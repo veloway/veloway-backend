@@ -1,6 +1,6 @@
 ﻿using Services.Interfaces;
 
-namespace WebApi.Controllers
+namespace webApi.Controllers
 {
     public class UsuariosController
     {
