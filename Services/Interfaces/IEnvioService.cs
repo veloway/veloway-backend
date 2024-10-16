@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {
-    public class IEnvioService
+    public interface IEnvioService
     {
     }
 }

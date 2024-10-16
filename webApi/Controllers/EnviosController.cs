@@ -1,8 +1,11 @@
-﻿using Services.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using Services.Interfaces;
 
 namespace webApi.Controllers
 {
-    public class EnviosController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EnviosController : ControllerBase
     {
         private readonly IEnvioService envioService;
         public EnviosController(IEnvioService envioService)
