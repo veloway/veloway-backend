@@ -1,0 +1,1 @@
+export type { EnviosI } from './envios.interface';

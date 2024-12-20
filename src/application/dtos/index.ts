@@ -1,0 +1,1 @@
+export { EnvioDto } from './envios/getAllEnvios.dto';

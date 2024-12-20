@@ -1,19 +1,24 @@
-import express from 'express';
-import cors from 'cors';
-import "dotenv/config";
-import { enviosRouter } from './routes';
+import { AppRoutes } from './presentation/app.routes';
+import { type Options, Server } from './presentation/server';
+import 'dotenv/config';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+(async () => {
+  try {
+    await main();
+  } catch (error) {
+    console.error('Error al iniciar el servidor:', error);
+  }
+})();
 
-//Middlewares
-app.use(express.json());
-app.use(cors({
-    origin: "*" //Temporal
-}));
 
-app.use('/api/envios', enviosRouter);
 
-app.listen(PORT, () => {
-  console.log('Server is running on http://localhost:3000');
-});
+async function main(): Promise<void> {
+  const OPTIONS: Options = {
+    port: Number(process.env.PORT),
+    routes: AppRoutes.routes
+  };
+  // TODO: await de la base de datos
+  new Server(OPTIONS).start();
+}
+
+
