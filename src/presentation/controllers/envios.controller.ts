@@ -1,6 +1,4 @@
 import { type Request, type Response } from 'express';
-import { bigIntReplacer } from '../../utils/bigIntReplacer';
-import { plainToClass } from 'class-transformer';
 import { CustomError, EnvioDto, type EnviosService } from '../../application';
 
 export class EnviosController {
@@ -13,9 +11,8 @@ export class EnviosController {
   getAll = (_req: Request, res: Response) => {
     this.enviosService.getAll()
       .then((envios) => {
-        const jsonResponse = JSON.stringify(envios, bigIntReplacer); // conversion del bigint
-        const jsonParse = JSON.parse(jsonResponse);
-        const enviosDto = plainToClass(EnvioDto, jsonParse, { excludeExtraneousValues: true }); // conversion a dto
+        const enviosDto = envios.map((envio) => EnvioDto.create(envio));
+
         res.status(200).json(enviosDto);
       })
       .catch((error) => {

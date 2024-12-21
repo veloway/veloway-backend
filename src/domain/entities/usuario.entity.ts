@@ -1,29 +1,22 @@
+import { type Envio } from './envio.entity';
+
 export class Usuario {
   constructor(
-    private id_usuario: string,
+    private idUsuario: string,
     private dni: number,
     private email: string,
     private password: string,
-    private fecha_nac: Date,
+    private fechaNac: Date,
     private nombre: string,
     private apellido: string,
-    private es_conductor: boolean,
-    private telefono?: string
-  ) {
-    this.id_usuario = id_usuario;
-    this.dni = dni;
-    this.email = email;
-    this.password = password;
-    this.fecha_nac = fecha_nac;
-    this.nombre = nombre;
-    this.apellido = apellido;
-    this.es_conductor = es_conductor;
-    this.telefono = telefono;
-  }
+    private esConductor: boolean,
+    private telefono?: string,
+    private envios?: Envio[]
+  ) {}
 
   // Getters
   public getIdUsuario(): string {
-    return this.id_usuario;
+    return this.idUsuario;
   }
 
   public getDni(): number {
@@ -39,7 +32,7 @@ export class Usuario {
   }
 
   public getFechaNac(): Date {
-    return this.fecha_nac;
+    return this.fechaNac;
   }
 
   public getNombre(): string {
@@ -51,10 +44,14 @@ export class Usuario {
   }
 
   public getEsConductor(): boolean {
-    return this.es_conductor;
+    return this.esConductor;
   }
 
   public getTelefono(): string | undefined {
     return this.telefono;
+  }
+
+  public getEnvios(): Envio[] | undefined {
+    return this.envios;
   }
 }

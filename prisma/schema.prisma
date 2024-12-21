@@ -46,11 +46,12 @@ model domicilios {
 }
 
 model envios {
-  nro_seguimiento                          Int        @id
+  nro_seguimiento                          BigInt        @id
   descripcion                              String
   fecha                                    DateTime      @db.Date
   hora                                     DateTime      @db.Time(6)
   peso_gramos                              Decimal       @db.Decimal(10, 2)
+  monto                                    Decimal       @db.Decimal(10, 2)
   id_cliente                               String        @db.Uuid
   id_estado                                Int           @default(1)
   id_origen                                Int
@@ -160,7 +161,7 @@ model viajes {
   fecha_inicio      DateTime?     @db.Timestamp(6)
   fecha_fin         DateTime?     @db.Timestamp(6)
   id_conductor      String        @db.Uuid
-  nro_seguimiento   Int        @unique
+  nro_seguimiento   BigInt        @unique
   checkpoints       checkpoints[]
   conductores       conductores   @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
   envios            envios        @relation(fields: [nro_seguimiento], references: [nro_seguimiento], onDelete: NoAction, onUpdate: NoAction)

@@ -6,7 +6,8 @@
     "build": "tsc",
     "start": "node build/app.js",
     "dev": "ts-node-dev src/app.ts",
-    "prisma-client": "npx prisma generate"
+    "prisma-client": "npx prisma generate",
+    "prisma-pull": "npx prisma db pull"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +15,6 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.1.0",
-    "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

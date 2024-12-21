@@ -1,1 +1,2 @@
-export { EnvioDto } from './envios/getAllEnvios.dto';
+export * from './envios';
+export * from './usuario';

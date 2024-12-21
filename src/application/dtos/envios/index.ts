@@ -1,0 +1,1 @@
+export { EnvioDto } from './getEnvio.dto';

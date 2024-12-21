@@ -1,0 +1,1 @@
+export { UsuarioDto } from './getUsuario.dto';

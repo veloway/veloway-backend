@@ -1,29 +1,24 @@
 import { type Domicilio } from './domicilio.entity';
+import { type EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
 
 export class Envio {
   constructor(
-    private nro_seguimiento: string,
+    private nroSeguimiento: number,
     private descripcion: string,
     private fecha: Date,
     private hora: Date,
-    private peso_gramos: number,
-    // TODO: private monto: number,
-    private estado: string,
+    private pesoGramos: number,
+    private monto: number,
+    private estado: EstadoEnvio,
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
-  ) {
-    this.nro_seguimiento = nro_seguimiento;
-    this.descripcion = descripcion;
-    this.fecha = fecha;
-    this.hora = hora;
-    this.peso_gramos = peso_gramos;
-  }
+  ) {}
 
   // Getters
-  public getNroSeguimiento(): string {
-    return this.nro_seguimiento;
+  public getNroSeguimiento(): number {
+    return this.nroSeguimiento;
   }
 
   public getDescripcion(): string {
@@ -39,10 +34,14 @@ export class Envio {
   }
 
   public getPesoGramos(): number {
-    return this.peso_gramos;
+    return this.pesoGramos;
   }
 
-  public getEstado(): string {
+  public getMonto(): number {
+    return this.monto;
+  }
+
+  public getEstado(): EstadoEnvio {
     return this.estado;
   }
 
@@ -56,5 +55,53 @@ export class Envio {
 
   public getCliente(): Usuario {
     return this.cliente;
+  }
+
+  // Setters
+
+  public setNroSeguimiento(nroSeguimiento: number): void {
+    this.nroSeguimiento = nroSeguimiento;
+  }
+
+  public setDescripcion(descripcion: string): void {
+    this.descripcion = descripcion;
+  }
+
+  public setFecha(fecha: Date): void {
+    this.fecha = fecha;
+  }
+
+  public setHora(hora: Date): void {
+    this.hora = hora;
+  }
+
+  public setPesoGramos(pesoGramos: number): void {
+    this.pesoGramos = pesoGramos;
+  }
+
+  public setMonto(monto: number): void {
+    this.monto = monto;
+  }
+
+  public setEstado(estado: EstadoEnvio): void {
+    this.estado = estado;
+  }
+
+  public setOrigen(origen: Domicilio): void {
+    this.origen = origen;
+  }
+
+  public setDestino(destino: Domicilio): void {
+    this.destino = destino;
+  }
+
+  public setCliente(cliente: Usuario): void {
+    this.cliente = cliente;
+  }
+
+  // Methods
+
+  public calcularMonto(): void {
+    // Implementar
   }
 }
