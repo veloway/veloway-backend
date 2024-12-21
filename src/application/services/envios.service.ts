@@ -1,4 +1,5 @@
 import { type EnviosI, type Envio } from '../../domain';
+import { type PostEnvioDto } from '../dtos';
 import { CustomError } from '../errors';
 
 // Implementacion de las reglas de negocio descriptas en las interfaces del dominio.
@@ -13,6 +14,17 @@ export class EnviosService {
     try {
       const envios = await this.db.getAll();
       return envios;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw CustomError.internalServerError();
+    }
+  }
+
+  async create(envio: PostEnvioDto): Promise<void> {
+    try {
+      await this.db.create(envio);
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

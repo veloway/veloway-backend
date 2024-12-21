@@ -6,6 +6,7 @@ export class EnviosRoutes {
     const router = Router();
 
     router.use('/all', enviosController.getAll);
+    router.use('/create', enviosController.create);
 
     return router;
   }

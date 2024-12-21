@@ -1,1 +1,2 @@
-export { EnvioDto } from './getEnvio.dto';
+export { GetEnvioDto } from './getEnvio.dto';
+export { PostEnvioDto } from './postEnvio.dto';

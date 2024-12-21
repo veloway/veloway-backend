@@ -1,33 +1,32 @@
-import { type Domicilio, type Envio } from '../../../domain';
+import { type Envio, type Domicilio } from '../../../domain';
 import { UsuarioDto } from '../usuario';
 
-export class EnvioDto {
-  constructor(
-    private nroSeguimiento: number,
-    private descripcion: string,
-    private fecha: Date,
-    private hora: Date,
-    private pesoGramos: number,
-    private monto: number,
-    private estado: string,
-    private origen: Domicilio,
-    private destino: Domicilio,
-    private cliente: UsuarioDto
+export class GetEnvioDto {
+  private constructor(
+    public nroSeguimiento: number,
+    public descripcion: string,
+    public fecha: Date,
+    public hora: Date,
+    public pesoGramos: number,
+    public monto: number,
+    public estado: string,
+    public origen: Domicilio,
+    public destino: Domicilio,
+    public cliente: UsuarioDto
   ) {}
 
-  public static create(envio: Envio): EnvioDto {
-    return new EnvioDto(
+  public static create(envio: Envio): GetEnvioDto {
+    return new GetEnvioDto(
       envio.getNroSeguimiento(),
       envio.getDescripcion(),
       envio.getFecha(),
       envio.getHora(),
       envio.getPesoGramos(),
       envio.getMonto(),
-      envio.getEstado().getNombre(),
+      envio.getEstado(),
       envio.getOrigen(),
       envio.getDestino(),
       UsuarioDto.create(envio.getCliente())
     );
   }
 }
-

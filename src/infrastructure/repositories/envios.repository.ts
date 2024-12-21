@@ -1,4 +1,5 @@
-import { Domicilio, Envio, EstadoEnvio, Localidad, Provincia, Usuario, type EnviosI } from '../../domain';
+import { type PostEnvioDto } from '../../application';
+import { Domicilio, Envio, Localidad, Provincia, Usuario, type EnviosI } from '../../domain';
 import { type PrismaClient } from '@prisma/client';
 
 export class EnviosRepository implements EnviosI {
@@ -41,19 +42,14 @@ export class EnviosRepository implements EnviosI {
         envio.hora, // TODO: Parsear para que muestre solo la hora
         parseFloat(envio.peso_gramos.toString()),
         Number(envio.monto),
-        new EstadoEnvio(
-          envio.estados_envio.id_estado,
-          envio.estados_envio.nombre
-        ),
+        envio.estados_envio.nombre,
         new Domicilio(
-          envio.domicilios_envios_id_origenTodomicilios.id_domicilio,
           envio.domicilios_envios_id_origenTodomicilios.calle,
           envio.domicilios_envios_id_origenTodomicilios.numero,
           new Localidad(
             envio.domicilios_envios_id_origenTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_origenTodomicilios.localidades.nombre,
             new Provincia(
-              envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.nombre
             )
           ),
@@ -62,14 +58,12 @@ export class EnviosRepository implements EnviosI {
           envio.domicilios_envios_id_origenTodomicilios.descripcion
         ),
         new Domicilio(
-          envio.domicilios_envios_id_destinoTodomicilios.id_domicilio,
           envio.domicilios_envios_id_destinoTodomicilios.calle,
           envio.domicilios_envios_id_destinoTodomicilios.numero,
           new Localidad(
             envio.domicilios_envios_id_destinoTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_destinoTodomicilios.localidades.nombre,
             new Provincia(
-              envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.nombre
             )
           ),
@@ -94,20 +88,75 @@ export class EnviosRepository implements EnviosI {
     return enviosEntities;
   }
 
-  public async create(envio: Envio): Promise<void> {
-    const dataPrisma = {
-      nro_seguimiento: Number(envio.getNroSeguimiento()),
-      descripcion: envio.getDescripcion(),
-      fecha: envio.getFecha(),
-      hora: envio.getHora(),
-      peso_gramos: envio.getPesoGramos(),
-      monto: envio.getMonto(),
-      id_cliente: envio.getCliente().getIdUsuario(),
-      id_estado: envio.getEstado().getIdEstado(),
-      id_origen: envio.getOrigen().getIdDomicilio(),
-      id_destino: envio.getDestino().getIdDomicilio()
+  public async create(envio: PostEnvioDto): Promise<void> {
+    // Origen
+    const provOrigen = await this.prisma.provincias.create({
+      data: {
+        nombre: envio.origen.getLocalidad().getProvincia().getNombre()
+      }
+    });
+
+    const localidadOrigen = await this.prisma.localidades.create({
+      data: {
+        codigo_postal: envio.origen.getLocalidad().getCodigoPostal(),
+        nombre: envio.origen.getLocalidad().getNombre(),
+        id_provincia: provOrigen.id_provincia
+      }
+    });
+
+    const domOrigen = await this.prisma.domicilios.create({
+      data: {
+        calle: envio.origen.getCalle(),
+        numero: envio.origen.getNumero(),
+        piso: envio.origen.getPiso(),
+        depto: envio.origen.getDepto(),
+        descripcion: envio.origen.getDescripcion(),
+        id_localidad: localidadOrigen.id_localidad
+      }
+    });
+
+    // Destino
+    const provDestino = await this.prisma.provincias.create({
+      data: {
+        nombre: envio.destino.getLocalidad().getProvincia().getNombre()
+      }
+    });
+
+    const localidadDestino = await this.prisma.localidades.create({
+      data: {
+        codigo_postal: envio.destino.getLocalidad().getCodigoPostal(),
+        nombre: envio.destino.getLocalidad().getNombre(),
+        id_provincia: provDestino.id_provincia
+      }
+    });
+
+    const domDestino = await this.prisma.domicilios.create({
+      data: {
+        calle: envio.destino.getCalle(),
+        numero: envio.destino.getNumero(),
+        piso: envio.destino.getPiso(),
+        depto: envio.destino.getDepto(),
+        descripcion: envio.destino.getDescripcion(),
+        id_localidad: localidadDestino.id_localidad
+      }
+    });
+
+    // Envio
+    const envioData = {
+      nro_seguimiento: envio.nroSeguimiento,
+      descripcion: envio.descripcion,
+      fecha: envio.fecha,
+      hora: envio.hora,
+      peso_gramos: envio.pesoGramos,
+      monto: envio.monto,
+      id_cliente: envio.clienteID,
+      id_estado: envio.estado,
+      id_origen: domOrigen.id_domicilio,
+      id_destino: domDestino.id_domicilio
     };
 
-    await this.prisma.envios.create({ data: dataPrisma });
+    console.log(envioData);
+
+    // await this.prisma.envios.create({ data: envioData });
   }
 }

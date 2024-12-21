@@ -2,16 +2,11 @@ import { type Localidad } from './localidad.entity';
 
 export class Provincia {
   constructor(
-    private idProvincia: number,
     private nombre: string,
     private localidades?: Localidad[]
   ) {}
 
-  // Getters
-  public getIdProvincia(): number {
-    return this.idProvincia;
-  }
-
+  // Getter
   public getNombre(): string {
     return this.nombre;
   }
@@ -21,11 +16,6 @@ export class Provincia {
   }
 
   // Setters
-
-  public setIdProvincia(idProvincia: number): void {
-    this.idProvincia = idProvincia;
-  }
-
   public setNombre(nombre: string): void {
     this.nombre = nombre;
   }
