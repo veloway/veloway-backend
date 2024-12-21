@@ -8,6 +8,7 @@ export class Envio {
     private fecha: Date,
     private hora: Date,
     private peso_gramos: number,
+    // TODO: private monto: number,
     private estado: string,
     private origen: Domicilio,
     private destino: Domicilio,

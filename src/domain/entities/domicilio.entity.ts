@@ -1,6 +1,6 @@
 import { type Usuario } from './usuario.entity';
 
-type Localidad = 'localidad.entity';
+type Localidad = 'localidad.entity'; // TODO: Implementar la entidad Localidad
 
 export class Domicilio {
   constructor(
@@ -8,7 +8,7 @@ export class Domicilio {
     private calle: string,
     private numero: number,
     private id_localidad: number,
-    private id_usuario: string,
+    private id_usuario: string | null,
     private piso?: number | null,
     private depto?: string | null,
     private descripcion?: string | null,

@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { Domicilio, Usuario } from '../../../domain';
 
 export class EnvioDto {
   @Expose()
@@ -17,6 +18,15 @@ export class EnvioDto {
     peso_gramos: number;
 
   @Expose()
-    id_estado: number;
+    estado: string;
+
+  @Expose()
+    origen: Domicilio;
+
+  @Expose()
+    destino: Domicilio;
+
+  @Expose()
+    cliente: Usuario;
 }
 

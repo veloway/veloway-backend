@@ -1,13 +1,12 @@
 import { type Request, type Response } from 'express';
 import { bigIntReplacer } from '../../utils/bigIntReplacer';
 import { plainToClass } from 'class-transformer';
-import { CustomError, EnvioDto } from '../../application';
-import { type EnviosI } from '../../domain';
+import { CustomError, EnvioDto, type EnviosService } from '../../application';
 
 export class EnviosController {
-  private readonly enviosService: EnviosI;
+  private readonly enviosService: EnviosService;
 
-  constructor(enviosService: EnviosI) {
+  constructor(enviosService: EnviosService) {
     this.enviosService = enviosService;
   }
 

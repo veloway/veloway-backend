@@ -35,20 +35,20 @@ export class EnviosRepository implements EnviosI {
           envio.domicilios_envios_id_origenTodomicilios.calle,
           envio.domicilios_envios_id_origenTodomicilios.numero,
           envio.domicilios_envios_id_origenTodomicilios.id_localidad,
-          envio.domicilios_envios_id_origenTodomicilios.id_usuario || '', // TODO:Corregir
-          envio.domicilios_envios_id_origenTodomicilios.piso || null,
-          envio.domicilios_envios_id_origenTodomicilios.depto || null,
-          envio.domicilios_envios_id_origenTodomicilios.descripcion || null
+          envio.domicilios_envios_id_origenTodomicilios.id_usuario,
+          envio.domicilios_envios_id_origenTodomicilios.piso,
+          envio.domicilios_envios_id_origenTodomicilios.depto,
+          envio.domicilios_envios_id_origenTodomicilios.descripcion
         ),
         new Domicilio(
           envio.domicilios_envios_id_destinoTodomicilios.id_domicilio,
           envio.domicilios_envios_id_destinoTodomicilios.calle,
           envio.domicilios_envios_id_destinoTodomicilios.numero,
-          envio.domicilios_envios_id_destinoTodomicilios.id_localidad,
-          envio.domicilios_envios_id_destinoTodomicilios.id_usuario || '', // TODO:Corregir
-          envio.domicilios_envios_id_destinoTodomicilios.piso || null,
-          envio.domicilios_envios_id_destinoTodomicilios.depto || null,
-          envio.domicilios_envios_id_destinoTodomicilios.descripcion || null
+          envio.domicilios_envios_id_destinoTodomicilios.id_localidad, // TODO: Hacer el mapeo de localidades
+          envio.domicilios_envios_id_destinoTodomicilios.id_usuario,
+          envio.domicilios_envios_id_destinoTodomicilios.piso,
+          envio.domicilios_envios_id_destinoTodomicilios.depto,
+          envio.domicilios_envios_id_destinoTodomicilios.descripcion
         ),
         new Usuario(
           envio.usuarios.id_usuario,
