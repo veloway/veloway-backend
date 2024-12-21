@@ -6,8 +6,8 @@ export class PostEnvioDto {
   private constructor(
     public nroSeguimiento: number,
     public descripcion: string,
-    public fecha: Date,
-    public hora: Date,
+    public fecha: string,
+    public hora: string,
     public pesoGramos: number,
     public monto: number,
     public estado: number,
@@ -15,96 +15,53 @@ export class PostEnvioDto {
     public destino: Domicilio,
     public clienteID: string
   ) {
-    nroSeguimiento = randomInt(100000, 999999);
+    nroSeguimiento = randomInt(100000, 999999); // TODO: NO ESTA FUNCIONANDO EL RANDOM, CORREGIR!!!!
   }
 
   public static create(envio: any): [string?, PostEnvioDto?] {
     const envioValidation = EnvioSchema.safeParse(envio);
 
     if (!envioValidation.success) {
-      return [envioValidation.error.message];
+      return [JSON.parse(envioValidation.error.message)];
     }
 
     return [undefined, new PostEnvioDto(
       envio.nroSeguimiento,
-      envio.descripcion,
-      envio.fecha,
-      envio.hora,
-      envio.pesoGramos,
-      envio.monto,
-      envio.estado,
+      envioValidation.data.descripcion,
+      envioValidation.data.fecha,
+      envioValidation.data.hora,
+      envioValidation.data.pesoGramos,
+      envioValidation.data.monto,
+      envioValidation.data.estado,
       new Domicilio(
-        envio.origen.calle,
-        envio.origen.numero,
+        envioValidation.data.origen.calle,
+        envioValidation.data.origen.numero,
         new Localidad(
-          envio.origen.localidad.codigoPostal,
-          envio.origen.localidad.nombre,
-          new Provincia(
-            envio.origen.localidad.provincia.nombre
-          )
+          envioValidation.data.origen.localidad.codigoPostal,
+          envioValidation.data.origen.localidad.nombre,
+          new Provincia(envioValidation.data.origen.localidad.provincia.nombre)
         ),
-        envio.origen.piso,
-        envio.origen.depto,
-        envio.origen.descripcion
+        envioValidation.data.origen.piso,
+        envioValidation.data.origen.depto,
+        envioValidation.data.origen.descripcion
       ),
       new Domicilio(
-        envio.destino.calle,
-        envio.destino.numero,
+        envioValidation.data.destino.calle,
+        envioValidation.data.destino.numero,
         new Localidad(
-          envio.destino.localidad.codigoPostal,
-          envio.destino.localidad.nombre,
-          new Provincia(
-            envio.destino.localidad.provincia.nombre
-          )
+          envioValidation.data.destino.localidad.codigoPostal,
+          envioValidation.data.destino.localidad.nombre,
+          new Provincia(envioValidation.data.destino.localidad.provincia.nombre)
         ),
-        envio.destino.piso,
-        envio.destino.depto,
-        envio.destino.descripcion
+        envioValidation.data.destino.piso,
+        envioValidation.data.destino.depto,
+        envioValidation.data.destino.descripcion
       ),
-      envio.cliente.idUsuario
-    )];
+      envioValidation.data.cliente
 
-    // return new PostEnvioDto(
-    //   envio.getNroSeguimiento(),
-    //   envio.getDescripcion(),
-    //   envio.getFecha(),
-    //   envio.getHora(),
-    //   envio.getPesoGramos(),
-    //   envio.getMonto(),
-    //   envio.getEstado(),
-    //   new Domicilio(
-    //     envio.getOrigen().getCalle(),
-    //     envio.getOrigen().getNumero(),
-    //     new Localidad(
-    //       envio.getOrigen().getLocalidad().getCodigoPostal(),
-    //       envio.getOrigen().getLocalidad().getNombre(),
-    //       new Provincia(
-    //         envio.getOrigen().getLocalidad().getProvincia().getNombre()
-    //       )
-    //     ),
-    //     envio.getOrigen().getPiso(),
-    //     envio.getOrigen().getDepto(),
-    //     envio.getOrigen().getDescripcion()
-    //   ),
-    //   new Domicilio(
-    //     envio.getDestino().getCalle(),
-    //     envio.getDestino().getNumero(),
-    //     new Localidad(
-    //       envio.getDestino().getLocalidad().getCodigoPostal(),
-    //       envio.getDestino().getLocalidad().getNombre(),
-    //       new Provincia(
-    //         envio.getDestino().getLocalidad().getProvincia().getNombre()
-    //       )
-    //     ),
-    //     envio.getDestino().getPiso(),
-    //     envio.getDestino().getDepto(),
-    //     envio.getDestino().getDescripcion()
-    //   ),
-    //   envio.getCliente().getIdUsuario()
-    // );
+    )];
   }
 }
-
 
 
 export const ProvinciaSchema = z.object({
@@ -112,7 +69,7 @@ export const ProvinciaSchema = z.object({
 });
 
 export const LocalidadSchema = z.object({
-  codigoPostal: z.string(),
+  codigoPostal: z.number().int(),
   nombre: z.string(),
   provincia: ProvinciaSchema
 });
@@ -120,7 +77,6 @@ export const LocalidadSchema = z.object({
 export const DomicilioSchema = z.object({
   calle: z.string(),
   numero: z.number().int(),
-  codigoPostal: z.string(),
   piso: z.number().int().nullable(),
   depto: z.string().nullable(),
   descripcion: z.string().nullable(),
@@ -130,11 +86,11 @@ export const DomicilioSchema = z.object({
 
 export const EnvioSchema = z.object({
   descripcion: z.string(),
-  fecha: z.date(),
-  hora: z.date(),
+  fecha: z.string(), // TODO: CAMBIAR STRING A FECHA
+  hora: z.string(),
   pesoGramos: z.number().int(),
   monto: z.number().int(),
-  estado: z.string(),
+  estado: z.number(),
   origen: DomicilioSchema,
   destino: DomicilioSchema,
   cliente: z.string()
