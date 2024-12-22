@@ -35,13 +35,13 @@ export class EnviosController {
     if (postEnvioDto) {
       this.enviosService.create(postEnvioDto)
         .then(() => {
-          res.status(201).json({ message: 'Envio creado' });
+          res.status(201).json({ nroSeguimiento: postEnvioDto.nroSeguimiento });
         })
         .catch((error) => {
           if (error instanceof CustomError) {
             return res.status(error.statusCode).json({ message: error.message });
           }
-          res.status(500).json({ message: 'Internal Server Error' });
+          res.status(500).json({ message: error.message });
         }
         );
     }

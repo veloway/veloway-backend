@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Domicilio, Localidad, Provincia } from '../../../domain';
 import { randomInt } from 'crypto';
+// import { type PostDomicilioDto } from '../domicilio';
 
 export class PostEnvioDto {
   private constructor(
@@ -15,12 +16,14 @@ export class PostEnvioDto {
     public destino: Domicilio,
     public clienteID: string
   ) {
-    nroSeguimiento = randomInt(100000, 999999); // TODO: NO ESTA FUNCIONANDO EL RANDOM, CORREGIR!!!!
+    this.nroSeguimiento = randomInt(10000000, 99999999);
+    this.estado = 1;
   }
 
   public static create(envio: any): [string?, PostEnvioDto?] {
     const envioValidation = EnvioSchema.safeParse(envio);
 
+    console.log(envioValidation);
     if (!envioValidation.success) {
       return [JSON.parse(envioValidation.error.message)];
     }
@@ -32,8 +35,8 @@ export class PostEnvioDto {
       envioValidation.data.hora,
       envioValidation.data.pesoGramos,
       envioValidation.data.monto,
-      envioValidation.data.estado,
-      new Domicilio(
+      envio.estado,
+      new Domicilio( // TODO: Crear un DTO para Domicilio
         envioValidation.data.origen.calle,
         envioValidation.data.origen.numero,
         new Localidad(
@@ -63,7 +66,7 @@ export class PostEnvioDto {
   }
 }
 
-
+// TODO: Mover a un archivo aparte
 export const ProvinciaSchema = z.object({
   nombre: z.string()
 });
@@ -88,9 +91,8 @@ export const EnvioSchema = z.object({
   descripcion: z.string(),
   fecha: z.string(), // TODO: CAMBIAR STRING A FECHA
   hora: z.string(),
-  pesoGramos: z.number().int(),
-  monto: z.number().int(),
-  estado: z.number(),
+  pesoGramos: z.number().int().positive(),
+  monto: z.number().positive(),
   origen: DomicilioSchema,
   destino: DomicilioSchema,
   cliente: z.string()

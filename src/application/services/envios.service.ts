@@ -18,16 +18,25 @@ export class EnviosService {
       if (error instanceof CustomError) {
         throw error;
       }
+      if (error instanceof Error) {
+        throw CustomError.internalServerError(error.message);
+      }
       throw CustomError.internalServerError();
     }
   }
 
   async create(envio: PostEnvioDto): Promise<void> {
     try {
+      // TODO: Validar que el clienteID exista en la base de datos
+      // TODO: Validar que el origen y destino sean distintos
+      // TODO: Validar que la localidad de origen y destino existan en la base de datos, si no, crearlas
       await this.db.create(envio);
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
+      }
+      if (error instanceof Error) {
+        throw CustomError.internalServerError(error.message);
       }
       throw CustomError.internalServerError();
     }

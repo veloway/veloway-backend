@@ -1,0 +1,1 @@
+export { PostDomicilioDto } from './postDomicilio.dto';
