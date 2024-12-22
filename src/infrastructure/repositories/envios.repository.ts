@@ -92,25 +92,25 @@ export class EnviosRepository implements EnviosI {
     // Origen
     const provOrigen = await this.prisma.provincias.create({
       data: {
-        nombre: envio.origen.getLocalidad().getProvincia().getNombre()
+        nombre: envio.origen.localidad.provincia.nombre
       }
     });
 
     const localidadOrigen = await this.prisma.localidades.create({
       data: {
-        codigo_postal: envio.origen.getLocalidad().getCodigoPostal(),
-        nombre: envio.origen.getLocalidad().getNombre(),
+        codigo_postal: envio.origen.localidad.codigoPostal,
+        nombre: envio.origen.localidad.nombre,
         id_provincia: provOrigen.id_provincia
       }
     });
 
     const domOrigen = await this.prisma.domicilios.create({
       data: {
-        calle: envio.origen.getCalle(),
-        numero: envio.origen.getNumero(),
-        piso: envio.origen.getPiso(),
-        depto: envio.origen.getDepto(),
-        descripcion: envio.origen.getDescripcion(),
+        calle: envio.origen.calle,
+        numero: envio.origen.numero,
+        piso: envio.origen.piso,
+        depto: envio.origen.depto,
+        descripcion: envio.origen.descripcion,
         id_localidad: localidadOrigen.id_localidad
       }
     });
@@ -118,29 +118,30 @@ export class EnviosRepository implements EnviosI {
     // Destino
     const provDestino = await this.prisma.provincias.create({
       data: {
-        nombre: envio.destino.getLocalidad().getProvincia().getNombre()
+        nombre: envio.destino.localidad.provincia.nombre
       }
     });
 
     const localidadDestino = await this.prisma.localidades.create({
       data: {
-        codigo_postal: envio.destino.getLocalidad().getCodigoPostal(),
-        nombre: envio.destino.getLocalidad().getNombre(),
+        codigo_postal: envio.destino.localidad.codigoPostal,
+        nombre: envio.destino.localidad.nombre,
         id_provincia: provDestino.id_provincia
       }
     });
 
     const domDestino = await this.prisma.domicilios.create({
       data: {
-        calle: envio.destino.getCalle(),
-        numero: envio.destino.getNumero(),
-        piso: envio.destino.getPiso(),
-        depto: envio.destino.getDepto(),
-        descripcion: envio.destino.getDescripcion(),
+        calle: envio.destino.calle,
+        numero: envio.destino.numero,
+        piso: envio.destino.piso,
+        depto: envio.destino.depto,
+        descripcion: envio.destino.descripcion,
         id_localidad: localidadDestino.id_localidad
       }
     });
 
+    // Eliminar el log despues de probar
     console.log({
       nro_seguimiento: envio.nroSeguimiento,
       descripcion: envio.descripcion,

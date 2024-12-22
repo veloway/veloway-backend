@@ -24,6 +24,11 @@ export class EnviosController {
 
   create = (req: Request, res: Response) => {
     const envio = req.body;
+    // Validate request body
+    if (!envio) {
+      res.status(400).json({ message: 'Request body is empty' });
+      return;
+    }
 
     const [error, postEnvioDto] = PostEnvioDto.create(envio);
 

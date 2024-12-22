@@ -1,12 +1,12 @@
-import { type Localidad } from '../../../domain';
+import { type PostLocalidadDto } from '../localidad';
 
 export class PostDomicilioDto {
   constructor(
-    public descripcion: string | null,
     public calle: string,
     public numero: number,
-    public localidad: Localidad,
-    public piso?: string,
-    public depto?: string
+    public localidad: PostLocalidadDto,
+    public descripcion?: string | null,
+    public piso?: number | null,
+    public depto?: string | null
   ) {}
 }

@@ -1,3 +1,3 @@
-export * from './envios';
+export * from './envio';
 export * from './usuario';
 export * from './domicilio';
