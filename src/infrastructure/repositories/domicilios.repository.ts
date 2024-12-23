@@ -1,7 +1,8 @@
 import { type PrismaClient } from '@prisma/client';
-import { type Domicilio, type DomicilioI } from '../../domain';
-import { type PostDomicilioDto } from '../../application';
-import { normalizeText } from '../../utils';
+import { type Domicilio } from '../../domain/entities/domicilio.entity';
+import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
+import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { normalizeText } from '../../utils/normalizeText';
 
 export class DomiciliosRepository implements DomicilioI {
   constructor(private readonly prisma: PrismaClient) {

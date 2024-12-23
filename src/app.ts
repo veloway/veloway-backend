@@ -1,10 +1,10 @@
-import { envs } from './config';
+import { PORT } from './config/envs.config';
 import { AppRoutes } from './presentation/app.routes';
 import { type Options, Server } from './presentation/server';
 
 async function main(): Promise<void> {
   const OPTIONS: Options = {
-    port: Number(envs.PORT),
+    port: Number(PORT),
     routes: AppRoutes.routes
   };
 

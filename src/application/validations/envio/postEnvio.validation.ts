@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DomicilioSchema } from '../domicilio';
+import { DomicilioSchema } from '../domicilio/postDomicilio.validation';
 
 export const EnvioSchema = z.object({
   descripcion: z.string(),

@@ -1,4 +1,5 @@
-import { type PostLocalidadDto } from '../localidad';
+import { type PostLocalidadDto } from '../localidad/postLocalidad.dto';
+
 
 export class PostDomicilioDto {
   constructor(

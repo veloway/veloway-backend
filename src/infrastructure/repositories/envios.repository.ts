@@ -1,6 +1,11 @@
-import { type PostEnvioDto } from '../../application';
-import { Domicilio, Envio, Localidad, Provincia, Usuario, type EnviosI } from '../../domain';
 import { type PrismaClient } from '@prisma/client';
+import { type EnviosI } from '../../domain/interfaces/envios.interface';
+import { Envio } from '../../domain/entities/envio.entity';
+import { Domicilio } from '../../domain/entities/domicilio.entity';
+import { Localidad } from '../../domain/entities/localidad.entity';
+import { Provincia } from '../../domain/entities/provincia.entity';
+import { Usuario } from '../../domain/entities/usuario.entity';
+import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 
 export class EnviosRepository implements EnviosI {
   constructor(private readonly prisma: PrismaClient) {}

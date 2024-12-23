@@ -1,7 +1,10 @@
-import { type EnviosI, type Envio, type UsuarioI, type DomicilioI } from '../../domain';
-import { normalizeText } from '../../utils';
-import { type PostEnvioDto } from '../dtos';
-import { CustomError } from '../errors';
+import { type Envio } from '../../domain/entities/envio.entity';
+import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
+import { type EnviosI } from '../../domain/interfaces/envios.interface';
+import { type UsuarioI } from '../../domain/interfaces/usuario.interface';
+import { normalizeText } from '../../utils/normalizeText';
+import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
+import { CustomError } from '../errors/custom.errors';
 
 export class EnviosService {
   constructor (

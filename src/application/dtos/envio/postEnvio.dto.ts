@@ -1,6 +1,6 @@
 import { randomInt } from 'crypto';
-import { type PostDomicilioDto } from '../domicilio';
-import { postEnvioValidation } from '../../validations';
+import { type PostDomicilioDto } from '../domicilio/postDomicilio.dto';
+import { postEnvioValidation } from '../../validations/envio/postEnvio.validation';
 
 export class PostEnvioDto {
   private constructor(

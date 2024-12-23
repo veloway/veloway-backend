@@ -1,5 +1,8 @@
 import { type Request, type Response } from 'express';
-import { CustomError, GetEnvioDto, PostEnvioDto, type EnviosService } from '../../application';
+import { type EnviosService } from '../../application/services/envios.service';
+import { CustomError } from '../../application/errors/custom.errors';
+import { GetEnvioDto } from '../../application/dtos/envio/getEnvio.dto';
+import { PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 
 export class EnviosController {
   private readonly enviosService: EnviosService;

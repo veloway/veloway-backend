@@ -1,5 +1,5 @@
-import { type PostDomicilioDto } from '../../application';
-import { type Domicilio } from '../entities';
+import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { type Domicilio } from '../entities/domicilio.entity';
 
 export interface DomicilioI {
   getall: () => Promise<Domicilio[]>

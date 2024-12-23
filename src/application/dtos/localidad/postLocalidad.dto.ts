@@ -1,4 +1,4 @@
-import { type PostProvinciaDto } from '../provincia';
+import { type PostProvinciaDto } from '../provincia/postProvincia.dto';
 
 export class PostLocalidadDto {
   constructor(

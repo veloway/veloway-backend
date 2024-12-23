@@ -1,5 +1,6 @@
-import { type Envio, type Domicilio } from '../../../domain';
-import { UsuarioDto } from '../usuario';
+import { type Domicilio } from '../../../domain/entities/domicilio.entity';
+import { type Envio } from '../../../domain/entities/envio.entity';
+import { UsuarioDto } from '../usuario/getUsuario.dto';
 
 export class GetEnvioDto {
   private constructor(

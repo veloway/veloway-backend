@@ -1,1 +1,0 @@
-export { PostLocalidadDto } from './postLocalidad.dto';

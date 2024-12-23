@@ -1,5 +1,6 @@
 import { type PrismaClient } from '@prisma/client';
-import { Usuario, type UsuarioI } from '../../domain';
+import { type UsuarioI } from '../../domain/interfaces/usuario.interface';
+import { Usuario } from '../../domain/entities/usuario.entity';
 
 export class UsuariosRepository implements UsuarioI {
   constructor(private readonly prisma: PrismaClient) {
@@ -7,7 +8,6 @@ export class UsuariosRepository implements UsuarioI {
   }
 
   getall: () => Promise<Usuario[]>;
-  create: (usuario: Usuario) => Promise<void>;
 
   public async getUsuario(id: string): Promise<Usuario | null> {
     const usuarioData = await this.prisma.usuarios.findUnique({

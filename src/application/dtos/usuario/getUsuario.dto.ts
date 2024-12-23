@@ -1,4 +1,4 @@
-import { type Usuario } from '../../../domain';
+import { type Usuario } from '../../../domain/entities/usuario.entity';
 
 export class UsuarioDto {
   constructor(

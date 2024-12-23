@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProvinciaSchema } from '../provincia';
+import { ProvinciaSchema } from '../provincia/postProvincia.validation';
 
 export const LocalidadSchema = z.object({
   codigoPostal: z.number().int(),
