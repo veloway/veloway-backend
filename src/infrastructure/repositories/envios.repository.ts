@@ -141,20 +141,6 @@ export class EnviosRepository implements EnviosI {
       }
     });
 
-    // Eliminar el log despues de probar
-    console.log({
-      nro_seguimiento: envio.nroSeguimiento,
-      descripcion: envio.descripcion,
-      fecha: envio.fecha,
-      hora: envio.hora,
-      peso_gramos: envio.pesoGramos,
-      monto: envio.monto,
-      id_cliente: envio.clienteID,
-      id_estado: envio.estado,
-      id_origen: domOrigen.id_domicilio,
-      id_destino: domDestino.id_domicilio
-    });
-
     // Envio
     await this.prisma.envios.create({
       data: {
