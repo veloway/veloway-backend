@@ -6,7 +6,7 @@ export class UsuarioDto {
     private email: string,
     private nombre: string,
     private apellido: string,
-    private telefono?: string
+    private telefono?: string | null
   ) {}
 
   public static create(usuario: Usuario): UsuarioDto {

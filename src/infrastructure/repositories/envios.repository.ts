@@ -89,58 +89,9 @@ export class EnviosRepository implements EnviosI {
   }
 
   public async create(envio: PostEnvioDto): Promise<void> {
-    // Origen
-    const provOrigen = await this.prisma.provincias.create({
-      data: {
-        nombre: envio.origen.localidad.provincia.nombre
-      }
-    });
-
-    const localidadOrigen = await this.prisma.localidades.create({
-      data: {
-        codigo_postal: envio.origen.localidad.codigoPostal,
-        nombre: envio.origen.localidad.nombre,
-        id_provincia: provOrigen.id_provincia
-      }
-    });
-
-    const domOrigen = await this.prisma.domicilios.create({
-      data: {
-        calle: envio.origen.calle,
-        numero: envio.origen.numero,
-        piso: envio.origen.piso,
-        depto: envio.origen.depto,
-        descripcion: envio.origen.descripcion,
-        id_localidad: localidadOrigen.id_localidad
-      }
-    });
-
-    // Destino
-    const provDestino = await this.prisma.provincias.create({
-      data: {
-        nombre: envio.destino.localidad.provincia.nombre
-      }
-    });
-
-    const localidadDestino = await this.prisma.localidades.create({
-      data: {
-        codigo_postal: envio.destino.localidad.codigoPostal,
-        nombre: envio.destino.localidad.nombre,
-        id_provincia: provDestino.id_provincia
-      }
-    });
-
-    const domDestino = await this.prisma.domicilios.create({
-      data: {
-        calle: envio.destino.calle,
-        numero: envio.destino.numero,
-        piso: envio.destino.piso,
-        depto: envio.destino.depto,
-        descripcion: envio.destino.descripcion,
-        id_localidad: localidadDestino.id_localidad
-      }
-    });
-
+    if (!envio.origenID || !envio.destinoID) {
+      throw new Error('El origenID y destinoID son obligatorios.');
+    }
     // Envio
     await this.prisma.envios.create({
       data: {
@@ -152,8 +103,8 @@ export class EnviosRepository implements EnviosI {
         monto: envio.monto,
         id_cliente: envio.clienteID,
         id_estado: envio.estado,
-        id_origen: domOrigen.id_domicilio,
-        id_destino: domDestino.id_domicilio
+        id_origen: envio.origenID,
+        id_destino: envio.destinoID
       }
     });
   }

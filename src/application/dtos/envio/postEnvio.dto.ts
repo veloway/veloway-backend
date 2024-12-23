@@ -13,7 +13,9 @@ export class PostEnvioDto {
     public estado: number,
     public origen: PostDomicilioDto,
     public destino: PostDomicilioDto,
-    public clienteID: string
+    public clienteID: string,
+    public origenID?: number, // Se le asigna al crear o recuperar el domicilio
+    public destinoID?: number
   ) {
     this.nroSeguimiento = randomInt(10000000, 99999999);
     this.estado = 1;
