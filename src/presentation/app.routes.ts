@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { EnviosRoutes } from './routes';
+import { EnviosRoutes } from './routes/envios.routes';
 
 export class AppRoutes {
   static get routes(): Router {

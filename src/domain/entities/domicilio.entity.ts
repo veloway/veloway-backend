@@ -4,7 +4,6 @@ import { type Usuario } from './usuario.entity';
 
 export class Domicilio {
   constructor(
-    private idDomicilio: number,
     private calle: string,
     private numero: number,
     private localidad: Localidad,
@@ -16,10 +15,6 @@ export class Domicilio {
   ) {}
 
   // Getters
-  public getIdDomicilio(): number {
-    return this.idDomicilio;
-  }
-
   public getCalle(): string {
     return this.calle;
   }
@@ -53,15 +48,6 @@ export class Domicilio {
   }
 
   // Setters
-
-  public setIdDomicilio(idDomicilio: number): void {
-    this.idDomicilio = idDomicilio;
-  }
-
-  public setCalle(calle: string): void {
-    this.calle = calle;
-  }
-
   public setNumero(numero: number): void {
     this.numero = numero;
   }

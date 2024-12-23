@@ -1,5 +1,11 @@
-import { Domicilio, Envio, EstadoEnvio, Localidad, Provincia, Usuario, type EnviosI } from '../../domain';
 import { type PrismaClient } from '@prisma/client';
+import { type EnviosI } from '../../domain/interfaces/envios.interface';
+import { Envio } from '../../domain/entities/envio.entity';
+import { Domicilio } from '../../domain/entities/domicilio.entity';
+import { Localidad } from '../../domain/entities/localidad.entity';
+import { Provincia } from '../../domain/entities/provincia.entity';
+import { Usuario } from '../../domain/entities/usuario.entity';
+import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 
 export class EnviosRepository implements EnviosI {
   constructor(private readonly prisma: PrismaClient) {}
@@ -37,23 +43,18 @@ export class EnviosRepository implements EnviosI {
       return new Envio(
         Number(envio.nro_seguimiento.toString()),
         envio.descripcion,
-        envio.fecha, // TODO: Parsear para que muestre solo la fecha
-        envio.hora, // TODO: Parsear para que muestre solo la hora
+        envio.fecha,
+        envio.hora,
         parseFloat(envio.peso_gramos.toString()),
         Number(envio.monto),
-        new EstadoEnvio(
-          envio.estados_envio.id_estado,
-          envio.estados_envio.nombre
-        ),
+        envio.estados_envio.nombre,
         new Domicilio(
-          envio.domicilios_envios_id_origenTodomicilios.id_domicilio,
           envio.domicilios_envios_id_origenTodomicilios.calle,
           envio.domicilios_envios_id_origenTodomicilios.numero,
           new Localidad(
             envio.domicilios_envios_id_origenTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_origenTodomicilios.localidades.nombre,
             new Provincia(
-              envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.nombre
             )
           ),
@@ -62,14 +63,12 @@ export class EnviosRepository implements EnviosI {
           envio.domicilios_envios_id_origenTodomicilios.descripcion
         ),
         new Domicilio(
-          envio.domicilios_envios_id_destinoTodomicilios.id_domicilio,
           envio.domicilios_envios_id_destinoTodomicilios.calle,
           envio.domicilios_envios_id_destinoTodomicilios.numero,
           new Localidad(
             envio.domicilios_envios_id_destinoTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_destinoTodomicilios.localidades.nombre,
             new Provincia(
-              envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.nombre
             )
           ),
@@ -94,20 +93,24 @@ export class EnviosRepository implements EnviosI {
     return enviosEntities;
   }
 
-  public async create(envio: Envio): Promise<void> {
-    const dataPrisma = {
-      nro_seguimiento: Number(envio.getNroSeguimiento()),
-      descripcion: envio.getDescripcion(),
-      fecha: envio.getFecha(),
-      hora: envio.getHora(),
-      peso_gramos: envio.getPesoGramos(),
-      monto: envio.getMonto(),
-      id_cliente: envio.getCliente().getIdUsuario(),
-      id_estado: envio.getEstado().getIdEstado(),
-      id_origen: envio.getOrigen().getIdDomicilio(),
-      id_destino: envio.getDestino().getIdDomicilio()
-    };
-
-    await this.prisma.envios.create({ data: dataPrisma });
+  public async create(envio: PostEnvioDto): Promise<void> {
+    if (!envio.origenID || !envio.destinoID) {
+      throw new Error('El origenID y destinoID son obligatorios.');
+    }
+    // Envio
+    await this.prisma.envios.create({
+      data: {
+        nro_seguimiento: envio.nroSeguimiento,
+        descripcion: envio.descripcion,
+        fecha: envio.fecha,
+        hora: envio.hora,
+        peso_gramos: envio.pesoGramos,
+        monto: envio.monto,
+        id_cliente: envio.clienteID,
+        id_estado: envio.estado,
+        id_origen: envio.origenID,
+        id_destino: envio.destinoID
+      }
+    });
   }
 }

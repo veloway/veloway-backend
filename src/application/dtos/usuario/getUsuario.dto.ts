@@ -1,24 +1,20 @@
-import { type Usuario } from '../../../domain';
+import { type Usuario } from '../../../domain/entities/usuario.entity';
 
 export class UsuarioDto {
   constructor(
     private dni: number,
     private email: string,
-    private fechaNac: Date,
     private nombre: string,
     private apellido: string,
-    private esConductor: boolean,
-    private telefono?: string
+    private telefono?: string | null
   ) {}
 
   public static create(usuario: Usuario): UsuarioDto {
     return new UsuarioDto(
       usuario.getDni(),
       usuario.getEmail(),
-      usuario.getFechaNac(),
       usuario.getNombre(),
       usuario.getApellido(),
-      usuario.getEsConductor(),
       usuario.getTelefono()
     );
   }

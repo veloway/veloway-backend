@@ -10,8 +10,8 @@ export class Usuario {
     private nombre: string,
     private apellido: string,
     private esConductor: boolean,
-    private telefono?: string,
-    private envios?: Envio[]
+    private telefono?: string | null,
+    private envios?: Envio[] | null
   ) {}
 
   // Getters
@@ -47,11 +47,11 @@ export class Usuario {
     return this.esConductor;
   }
 
-  public getTelefono(): string | undefined {
+  public getTelefono(): string | null | undefined {
     return this.telefono;
   }
 
-  public getEnvios(): Envio[] | undefined {
+  public getEnvios(): Envio[] | null | undefined {
     return this.envios;
   }
 }
