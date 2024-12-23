@@ -38,8 +38,8 @@ export class EnviosRepository implements EnviosI {
       return new Envio(
         Number(envio.nro_seguimiento.toString()),
         envio.descripcion,
-        envio.fecha, // TODO: Parsear para que muestre solo la fecha
-        envio.hora, // TODO: Parsear para que muestre solo la hora
+        envio.fecha,
+        envio.hora,
         parseFloat(envio.peso_gramos.toString()),
         Number(envio.monto),
         envio.estados_envio.nombre,

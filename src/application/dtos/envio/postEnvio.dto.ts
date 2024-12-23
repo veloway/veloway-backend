@@ -6,8 +6,8 @@ export class PostEnvioDto {
   private constructor(
     public nroSeguimiento: number,
     public descripcion: string,
-    public fecha: string,
-    public hora: string,
+    public fecha: Date,
+    public hora: Date,
     public pesoGramos: number,
     public monto: number,
     public estado: number,
@@ -26,11 +26,15 @@ export class PostEnvioDto {
       return [JSON.parse(envioValidation.error.message)];
     }
 
+    // Convierte la fecha y hora en formato Date para poder guardarla en la base de datos
+    const fecha = new Date(envioValidation.data.fecha);
+    const hora = new Date(`1970-01-01T${envioValidation.data.hora}Z`); // La z es para que tome la hora en UTC
+
     return [undefined, new PostEnvioDto(
       envio.nroSeguimiento,
       envioValidation.data.descripcion,
-      envioValidation.data.fecha,
-      envioValidation.data.hora,
+      fecha,
+      hora,
       envioValidation.data.pesoGramos,
       envioValidation.data.monto,
       envio.estado,
