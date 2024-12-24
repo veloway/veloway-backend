@@ -1,13 +1,13 @@
 import { type PrismaClient } from '@prisma/client';
-import { type EnviosI } from '../../domain/interfaces/envios.interface';
 import { Envio } from '../../domain/entities/envio.entity';
 import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
+import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 
-export class EnviosRepository implements EnviosI {
+export class EnviosRepository implements IEnviosRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   getEnvio: (nroSeguimiento: string) => Promise<Envio | null>;
@@ -104,12 +104,12 @@ export class EnviosRepository implements EnviosI {
     return enviosEntities;
   }
 
-  public async create(envio: PostEnvioDto): Promise<void> {
+  public async create(envio: PostEnvioDto): Promise<number> {
     if (!envio.origenID || !envio.destinoID) {
       throw new Error('El origenID y destinoID son obligatorios.');
     }
     // Envio
-    await this.prisma.envios.create({
+    const envioData = await this.prisma.envios.create({
       data: {
         nro_seguimiento: envio.nroSeguimiento,
         descripcion: envio.descripcion,
@@ -123,6 +123,8 @@ export class EnviosRepository implements EnviosI {
         id_destino: envio.destinoID
       }
     });
+
+    return Number(envioData.nro_seguimiento);
   }
 
   public async buscarEnvioIgual(envio: PostEnvioDto): Promise<boolean> {

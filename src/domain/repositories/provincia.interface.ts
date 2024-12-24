@@ -1,7 +1,7 @@
 import { type PostProvinciaDto } from '../../application/dtos/provincia/postProvincia.dto';
 import { type Provincia } from '../entities/provincia.entity';
 
-export class ProvinciaI {
+export class IProvinciaRepository {
   getAll: () => Promise<Provincia[]>;
   getProvincia: (provinciaID: number) => Promise<Provincia | null>;
   create: (provincia: PostProvinciaDto) => Promise<void>;

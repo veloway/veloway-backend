@@ -1,10 +1,10 @@
 import { type PrismaClient } from '@prisma/client';
-import { type LocalidadI } from '../../domain/interfaces/localidad.interface';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { type PostLocalidadDto } from '../../application/dtos/localidad/postLocalidad.dto';
+import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
 
-export class LocalidadesRepository implements LocalidadI {
+export class LocalidadesRepository implements ILocalidadRepository {
   constructor(private readonly prisma: PrismaClient) {
     this.prisma = prisma;
   }

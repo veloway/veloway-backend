@@ -1,8 +1,8 @@
 import { type PrismaClient } from '@prisma/client';
-import { type UsuarioI } from '../../domain/interfaces/usuario.interface';
 import { Usuario } from '../../domain/entities/usuario.entity';
+import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
 
-export class UsuariosRepository implements UsuarioI {
+export class UsuariosRepository implements IUsuarioRepository {
   constructor(private readonly prisma: PrismaClient) {
     this.prisma = prisma;
   }

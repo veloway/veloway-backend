@@ -1,9 +1,9 @@
 import { type PrismaClient } from '@prisma/client';
 import { type Domicilio } from '../../domain/entities/domicilio.entity';
-import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
 import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 
-export class DomiciliosRepository implements DomicilioI {
+export class DomiciliosRepository implements IDomicilioRepository {
   constructor(private readonly prisma: PrismaClient) {
     this.prisma = prisma;
   }

@@ -1,14 +1,15 @@
-import { type Envio } from '../../domain/entities/envio.entity';
-import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
-import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
-import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
-import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
-import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
-import { CustomError } from '../errors/custom.errors';
+import { type IDomicilioRepository } from '../../../domain/repositories/domicilio.interface';
+import { type IEnviosRepository } from '../../../domain/repositories/envios.interface';
+import { type ILocalidadRepository } from '../../../domain/repositories/localidad.interface';
+import { type IUsuarioRepository } from '../../../domain/repositories/usuario.interface';
+import { type PostEnvioDto } from '../../dtos/envio/postEnvio.dto';
+import { CustomError } from '../../errors/custom.errors';
 
-// TODO: ver si sigo usando esto xd
+interface createEnvioUseCaseI {
+  execute: (envio: PostEnvioDto) => Promise<number>
+}
 
-export class EnviosService {
+export class CreateEnvioUseCase implements createEnvioUseCaseI {
   constructor (
     private readonly enviosRepository: IEnviosRepository,
     private readonly domiciliosRepository: IDomicilioRepository,
@@ -21,22 +22,7 @@ export class EnviosService {
     this.localidadesRepository = localidadesRepository;
   }
 
-  async getAll(): Promise<Envio[]> {
-    try {
-      const envios = await this.enviosRepository.getAll();
-      return envios;
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-      if (error instanceof Error) {
-        throw CustomError.internalServerError(error.message);
-      }
-      throw CustomError.internalServerError();
-    }
-  }
-
-  async create(envio: PostEnvioDto): Promise<void> {
+  async execute(envio: PostEnvioDto): Promise<number> {
     // TODO: Ver si se puede mapear dto a un objeto de la entidad, y asi poder trabajar con los metodos de la entidad
     // Luego la entidad se mapea con una entidad de la base de datos para guardarla
     // en la arquitectura de software bien estructurada, el servicio debe trabajar con las entidades de negocio.
@@ -101,7 +87,8 @@ export class EnviosService {
       }
 
       // Crear el envio
-      await this.enviosRepository.create(envio);
+      const nroSeguimiento = await this.enviosRepository.create(envio);
+      return nroSeguimiento;
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -112,14 +99,4 @@ export class EnviosService {
       throw CustomError.internalServerError();
     }
   }
-
-  // TODO: Implementar buscar envio por numero de seguimiento
-
-  // TODO: Implementar actualizar envio
-
-  // TODO: Implementar eliminar envio
-
-  // TODO: Implementar buscar envios por cliente
-
-  // TODO: Implementar buscar envios por estado, origen y destino, paginado, ordenado por fecha, etc.
 }

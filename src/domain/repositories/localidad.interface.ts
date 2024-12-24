@@ -1,7 +1,7 @@
 import { type PostLocalidadDto } from '../../application/dtos/localidad/postLocalidad.dto';
 import { type Localidad } from '../entities/localidad.entity';
 
-export class LocalidadI {
+export class ILocalidadRepository {
   getAll: () => Promise<Localidad[]>;
   getAllByProvincia: (provinciaID: number) => Promise<Localidad[]>;
   getLocalidad: (localidadID: number) => Promise<Localidad | null>;
