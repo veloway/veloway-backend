@@ -94,8 +94,17 @@ export class Envio {
   }
 
   // Methods
-
   public calcularMonto(): void {
-    // Implementar
+    // Cada 100 gramos cuesta $1000
+    const monto = this.pesoGramos * 1000 / 100;
+    this.setMonto(monto);
+  }
+
+  public verificarRangoHorario(): boolean {
+    const hora = this.hora.getHours();
+    if (hora < 8 || hora > 18) {
+      return false;
+    }
+    return true;
   }
 }

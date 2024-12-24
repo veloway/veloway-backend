@@ -124,4 +124,29 @@ export class EnviosRepository implements EnviosI {
       }
     });
   }
+
+  public async buscarEnvioIgual(envio: PostEnvioDto): Promise<boolean> {
+    if (!envio.origenID || !envio.destinoID) {
+      throw new Error('El origenID y destinoID son obligatorios.');
+    }
+
+    const envioPrisma = await this.prisma.envios.findFirst({
+      where: {
+        descripcion: envio.descripcion,
+        fecha: envio.fecha,
+        hora: envio.hora,
+        peso_gramos: envio.pesoGramos,
+        id_estado: envio.estado,
+        id_cliente: envio.clienteID,
+        id_origen: envio.origenID,
+        id_destino: envio.destinoID
+      }
+    });
+
+    if (!envioPrisma) {
+      return false;
+    }
+
+    return true;
+  }
 }

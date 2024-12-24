@@ -8,4 +8,5 @@ export interface EnviosI {
   create: (envio: PostEnvioDto) => Promise<void>
   update: (nroSeguimiento: string, envio: PostEnvioDto) => Promise<void>
   delete: (nroSeguimiento: string) => Promise<void>
+  buscarEnvioIgual: (envio: PostEnvioDto) => Promise<boolean>
 }

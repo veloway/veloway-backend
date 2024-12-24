@@ -12,26 +12,20 @@ export class DomiciliosRepository implements DomicilioI {
   update: (id: number, domicilio: PostDomicilioDto) => Promise<void>;
   delete: (id: number) => Promise<void>;
 
-  public async getDomicilio(
-    calle: string,
-    numero: number,
-    localidadID: number,
-    piso: number | null,
-    depto: string | null
-  ): Promise<number | null> {
-    const domicilio = await this.prisma.domicilios.findFirst({
+  public async getDomicilio(domicilio: PostDomicilioDto): Promise<number | null> {
+    const domicilioData = await this.prisma.domicilios.findFirst({
       where: {
-        calle,
-        numero,
-        piso,
-        depto,
+        calle: domicilio.calle,
+        numero: domicilio.numero,
+        piso: domicilio.piso,
+        depto: domicilio.depto,
         localidades: {
-          id_localidad: localidadID
+          id_localidad: domicilio.localidadID // Al saber la localidad, se sabe la provincia
         }
       }
     });
 
-    return domicilio ? domicilio.id_domicilio : null;
+    return domicilioData ? domicilioData.id_domicilio : null;
   };
 
   public async create(domicilio: PostDomicilioDto): Promise<number> {
