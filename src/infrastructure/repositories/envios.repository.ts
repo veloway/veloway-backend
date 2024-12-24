@@ -10,6 +10,11 @@ import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 export class EnviosRepository implements EnviosI {
   constructor(private readonly prisma: PrismaClient) {}
 
+  getEnvio: (nroSeguimiento: string) => Promise<Envio | null>;
+  getAllByClienteID: (clienteID: string) => Promise<Envio[]>;
+  update: (nroSeguimiento: string, envio: PostEnvioDto) => Promise<void>;
+  delete: (nroSeguimiento: string) => Promise<void>;
+
   public async getAll(): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
       {
@@ -49,12 +54,15 @@ export class EnviosRepository implements EnviosI {
         Number(envio.monto),
         envio.estados_envio.nombre,
         new Domicilio(
+          envio.domicilios_envios_id_origenTodomicilios.id_domicilio,
           envio.domicilios_envios_id_origenTodomicilios.calle,
           envio.domicilios_envios_id_origenTodomicilios.numero,
           new Localidad(
+            envio.domicilios_envios_id_origenTodomicilios.localidades.id_localidad,
             envio.domicilios_envios_id_origenTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_origenTodomicilios.localidades.nombre,
             new Provincia(
+              envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_origenTodomicilios.localidades.provincias.nombre
             )
           ),
@@ -63,12 +71,15 @@ export class EnviosRepository implements EnviosI {
           envio.domicilios_envios_id_origenTodomicilios.descripcion
         ),
         new Domicilio(
+          envio.domicilios_envios_id_destinoTodomicilios.id_domicilio,
           envio.domicilios_envios_id_destinoTodomicilios.calle,
           envio.domicilios_envios_id_destinoTodomicilios.numero,
           new Localidad(
+            envio.domicilios_envios_id_destinoTodomicilios.localidades.id_localidad,
             envio.domicilios_envios_id_destinoTodomicilios.localidades.codigo_postal,
             envio.domicilios_envios_id_destinoTodomicilios.localidades.nombre,
             new Provincia(
+              envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.id_provincia,
               envio.domicilios_envios_id_destinoTodomicilios.localidades.provincias.nombre
             )
           ),

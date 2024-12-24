@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { LocalidadSchema } from '../localidad/postLocalidad.validation';
 
 export const DomicilioSchema = z.object({
   calle: z.string(),
@@ -7,7 +6,7 @@ export const DomicilioSchema = z.object({
   piso: z.number().int().nullable(),
   depto: z.string().nullable(),
   descripcion: z.string().nullable(),
-  localidad: LocalidadSchema
+  localidadID: z.number().int()
 });
 
 export const postDomicilioValidation = (domicilio: any) => {

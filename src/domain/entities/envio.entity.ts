@@ -3,7 +3,7 @@ import { type Usuario } from './usuario.entity';
 
 export class Envio {
   constructor(
-    private nroSeguimiento: number,
+    private readonly nroSeguimiento: number,
     private descripcion: string,
     private fecha: Date,
     private hora: Date,
@@ -57,11 +57,6 @@ export class Envio {
   }
 
   // Setters
-
-  public setNroSeguimiento(nroSeguimiento: number): void {
-    this.nroSeguimiento = nroSeguimiento;
-  }
-
   public setDescripcion(descripcion: string): void {
     this.descripcion = descripcion;
   }

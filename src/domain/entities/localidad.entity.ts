@@ -3,6 +3,7 @@ import { type Provincia } from './provincia.entity';
 
 export class Localidad {
   constructor(
+    private readonly id: number,
     private codigoPostal: number,
     private nombre: string,
     private provincia: Provincia,
@@ -10,6 +11,10 @@ export class Localidad {
   ) {}
 
   // getters
+  public getLocalidadID(): number {
+    return this.id;
+  }
+
   public getCodigoPostal(): number {
     return this.codigoPostal;
   }

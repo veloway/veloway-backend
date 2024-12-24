@@ -2,7 +2,6 @@ import { type Envio } from '../../domain/entities/envio.entity';
 import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
 import { type EnviosI } from '../../domain/interfaces/envios.interface';
 import { type UsuarioI } from '../../domain/interfaces/usuario.interface';
-import { normalizeText } from '../../utils/normalizeText';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
 
@@ -47,8 +46,7 @@ export class EnviosService {
       if (
         envio.origen.calle === envio.destino.calle &&
         envio.origen.numero === envio.destino.numero &&
-        envio.origen.localidad.codigoPostal === envio.destino.localidad.codigoPostal &&
-        normalizeText(envio.origen.localidad.provincia.nombre) === normalizeText(envio.destino.localidad.provincia.nombre)
+        envio.origen.localidadID === envio.destino.localidadID
       ) {
         throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
       }
@@ -56,8 +54,7 @@ export class EnviosService {
       const domicilioOrigenID = await this.domiciliosRepository.getDomicilio(
         envio.origen.calle,
         envio.origen.numero,
-        envio.origen.localidad.codigoPostal,
-        envio.origen.localidad.provincia.nombre,
+        envio.origen.localidadID,
         envio.origen.piso,
         envio.origen.depto
       );
@@ -72,8 +69,7 @@ export class EnviosService {
       const domicilioDestinoID = await this.domiciliosRepository.getDomicilio(
         envio.destino.calle,
         envio.destino.numero,
-        envio.destino.localidad.codigoPostal,
-        envio.destino.localidad.provincia.nombre,
+        envio.destino.localidadID,
         envio.destino.piso,
         envio.destino.depto
       );

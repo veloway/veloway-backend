@@ -4,6 +4,7 @@ import { type Usuario } from './usuario.entity';
 
 export class Domicilio {
   constructor(
+    private readonly id: number,
     private calle: string,
     private numero: number,
     private localidad: Localidad,
@@ -15,6 +16,10 @@ export class Domicilio {
   ) {}
 
   // Getters
+  public getId(): number {
+    return this.id;
+  }
+
   public getCalle(): string {
     return this.calle;
   }
