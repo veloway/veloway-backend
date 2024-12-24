@@ -16,7 +16,7 @@ export class Domicilio {
   ) {}
 
   // Getters
-  public getId(): number {
+  public getID(): number {
     return this.id;
   }
 

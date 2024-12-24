@@ -8,7 +8,7 @@ export class Provincia {
   ) {}
 
   // Getter
-  public getId(): number {
+  public getID(): number {
     return this.id;
   }
 

@@ -1,6 +1,7 @@
 import { type Envio } from '../../domain/entities/envio.entity';
 import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
 import { type EnviosI } from '../../domain/interfaces/envios.interface';
+import { type LocalidadI } from '../../domain/interfaces/localidad.interface';
 import { type UsuarioI } from '../../domain/interfaces/usuario.interface';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
@@ -9,13 +10,13 @@ export class EnviosService {
   constructor (
     private readonly enviosRepository: EnviosI,
     private readonly domiciliosRepository: DomicilioI,
-    // private readonly localidadesRepository: LocalidadesI,
-    // private readonly provinciasRepository: ProvinciasI,
-    private readonly usuariosRepository: UsuarioI
+    private readonly usuariosRepository: UsuarioI,
+    private readonly localidadesRepository: LocalidadI
   ) {
     this.enviosRepository = enviosRepository;
     this.usuariosRepository = usuariosRepository;
     this.domiciliosRepository = domiciliosRepository;
+    this.localidadesRepository = localidadesRepository;
   }
 
   async getAll(): Promise<Envio[]> {
@@ -35,14 +36,23 @@ export class EnviosService {
 
   async create(envio: PostEnvioDto): Promise<void> {
     try {
-      // TODO: PROBAR TODAS LA VALIDACIONES
-
-      // Valida que el clienteID exista en la base de datos
+      // Validacion que el cliente exista
       const cliente = await this.usuariosRepository.getUsuario(envio.clienteID);
       if (!cliente) {
         throw CustomError.notFound('Usuario no encontrado');
       }
-      // Valida que el origen y destino sean distintos
+
+      // Validar que la localidad exista
+      const localidad = await this.localidadesRepository.getLocalidad(envio.origen.localidadID);
+      if (!localidad) {
+        throw CustomError.notFound('La localidad de origen no existe');
+      }
+      const localidadDestino = await this.localidadesRepository.getLocalidad(envio.destino.localidadID);
+      if (!localidadDestino) {
+        throw CustomError.notFound('La localidad de destino no existe');
+      }
+
+      // Validacion que el origen y destino no sean iguales
       if (
         envio.origen.calle === envio.destino.calle &&
         envio.origen.numero === envio.destino.numero &&
@@ -50,7 +60,8 @@ export class EnviosService {
       ) {
         throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
       }
-      // Valida que el domicilio de origen y destino existan en la base de datos, si no, crearlos
+
+      // Validacion que el domicilio de origen y destino existan en la base de datos, si no, crearlos
       const domicilioOrigenID = await this.domiciliosRepository.getDomicilio(
         envio.origen.calle,
         envio.origen.numero,

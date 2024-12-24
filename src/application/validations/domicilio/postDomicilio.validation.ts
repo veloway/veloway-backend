@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const DomicilioSchema = z.object({
+export const PostDomicilioSchema = z.object({
   calle: z.string(),
   numero: z.number().int(),
   piso: z.number().int().nullable(),
@@ -10,5 +10,5 @@ export const DomicilioSchema = z.object({
 });
 
 export const postDomicilioValidation = (domicilio: any) => {
-  return DomicilioSchema.safeParse(domicilio);
+  return PostDomicilioSchema.safeParse(domicilio);
 };

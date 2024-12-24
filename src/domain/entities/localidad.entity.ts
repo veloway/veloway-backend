@@ -11,7 +11,7 @@ export class Localidad {
   ) {}
 
   // getters
-  public getLocalidadID(): number {
+  public getID(): number {
     return this.id;
   }
 

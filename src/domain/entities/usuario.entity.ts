@@ -15,7 +15,7 @@ export class Usuario {
   ) {}
 
   // Getters
-  public getIdUsuario(): string {
+  public getID(): string {
     return this.id;
   }
 

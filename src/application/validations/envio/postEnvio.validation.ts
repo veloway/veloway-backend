@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DomicilioSchema } from '../domicilio/postDomicilio.validation';
+import { PostDomicilioSchema } from '../domicilio/postDomicilio.validation';
 
 export const EnvioSchema = z.object({
   descripcion: z.string(),
@@ -7,8 +7,8 @@ export const EnvioSchema = z.object({
   hora: z.string().regex(/^\d{2}:\d{2}$/, 'Hora en formato HH:mm'),
   pesoGramos: z.number().int().positive(),
   monto: z.number().positive(),
-  origen: DomicilioSchema,
-  destino: DomicilioSchema,
+  origen: PostDomicilioSchema,
+  destino: PostDomicilioSchema,
   cliente: z.string()
 });
 
