@@ -1,7 +1,6 @@
 import { type PrismaClient } from '@prisma/client';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
-import { type PostLocalidadDto } from '../../application/dtos/localidad/postLocalidad.dto';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
 
 export class LocalidadesRepository implements ILocalidadRepository {
@@ -11,8 +10,8 @@ export class LocalidadesRepository implements ILocalidadRepository {
 
   getAll: () => Promise<Localidad[]>;
   getAllByProvincia: (provinciaID: number) => Promise<Localidad[]>;
-  create: (localidad: PostLocalidadDto) => Promise<void>;
-  update: (id: string, localidad: PostLocalidadDto) => Promise<void>;
+  create: (localidad: Localidad) => Promise<void>;
+  update: (id: string, localidad: Localidad) => Promise<void>;
   delete: (id: string) => Promise<void>;
 
   public async getLocalidad(localidadID: number): Promise<Localidad | null> {

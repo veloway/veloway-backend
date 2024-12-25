@@ -1,6 +1,5 @@
 import { type PrismaClient } from '@prisma/client';
-import { type Domicilio } from '../../domain/entities/domicilio.entity';
-import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 
 export class DomiciliosRepository implements IDomicilioRepository {
@@ -9,42 +8,60 @@ export class DomiciliosRepository implements IDomicilioRepository {
   }
 
   getall: () => Promise<Domicilio[]>;
-  update: (id: number, domicilio: PostDomicilioDto) => Promise<void>;
-  delete: (id: number) => Promise<void>;
+  update: (id: number, domicilio: Domicilio) => Promise<Domicilio>;
+  delete: (id: number) => Promise<Domicilio>;
 
-  public async getDomicilio(domicilio: PostDomicilioDto): Promise<number | null> {
+  public async getDomicilioID(domicilio: Domicilio): Promise<Domicilio | null> {
     const domicilioData = await this.prisma.domicilios.findFirst({
       where: {
-        calle: domicilio.calle,
-        numero: domicilio.numero,
-        piso: domicilio.piso,
-        depto: domicilio.depto,
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
         localidades: {
-          id_localidad: domicilio.localidadID // Al saber la localidad, se sabe la provincia
+          id_localidad: domicilio.getLocalidad().getID()// Al saber la localidad, se sabe la provincia
         }
       }
     });
 
-    return domicilioData ? domicilioData.id_domicilio : null;
+    if (!domicilioData) return null;
+
+    return new Domicilio(
+      domicilioData.id_domicilio,
+      domicilioData.calle,
+      domicilioData.numero,
+      domicilio.getLocalidad(),
+      domicilioData.piso,
+      domicilioData.depto,
+      domicilioData.descripcion
+    );
   };
 
-  public async create(domicilio: PostDomicilioDto): Promise<number> {
+  public async create(domicilio: Domicilio): Promise<Domicilio> {
     const domicilioPrisma = await this.prisma.domicilios.create({
       data: {
-        calle: domicilio.calle,
-        numero: domicilio.numero,
-        piso: domicilio.piso,
-        depto: domicilio.depto,
-        descripcion: domicilio.descripcion,
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
+        descripcion: domicilio.getDescripcion(),
         localidades: {
           connect: {
-            id_localidad: domicilio.localidadID
+            id_localidad: domicilio.getLocalidad().getID()
           }
         }
       }
     });
 
-    return domicilioPrisma.id_domicilio;
+    return new Domicilio(
+      domicilioPrisma.id_domicilio,
+      domicilioPrisma.calle,
+      domicilioPrisma.numero,
+      domicilio.getLocalidad(),
+      domicilioPrisma.piso,
+      domicilioPrisma.depto,
+      domicilioPrisma.descripcion
+    );
   }
 }
 

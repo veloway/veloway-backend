@@ -1,5 +1,4 @@
-import { CreateEnvioUseCase } from '../../application/use-cases/envios/create.usecase';
-import { GetAllEnvioUseCase } from '../../application/use-cases/envios/get-all.usecase';
+import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { prismaClient } from '../data/prismaClient';
 import { DomiciliosRepository } from '../repositories/domicilios.repository';
@@ -12,20 +11,14 @@ const localidadesRepository = new LocalidadesRepository(prismaClient);
 const domiciliosRepository = new DomiciliosRepository(prismaClient);
 const usuariosRepository = new UsuariosRepository(prismaClient);
 const enviosRepository = new EnviosRepository(prismaClient);
-
-// Crear instancias de los casos de uso
-const getAllEnvioUseCase = new GetAllEnvioUseCase(enviosRepository);
-const createEnvioUseCase = new CreateEnvioUseCase(
+// Crear servicio
+const enviosService = new EnviosService(
   enviosRepository,
   domiciliosRepository,
   usuariosRepository,
   localidadesRepository
 );
-
 // Crear instancia del controlador
-const enviosController = new EnviosController(
-  getAllEnvioUseCase,
-  createEnvioUseCase
-);
+const enviosController = new EnviosController(enviosService);
 
 export { enviosController };

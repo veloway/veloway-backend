@@ -4,7 +4,6 @@ import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
-import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 
 export class EnviosRepository implements IEnviosRepository {
@@ -12,8 +11,8 @@ export class EnviosRepository implements IEnviosRepository {
 
   getEnvio: (nroSeguimiento: string) => Promise<Envio | null>;
   getAllByClienteID: (clienteID: string) => Promise<Envio[]>;
-  update: (nroSeguimiento: string, envio: PostEnvioDto) => Promise<void>;
-  delete: (nroSeguimiento: string) => Promise<void>;
+  update: (nroSeguimiento: string, envio: Envio) => Promise<Envio>;
+  delete: (nroSeguimiento: string) => Promise<Envio>;
 
   public async getAll(): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
@@ -104,44 +103,44 @@ export class EnviosRepository implements IEnviosRepository {
     return enviosEntities;
   }
 
-  public async create(envio: PostEnvioDto): Promise<number> {
-    if (!envio.origenID || !envio.destinoID) {
+  public async create(envio: Envio): Promise<number> {
+    if (!envio.getOrigen().getID() || !envio.getOrigen().getID()) {
       throw new Error('El origenID y destinoID son obligatorios.');
     }
     // Envio
     const envioData = await this.prisma.envios.create({
       data: {
-        nro_seguimiento: envio.nroSeguimiento,
-        descripcion: envio.descripcion,
-        fecha: envio.fecha,
-        hora: envio.hora,
-        peso_gramos: envio.pesoGramos,
-        monto: envio.monto,
-        id_cliente: envio.clienteID,
-        id_estado: envio.estado,
-        id_origen: envio.origenID,
-        id_destino: envio.destinoID
+        nro_seguimiento: envio.getNroSeguimiento(),
+        descripcion: envio.getDescripcion(),
+        fecha: envio.getFecha(),
+        hora: envio.getHora(),
+        peso_gramos: envio.getPesoGramos(),
+        monto: envio.getMonto(),
+        id_cliente: envio.getCliente().getID(),
+        id_estado: 1, // TODO: Pendiente Hacer clase EstadoEnvio
+        id_origen: envio.getOrigen().getID(),
+        id_destino: envio.getDestino().getID()
       }
     });
 
     return Number(envioData.nro_seguimiento);
   }
 
-  public async buscarEnvioIgual(envio: PostEnvioDto): Promise<boolean> {
-    if (!envio.origenID || !envio.destinoID) {
+  public async buscarEnvioIgual(envio: Envio): Promise<boolean> {
+    if (!envio.getOrigen().getID() || !envio.getOrigen().getID()) {
       throw new Error('El origenID y destinoID son obligatorios.');
     }
 
     const envioPrisma = await this.prisma.envios.findFirst({
       where: {
-        descripcion: envio.descripcion,
-        fecha: envio.fecha,
-        hora: envio.hora,
-        peso_gramos: envio.pesoGramos,
-        id_estado: envio.estado,
-        id_cliente: envio.clienteID,
-        id_origen: envio.origenID,
-        id_destino: envio.destinoID
+        descripcion: envio.getDescripcion(),
+        fecha: envio.getFecha(),
+        hora: envio.getHora(),
+        peso_gramos: envio.getPesoGramos(),
+        id_estado: 1, // TODO: Pendiente Hacer clase EstadoEnvio
+        id_cliente: envio.getCliente().getID(),
+        id_origen: envio.getOrigen().getID(),
+        id_destino: envio.getDestino().getID()
       }
     });
 

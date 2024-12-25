@@ -2,19 +2,17 @@ import { type Request, type Response } from 'express';
 import { GetEnvioDto } from '../../application/dtos/envio/getEnvio.dto';
 import { PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 import { StatusError } from '../errors/status.error';
-import { type CreateEnvioUseCase } from '../../application/use-cases/envios/create.usecase';
-import { type GetAllEnvioUseCase } from '../../application/use-cases/envios/get-all.usecase';
+import { type EnviosService } from '../../application/services/envios.service';
 
 
 export class EnviosController {
   constructor(
-    private readonly getAllEnvioUseCase: GetAllEnvioUseCase,
-    private readonly createEnvioUseCase: CreateEnvioUseCase
+    private readonly enviosService: EnviosService
   ) {}
 
   getAll = async (_req: Request, res: Response) => {
     try {
-      const envios = await this.getAllEnvioUseCase.execute();
+      const envios = await this.enviosService.getAll();
       const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
       res.status(200).json(enviosDto);
     } catch (error) {
@@ -39,7 +37,7 @@ export class EnviosController {
 
     if (postEnvioDto) {
       try {
-        await this.createEnvioUseCase.execute(postEnvioDto);
+        await this.enviosService.create(postEnvioDto);
         res.status(201).json({ nroSeguimiento: postEnvioDto.nroSeguimiento });
       } catch (error) {
         StatusError.throw(error, res);
