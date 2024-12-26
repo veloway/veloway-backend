@@ -154,34 +154,26 @@ export class EnviosRepository implements IEnviosRepository {
     return true;
   }
 
-  update: (nroSeguimiento: number, envio: Envio) => Promise<Envio>;
-
-  // public async update(nroSeguimiento: number, envio: UpdateEnvioDto): Promise<Envio> {
-  //   const envioActualizadoData = await this.prisma.envios.update({
+  // TODO: VER BIEN COMO GUARDAR DATOS MODIFICADOS
+  update: (envio: Envio) => Promise<Envio>;
+  // public async update(envio: Envio): Promise<Envio> {
+  //   const envioUpdateData = await this.prisma.envios.update({
   //     where: {
-  //       nro_seguimiento: nroSeguimiento
+  //       nro_seguimiento: envio.getNroSeguimiento()
   //     },
   //     data: {
-  //       descripcion: envio.descripcion,
-  //       fecha: envio.fecha,
-  //       hora: envio.hora,
-  //       peso_gramos: envio.pesoGramos,
-  //       monto: envio.monto,
-  //       id_estado: envio.estadoID
+  //       descripcion: envio.getDescripcion(),
+  //       fecha: envio.getFecha(),
+  //       hora: envio.getHora(),
+  //       peso_gramos: envio.getPesoGramos(),
+  //       monto: envio.getMonto(),
+  //       id_cliente: envio.getCliente().getID(),
+  //       id_estado: envio.getEstado().getID(),
+  //       id_origen: envio.getOrigen().getID(),
+  //       id_destino: envio.getDestino().getID()
   //     }
   //   });
 
-  //   // const domicilioOrigenActualizadoData = await this.prisma.domicilios_envios.update({
-  //   //   where: {
-  //   //     id_domicilio: envio.origen?.
-  //   //   },
-  //   //   data: {
-  //   //     calle: envio.origen?.calle,
-  //   //     numero: envio.origen?.numero,
-  //   //     piso: envio.origen?.piso,
-  //   //     depto: envio.origen?.depto,
-  //   //     descripcion: envio.origen?.descripcion
-  //   //   }
-  //   // });
+  //   // TODO: CREAR MAPEO, Y VER QUE LO QUE DEVULEVE EL UPDATE ES LO QUE LE MANDASTE.
   // };
 }

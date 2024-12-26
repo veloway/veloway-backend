@@ -1,9 +1,12 @@
+import { randomInt } from 'crypto';
 import { type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
+import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
 import { type EnvioMapper } from '../mappers/envio.mapper';
+import { EstadoEnvioEnum } from '../../types/estadoEnvio.type';
 
 export class EnviosService {
   constructor (
@@ -18,7 +21,12 @@ export class EnviosService {
   }
 
   async create(envioDto: PostEnvioDto): Promise<number> {
-    const envio = await this.envioMapper.fromDtoToEntity(envioDto);
+    const newNroSeguimiento = randomInt(10000000, 99999999);
+    const envio = await this.envioMapper.fromPostDtoToEntity(
+      envioDto,
+      newNroSeguimiento,
+      EstadoEnvioEnum.Confirmado
+    );
 
     // TODO: Validar que el peso no exceda los 20000 gramos??
 
@@ -69,7 +77,6 @@ export class EnviosService {
       }
     }
 
-    envio.getEstado().setID(1); // Estado 1 = Confirmado
     // Crear el envio
     const nroSeguimiento = await this.enviosRepository.create(envio);
     return nroSeguimiento;
@@ -88,8 +95,8 @@ export class EnviosService {
   }
 
   // TODO: Implementar actualizar envio
-  public async update(envioDto: PostEnvioDto): Promise<Envio> {
-    const envio = await this.envioMapper.fromDtoToEntity(envioDto);
+  public async update(envioDto: UpdateEnvioDto): Promise<Envio> {
+    const envio = await this.envioMapper.fromUpdateDtoToEntity(envioDto);
 
     const envioUpdate = await this.enviosRepository.update(envio.getNroSeguimiento(), envio);
     return envioUpdate;

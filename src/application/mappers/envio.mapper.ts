@@ -8,6 +8,7 @@ import { Provincia } from '../../domain/entities/provincia.entity';
 import { type Usuario } from '../../domain/entities/usuario.entity';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
 import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
+import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
 
 export class EnvioMapper {
@@ -15,27 +16,6 @@ export class EnvioMapper {
     private readonly clienteRepository: IUsuarioRepository,
     private readonly localidadRepository: ILocalidadRepository
   ) {}
-
-  // TODO: Hacer uno para post y otro para put
-
-  public async fromDtoToEntity(envioDto: PostEnvioDto): Promise<Envio> {
-    const cliente = await this.mapToCliente(envioDto.clienteID);
-    const origen = await this.mapToDomicilio(envioDto.origen);
-    const destino = await this.mapToDomicilio(envioDto.destino);
-    const estado = new EstadoEnvio(envioDto.estadoID, '');
-    return new Envio(
-      envioDto.nroSeguimiento, // TODO: Funciona para el post pero no para el put ya que no valida que venga el nroSeguimiento ni el estado
-      envioDto.descripcion,
-      envioDto.fecha,
-      envioDto.hora,
-      envioDto.pesoGramos,
-      envioDto.monto,
-      estado,
-      origen,
-      destino,
-      cliente
-    );
-  }
 
   private async mapToCliente(clienteId: string): Promise<Usuario> {
     const cliente = await this.clienteRepository.getUsuario(clienteId);
@@ -63,6 +43,46 @@ export class EnvioMapper {
       domicilioDto.piso,
       domicilioDto.depto,
       domicilioDto.descripcion
+    );
+  }
+
+  public async fromPostDtoToEntity(
+    envioDto: PostEnvioDto,
+    newNroSeguimiento: number,
+    estadoEnvioID: number
+  ): Promise<Envio> {
+    const cliente = await this.mapToCliente(envioDto.clienteID);
+    const origen = await this.mapToDomicilio(envioDto.origen);
+    const destino = await this.mapToDomicilio(envioDto.destino);
+    return new Envio(
+      newNroSeguimiento,
+      envioDto.descripcion,
+      envioDto.fecha,
+      envioDto.hora,
+      envioDto.pesoGramos,
+      envioDto.monto,
+      new EstadoEnvio(estadoEnvioID, ''),
+      origen,
+      destino,
+      cliente
+    );
+  }
+
+  public async fromUpdateDtoToEntity(envioDto: UpdateEnvioDto) {
+    const cliente = await this.mapToCliente(envioDto.clienteID);
+    const origen = await this.mapToDomicilio(envioDto.origen);
+    const destino = await this.mapToDomicilio(envioDto.destino);
+    return new Envio(
+      envioDto.nroSeguimiento,
+      envioDto.descripcion,
+      envioDto.fecha,
+      envioDto.hora,
+      envioDto.pesoGramos,
+      envioDto.monto,
+      new EstadoEnvio(envioDto.estadoID, ''),
+      origen,
+      destino,
+      cliente
     );
   }
 }

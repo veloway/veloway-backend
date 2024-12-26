@@ -5,7 +5,7 @@ export interface IEnviosRepository {
   getEnvio: (nroSeguimiento: number) => Promise<Envio | null>
   getAllByClienteID: (clienteID: string) => Promise<Envio[]>
   create: (envio: Envio) => Promise<number>
-  update: (nroSeguimiento: number, envio: Envio) => Promise<Envio>
+  update: (envio: Envio) => Promise<Envio>
   delete: (nroSeguimiento: number) => Promise<Envio>
   buscarEnvioIgual: (envio: Envio) => Promise<boolean>
 }
