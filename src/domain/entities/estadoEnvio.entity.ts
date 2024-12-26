@@ -1,6 +1,6 @@
 export class EstadoEnvio {
   constructor(
-    public readonly id: number,
+    public id: number,
     public nombre: string
   ) {}
 
@@ -16,5 +16,9 @@ export class EstadoEnvio {
   // setters
   public setNombre(nombre: string): void {
     this.nombre = nombre;
+  }
+
+  public setID(id: number): void {
+    this.id = id;
   }
 }

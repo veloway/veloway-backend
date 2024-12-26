@@ -1,19 +1,15 @@
-import { Domicilio } from '../../domain/entities/domicilio.entity';
-import { Envio } from '../../domain/entities/envio.entity';
-import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
-import { type Usuario } from '../../domain/entities/usuario.entity';
+import { type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
-import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
-import { type UpdateEnvioDto } from '../dtos/envio/updateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
+import { type EnvioMapper } from '../mappers/envio.mapper';
 
 export class EnviosService {
   constructor (
     private readonly enviosRepository: IEnviosRepository,
-    private readonly domiciliosRepository: IDomicilioRepository,
-    private readonly localidadesRepository: ILocalidadRepository
+    private readonly domicilioRepository: IDomicilioRepository,
+    private readonly envioMapper: EnvioMapper
   ) {}
 
   async getAll(): Promise<Envio[]> {
@@ -21,50 +17,8 @@ export class EnviosService {
     return envios;
   }
 
-  async create(envioDto: PostEnvioDto, cliente: Usuario): Promise<number> {
-    // TODO: Hacer tambien un localidad service para buscar las localidades, hacerlo en el controller y pasarlas como parametro
-    // Validar que la localidad de origen y destino existan
-    const localidadOrigen = await this.localidadesRepository.getLocalidad(envioDto.origen.localidadID);
-    if (!localidadOrigen) {
-      throw CustomError.notFound('La localidad de origen no existe');
-    }
-    const localidadDestino = await this.localidadesRepository.getLocalidad(envioDto.destino.localidadID);
-    if (!localidadDestino) {
-      throw CustomError.notFound('La localidad de destino no existe');
-    }
-
-    // Crear un objeto de tipo envio
-    const envio = new Envio( // TODO: Hacer un mapper de dto a entidad
-      envioDto.nroSeguimiento,
-      envioDto.descripcion,
-      envioDto.fecha,
-      envioDto.hora,
-      envioDto.pesoGramos,
-      envioDto.monto,
-      new EstadoEnvio(
-        envioDto.estadoID,
-        ''
-      ),
-      new Domicilio(
-        0, // ID temporal
-        envioDto.origen.calle,
-        envioDto.origen.numero,
-        localidadOrigen,
-        envioDto.origen.piso,
-        envioDto.origen.depto,
-        envioDto.origen.descripcion
-      ),
-      new Domicilio(
-        0,
-        envioDto.destino.calle,
-        envioDto.destino.numero,
-        localidadDestino,
-        envioDto.destino.piso,
-        envioDto.destino.depto,
-        envioDto.destino.descripcion
-      ),
-      cliente
-    );
+  async create(envioDto: PostEnvioDto): Promise<number> {
+    const envio = await this.envioMapper.fromDtoToEntity(envioDto);
 
     // TODO: Validar que el peso no exceda los 20000 gramos??
 
@@ -89,21 +43,21 @@ export class EnviosService {
       */
 
     // Validar que el domicilio de origen y destino existan en la base de datos, si no, crearlos
-    const domicilioOrigen = await this.domiciliosRepository.getDomicilioID(envio.getOrigen());
+    const domicilioOrigen = await this.domicilioRepository.getDomicilioID(envio.getOrigen());
 
     if (domicilioOrigen) {
       envio.setOrigen(domicilioOrigen);
     } else {
-      const origenCreated = await this.domiciliosRepository.create(envio.getOrigen());
+      const origenCreated = await this.domicilioRepository.create(envio.getOrigen());
       envio.setOrigen(origenCreated);
     }
 
-    const domicilioDestino = await this.domiciliosRepository.getDomicilioID(envio.getDestino());
+    const domicilioDestino = await this.domicilioRepository.getDomicilioID(envio.getDestino());
 
     if (domicilioDestino) {
       envio.setDestino(domicilioDestino);
     } else {
-      const destinoCreated = await this.domiciliosRepository.create(envio.getDestino());
+      const destinoCreated = await this.domicilioRepository.create(envio.getDestino());
       envio.setDestino(destinoCreated);
     }
 
@@ -114,6 +68,8 @@ export class EnviosService {
         throw CustomError.badRequest('Ya existe un envio con los mismos datos');
       }
     }
+
+    envio.getEstado().setID(1); // Estado 1 = Confirmado
     // Crear el envio
     const nroSeguimiento = await this.enviosRepository.create(envio);
     return nroSeguimiento;
@@ -132,12 +88,11 @@ export class EnviosService {
   }
 
   // TODO: Implementar actualizar envio
-  public async update(updateEnvioDto: UpdateEnvioDto): Promise<Envio> {
-    const envioExistente = await this.enviosRepository.getEnvio(updateEnvioDto.nroSeguimiento);
-    if (!envioExistente) throw CustomError.notFound('No se encontró un envío con ese número');
+  public async update(envioDto: PostEnvioDto): Promise<Envio> {
+    const envio = await this.envioMapper.fromDtoToEntity(envioDto);
 
-    const envio = await this.enviosRepository.update(envioExistente.getNroSeguimiento(), updateEnvioDto);
-    return envio;
+    const envioUpdate = await this.enviosRepository.update(envio.getNroSeguimiento(), envio);
+    return envioUpdate;
   }
 
 

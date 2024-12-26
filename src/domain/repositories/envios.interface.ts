@@ -1,4 +1,3 @@
-import { type UpdateEnvioDto } from '../../application/dtos/envio/updateEnvio.dto';
 import { type Envio } from '../entities/envio.entity';
 
 export interface IEnviosRepository {
@@ -6,7 +5,7 @@ export interface IEnviosRepository {
   getEnvio: (nroSeguimiento: number) => Promise<Envio | null>
   getAllByClienteID: (clienteID: string) => Promise<Envio[]>
   create: (envio: Envio) => Promise<number>
-  update: (nroSeguimiento: number, envio: UpdateEnvioDto) => Promise<Envio>
+  update: (nroSeguimiento: number, envio: Envio) => Promise<Envio>
   delete: (nroSeguimiento: number) => Promise<Envio>
   buscarEnvioIgual: (envio: Envio) => Promise<boolean>
 }

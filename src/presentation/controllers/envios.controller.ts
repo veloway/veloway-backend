@@ -3,13 +3,10 @@ import { GetEnvioDto } from '../../application/dtos/envio/getEnvio.dto';
 import { PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 import { HandleError } from '../errors/handle.error';
 import { type EnviosService } from '../../application/services/envios.service';
-import { type ClienteService } from '../../application/services/cliente.service';
-
 
 export class EnviosController {
   constructor(
-    private readonly enviosService: EnviosService,
-    private readonly clientesService: ClienteService
+    private readonly enviosService: EnviosService
   ) {}
 
   getAll = async (_req: Request, res: Response) => {
@@ -39,8 +36,7 @@ export class EnviosController {
 
     if (postEnvioDto) {
       try {
-        const cliente = await this.clientesService.getCliente(postEnvioDto.clienteID);
-        const nroSeguimiento = await this.enviosService.create(postEnvioDto, cliente);
+        const nroSeguimiento = await this.enviosService.create(postEnvioDto);
         res.status(201).json({ nroSeguimiento });
       } catch (error) {
         HandleError.throw(error, res);

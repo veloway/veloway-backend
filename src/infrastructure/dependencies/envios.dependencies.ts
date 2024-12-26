@@ -1,4 +1,4 @@
-import { ClienteService } from '../../application/services/cliente.service';
+import { EnvioMapper } from '../../application/mappers/envio.mapper';
 import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { prismaClient } from '../data/prismaClient';
@@ -11,17 +11,18 @@ import { UsuariosRepository } from '../repositories/usuarios.repository';
 const localidadesRepository = new LocalidadesRepository(prismaClient);
 const domiciliosRepository = new DomiciliosRepository(prismaClient);
 const enviosRepository = new EnviosRepository(prismaClient);
+const usuariosRepository = new UsuariosRepository(prismaClient);
+
+const envioMapper = new EnvioMapper(usuariosRepository, localidadesRepository);
+
 // Crear servicio
 const enviosService = new EnviosService(
   enviosRepository,
   domiciliosRepository,
-  localidadesRepository
+  envioMapper
 );
 
-const clienteService = new ClienteService(
-  new UsuariosRepository(prismaClient)
-);
 // Crear instancia del controlador
-const enviosController = new EnviosController(enviosService, clienteService);
+const enviosController = new EnviosController(enviosService);
 
 export { enviosController };

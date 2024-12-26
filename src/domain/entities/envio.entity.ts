@@ -1,3 +1,4 @@
+import { randomInt } from 'crypto';
 import { type Domicilio } from './domicilio.entity';
 import { type EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
@@ -14,7 +15,11 @@ export class Envio {
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
-  ) {}
+  ) {
+    if (!this.nroSeguimiento) {
+      this.nroSeguimiento = randomInt(10000000, 99999999);
+    }
+  }
 
   // Getters
   public getNroSeguimiento(): number {

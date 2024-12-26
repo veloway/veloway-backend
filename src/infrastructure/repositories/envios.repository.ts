@@ -6,7 +6,6 @@ import { Provincia } from '../../domain/entities/provincia.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
-import { type UpdateEnvioDto } from '../../application/dtos/envio/updateEnvio.dto';
 
 export class EnviosRepository implements IEnviosRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -155,7 +154,7 @@ export class EnviosRepository implements IEnviosRepository {
     return true;
   }
 
-  update: (nroSeguimiento: number, envio: UpdateEnvioDto) => Promise<Envio>;
+  update: (nroSeguimiento: number, envio: Envio) => Promise<Envio>;
 
   // public async update(nroSeguimiento: number, envio: UpdateEnvioDto): Promise<Envio> {
   //   const envioActualizadoData = await this.prisma.envios.update({
