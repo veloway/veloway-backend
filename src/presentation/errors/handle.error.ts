@@ -1,7 +1,7 @@
 import { type Response } from 'express';
 import { CustomError } from '../../application/errors/custom.errors';
 
-export class StatusError {
+export class HandleError {
   static throw(error: unknown, res: Response): any {
     if (error instanceof CustomError) {
       return res.status(error.statusCode).json({ message: error.message });

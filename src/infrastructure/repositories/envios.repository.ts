@@ -5,14 +5,15 @@ import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
+import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
+import { type UpdateEnvioDto } from '../../application/dtos/envio/updateEnvio.dto';
 
 export class EnviosRepository implements IEnviosRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  getEnvio: (nroSeguimiento: string) => Promise<Envio | null>;
+  getEnvio: (nroSeguimiento: number) => Promise<Envio | null>;
   getAllByClienteID: (clienteID: string) => Promise<Envio[]>;
-  update: (nroSeguimiento: string, envio: Envio) => Promise<Envio>;
-  delete: (nroSeguimiento: string) => Promise<Envio>;
+  delete: (nroSeguimiento: number) => Promise<Envio>;
 
   public async getAll(): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
@@ -51,7 +52,10 @@ export class EnviosRepository implements IEnviosRepository {
         envio.hora,
         parseFloat(envio.peso_gramos.toString()),
         Number(envio.monto),
-        envio.estados_envio.nombre,
+        new EstadoEnvio(
+          envio.estados_envio.id_estado,
+          envio.estados_envio.nombre
+        ),
         new Domicilio(
           envio.domicilios_envios_id_origenTodomicilios.id_domicilio,
           envio.domicilios_envios_id_origenTodomicilios.calle,
@@ -117,7 +121,7 @@ export class EnviosRepository implements IEnviosRepository {
         peso_gramos: envio.getPesoGramos(),
         monto: envio.getMonto(),
         id_cliente: envio.getCliente().getID(),
-        id_estado: 1, // TODO: Pendiente Hacer clase EstadoEnvio
+        id_estado: envio.getEstado().getID(),
         id_origen: envio.getOrigen().getID(),
         id_destino: envio.getDestino().getID()
       }
@@ -137,7 +141,7 @@ export class EnviosRepository implements IEnviosRepository {
         fecha: envio.getFecha(),
         hora: envio.getHora(),
         peso_gramos: envio.getPesoGramos(),
-        id_estado: 1, // TODO: Pendiente Hacer clase EstadoEnvio
+        id_estado: envio.getEstado().getID(),
         id_cliente: envio.getCliente().getID(),
         id_origen: envio.getOrigen().getID(),
         id_destino: envio.getDestino().getID()
@@ -150,4 +154,35 @@ export class EnviosRepository implements IEnviosRepository {
 
     return true;
   }
+
+  update: (nroSeguimiento: number, envio: UpdateEnvioDto) => Promise<Envio>;
+
+  // public async update(nroSeguimiento: number, envio: UpdateEnvioDto): Promise<Envio> {
+  //   const envioActualizadoData = await this.prisma.envios.update({
+  //     where: {
+  //       nro_seguimiento: nroSeguimiento
+  //     },
+  //     data: {
+  //       descripcion: envio.descripcion,
+  //       fecha: envio.fecha,
+  //       hora: envio.hora,
+  //       peso_gramos: envio.pesoGramos,
+  //       monto: envio.monto,
+  //       id_estado: envio.estadoID
+  //     }
+  //   });
+
+  //   // const domicilioOrigenActualizadoData = await this.prisma.domicilios_envios.update({
+  //   //   where: {
+  //   //     id_domicilio: envio.origen?.
+  //   //   },
+  //   //   data: {
+  //   //     calle: envio.origen?.calle,
+  //   //     numero: envio.origen?.numero,
+  //   //     piso: envio.origen?.piso,
+  //   //     depto: envio.origen?.depto,
+  //   //     descripcion: envio.origen?.descripcion
+  //   //   }
+  //   // });
+  // };
 }

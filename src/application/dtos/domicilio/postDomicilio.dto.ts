@@ -1,5 +1,5 @@
 export class PostDomicilioDto {
-  constructor(
+  private constructor(
     public calle: string,
     public numero: number,
     public descripcion: string | null,

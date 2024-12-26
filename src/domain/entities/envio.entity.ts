@@ -1,4 +1,5 @@
 import { type Domicilio } from './domicilio.entity';
+import { type EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
 
 export class Envio {
@@ -9,7 +10,7 @@ export class Envio {
     private hora: Date,
     private pesoGramos: number,
     private monto: number,
-    private estado: string,
+    private estado: EstadoEnvio,
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
@@ -40,7 +41,7 @@ export class Envio {
     return this.monto;
   }
 
-  public getEstado(): string {
+  public getEstado(): EstadoEnvio {
     return this.estado;
   }
 
@@ -77,7 +78,7 @@ export class Envio {
     this.monto = monto;
   }
 
-  public setEstado(estado: string): void {
+  public setEstado(estado: EstadoEnvio): void {
     this.estado = estado;
   }
 

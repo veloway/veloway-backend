@@ -27,7 +27,7 @@ export class GetEnvioDto {
       hora,
       envio.getPesoGramos(),
       envio.getMonto(),
-      envio.getEstado(),
+      envio.getEstado().getNombre(),
       envio.getOrigen(),
       envio.getDestino(),
       UsuarioDto.create(envio.getCliente())

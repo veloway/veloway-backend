@@ -2,7 +2,7 @@ import { type Localidad } from '../../../domain/entities/localidad.entity';
 import { GetProvinciaDto } from '../provincia/getProvincia.dto';
 
 export class GetLocalidadDto {
-  constructor(
+  private constructor(
     public idLocalidad: number,
     public nombre: string,
     public codigoPostal: number,

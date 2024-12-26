@@ -1,7 +1,7 @@
 import { type Provincia } from '../../../domain/entities/provincia.entity';
 
 export class GetProvinciaDto {
-  constructor(
+  private constructor(
     public idProvincia: number,
     public nombre: string
   ) {}

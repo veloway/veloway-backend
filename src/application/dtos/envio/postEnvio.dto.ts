@@ -10,7 +10,7 @@ export class PostEnvioDto {
     public hora: Date,
     public pesoGramos: number,
     public monto: number,
-    public estado: number,
+    public estadoID: number,
     public origen: PostDomicilioDto,
     public destino: PostDomicilioDto,
     public clienteID: string,
@@ -18,7 +18,7 @@ export class PostEnvioDto {
     public destinoID?: number
   ) {
     this.nroSeguimiento = randomInt(10000000, 99999999);
-    this.estado = 1;
+    this.estadoID = 1;
   }
 
   public static create(envio: any): [string?, PostEnvioDto?] {

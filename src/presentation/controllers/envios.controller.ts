@@ -1,13 +1,15 @@
 import { type Request, type Response } from 'express';
 import { GetEnvioDto } from '../../application/dtos/envio/getEnvio.dto';
 import { PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
-import { StatusError } from '../errors/status.error';
+import { HandleError } from '../errors/handle.error';
 import { type EnviosService } from '../../application/services/envios.service';
+import { type ClienteService } from '../../application/services/cliente.service';
 
 
 export class EnviosController {
   constructor(
-    private readonly enviosService: EnviosService
+    private readonly enviosService: EnviosService,
+    private readonly clientesService: ClienteService
   ) {}
 
   getAll = async (_req: Request, res: Response) => {
@@ -16,20 +18,20 @@ export class EnviosController {
       const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
       res.status(200).json(enviosDto);
     } catch (error) {
-      StatusError.throw(error, res);
+      HandleError.throw(error, res);
     }
   };
 
   create = async (req: Request, res: Response) => {
-    const envio = req.body;
+    const newEnvio = req.body;
     // Validate request body
-    if (!envio) {
+    if (!newEnvio) {
       res.status(400).json({ message: 'Request body is empty' });
       return;
     }
 
     // create dto
-    const [error, postEnvioDto] = PostEnvioDto.create(envio);
+    const [error, postEnvioDto] = PostEnvioDto.create(newEnvio);
     if (error) {
       res.status(400).json({ message: error });
       return;
@@ -37,10 +39,11 @@ export class EnviosController {
 
     if (postEnvioDto) {
       try {
-        await this.enviosService.create(postEnvioDto);
-        res.status(201).json({ nroSeguimiento: postEnvioDto.nroSeguimiento });
+        const cliente = await this.clientesService.getCliente(postEnvioDto.clienteID);
+        const nroSeguimiento = await this.enviosService.create(postEnvioDto, cliente);
+        res.status(201).json({ nroSeguimiento });
       } catch (error) {
-        StatusError.throw(error, res);
+        HandleError.throw(error, res);
       }
     }
   };

@@ -1,7 +1,7 @@
 import { type PostProvinciaDto } from '../provincia/postProvincia.dto';
 
 export class PostLocalidadDto {
-  constructor(
+  private constructor(
     public codigoPostal: number,
     public nombre: string,
     public provincia: PostProvinciaDto

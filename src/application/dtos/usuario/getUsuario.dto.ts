@@ -1,7 +1,7 @@
 import { type Usuario } from '../../../domain/entities/usuario.entity';
 
 export class UsuarioDto {
-  constructor(
+  private constructor(
     private dni: number,
     private email: string,
     private nombre: string,
