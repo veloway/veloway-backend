@@ -90,21 +90,56 @@ export class EnviosService {
   }
 
   public async getEnvioByCliente(idCliente: string): Promise<Envio[]> {
-    const envio = await this.enviosRepository.getAllByClienteID(idCliente);
-    return envio;
+    const envios = await this.enviosRepository.getAllByClienteID(idCliente);
+    return envios;
   }
 
-  // TODO: Implementar actualizar envio
-  public async update(envioDto: UpdateEnvioDto): Promise<Envio> {
-    const envio = await this.envioMapper.fromUpdateDtoToEntity(envioDto);
+  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> {
+    const existingEnvio = await this.enviosRepository.getEnvio(nroSeguimiento);
+    if (!existingEnvio) throw CustomError.notFound('No se encontró un envío con ese número');
 
-    const envioUpdate = await this.enviosRepository.update(envio.getNroSeguimiento(), envio);
+    if (envioDto.destino || envioDto.origen) {
+      if (existingEnvio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
+        throw CustomError.badRequest('No se puede modificar un envio en viaje');
+      }
+    }
+
+    const envioToUpdate = await this.envioMapper.fromUpdateDtoToEntity(nroSeguimiento, envioDto, existingEnvio);
+
+    // TODO: Crear una validacion de zod para domicilio, localidad y provincia.
+    if (envioDto.origen) {
+      const existingDomicilio = await this.domicilioRepository.getDomicilioID(envioToUpdate.getOrigen());
+      if (!existingDomicilio) {
+        const domicilioOrigen = await this.domicilioRepository.create(envioToUpdate.getOrigen());
+        envioToUpdate.setOrigen(domicilioOrigen);
+      }
+      if (existingDomicilio) {
+        const origenUpdated = await this.domicilioRepository.update(existingDomicilio.getID(), envioToUpdate.getOrigen());
+        envioToUpdate.setOrigen(origenUpdated);
+      }
+    }
+
+    if (envioDto.destino) {
+      const existingDomicilio = await this.domicilioRepository.getDomicilioID(envioToUpdate.getDestino());
+      if (!existingDomicilio) {
+        const domicilioDestino = await this.domicilioRepository.create(envioToUpdate.getDestino());
+        envioToUpdate.setDestino(domicilioDestino);
+      }
+      if (existingDomicilio) {
+        // TODO: IMPLEMENTAR UPDATE DE DOMICILIO
+        const destinoUpdated = await this.domicilioRepository.update(existingDomicilio.getID(), envioToUpdate.getDestino());
+        envioToUpdate.setDestino(destinoUpdated);
+      }
+    }
+
+    const envioUpdate = await this.enviosRepository.update(envioToUpdate);
     return envioUpdate;
   }
 
 
   // TODO: Implementar eliminar envio
 
+  // TODO: Que solo actalize una parte del envio, no todo
 
   // TODO: Implementar buscar envios por estado, origen y destino, paginado, ordenado por fecha, etc.
 }

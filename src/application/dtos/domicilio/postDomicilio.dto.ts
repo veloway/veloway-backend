@@ -5,7 +5,6 @@ export class PostDomicilioDto {
     public descripcion: string | null,
     public piso: number | null,
     public depto: string | null,
-    public localidadID: number,
-    public id?: number | null
+    public localidadID: number
   ) {}
 }

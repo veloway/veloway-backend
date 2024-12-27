@@ -5,8 +5,9 @@ export class EnviosRoutes {
   static get routes(): Router {
     const router = Router();
 
-    router.use('/all', enviosController.getAll);
-    router.use('/create', enviosController.create);
+    router.get('/all', enviosController.getAll);
+    router.post('/create', enviosController.create);
+    router.patch('/update/:nroSeguimiento', enviosController.update);
 
     return router;
   }

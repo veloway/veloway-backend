@@ -17,6 +17,61 @@ export class EnvioMapper {
     private readonly localidadRepository: ILocalidadRepository
   ) {}
 
+  public async fromPostDtoToEntity(
+    postEnvioDto: PostEnvioDto,
+    newNroSeguimiento: number,
+    estadoEnvioID: number
+  ): Promise<Envio> {
+    const [cliente, origen, destino] = await this.getClienteDomicilios(
+      postEnvioDto.clienteID,
+      postEnvioDto.origen,
+      postEnvioDto.destino
+    );
+    return new Envio(
+      newNroSeguimiento,
+      postEnvioDto.descripcion,
+      postEnvioDto.fecha,
+      postEnvioDto.hora,
+      postEnvioDto.pesoGramos,
+      postEnvioDto.monto,
+      new EstadoEnvio(estadoEnvioID, ''),
+      origen,
+      destino,
+      cliente
+    );
+  }
+
+  public async fromUpdateDtoToEntity(
+    nroSeguimiento: number,
+    updateEnvioDto: UpdateEnvioDto,
+    existingEnvio: Envio
+  ): Promise<Envio> {
+    const cliente = await this.mapToCliente(existingEnvio.getCliente().getID());
+    return new Envio(
+      nroSeguimiento,
+      updateEnvioDto.descripcion || existingEnvio.getDescripcion(),
+      updateEnvioDto.fecha || existingEnvio.getFecha(),
+      updateEnvioDto.hora || existingEnvio.getHora(),
+      updateEnvioDto.pesoGramos || existingEnvio.getPesoGramos(),
+      updateEnvioDto.monto || existingEnvio.getMonto(),
+      new EstadoEnvio(updateEnvioDto.estadoID || existingEnvio.getEstado().getID(), ''),
+      existingEnvio.getOrigen(), // Este origen es provisorio, se reemplaza en el servicio
+      existingEnvio.getDestino(), // Este destino es provisorio, se reemplaza en el servicio
+      cliente
+    );
+  }
+
+  private async getClienteDomicilios(
+    clienteID: string,
+    origen: PostDomicilioDto,
+    destino: PostDomicilioDto
+  ): Promise<[Usuario, Domicilio, Domicilio]> {
+    const cliente = await this.mapToCliente(clienteID);
+    const origenDomicilio = await this.mapToDomicilio(origen);
+    const destinoDomicilio = await this.mapToDomicilio(destino);
+    return [cliente, origenDomicilio, destinoDomicilio];
+  }
+
   private async mapToCliente(clienteId: string): Promise<Usuario> {
     const cliente = await this.clienteRepository.getUsuario(clienteId);
     if (!cliente) throw CustomError.notFound('El cliente no existe');
@@ -28,7 +83,7 @@ export class EnvioMapper {
     if (!localidad) throw CustomError.notFound('La localidad no existe');
 
     return new Domicilio(
-      domicilioDto.id || 0,
+      0,
       domicilioDto.calle,
       domicilioDto.numero,
       new Localidad(
@@ -43,46 +98,6 @@ export class EnvioMapper {
       domicilioDto.piso,
       domicilioDto.depto,
       domicilioDto.descripcion
-    );
-  }
-
-  public async fromPostDtoToEntity(
-    envioDto: PostEnvioDto,
-    newNroSeguimiento: number,
-    estadoEnvioID: number
-  ): Promise<Envio> {
-    const cliente = await this.mapToCliente(envioDto.clienteID);
-    const origen = await this.mapToDomicilio(envioDto.origen);
-    const destino = await this.mapToDomicilio(envioDto.destino);
-    return new Envio(
-      newNroSeguimiento,
-      envioDto.descripcion,
-      envioDto.fecha,
-      envioDto.hora,
-      envioDto.pesoGramos,
-      envioDto.monto,
-      new EstadoEnvio(estadoEnvioID, ''),
-      origen,
-      destino,
-      cliente
-    );
-  }
-
-  public async fromUpdateDtoToEntity(envioDto: UpdateEnvioDto) {
-    const cliente = await this.mapToCliente(envioDto.clienteID);
-    const origen = await this.mapToDomicilio(envioDto.origen);
-    const destino = await this.mapToDomicilio(envioDto.destino);
-    return new Envio(
-      envioDto.nroSeguimiento,
-      envioDto.descripcion,
-      envioDto.fecha,
-      envioDto.hora,
-      envioDto.pesoGramos,
-      envioDto.monto,
-      new EstadoEnvio(envioDto.estadoID, ''),
-      origen,
-      destino,
-      cliente
     );
   }
 }
