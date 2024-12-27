@@ -46,7 +46,6 @@ export class EnvioMapper {
     updateEnvioDto: UpdateEnvioDto,
     existingEnvio: Envio
   ): Promise<Envio> {
-    const cliente = await this.mapToCliente(existingEnvio.getCliente().getID());
     return new Envio(
       nroSeguimiento,
       updateEnvioDto.descripcion || existingEnvio.getDescripcion(),
@@ -57,7 +56,7 @@ export class EnvioMapper {
       new EstadoEnvio(updateEnvioDto.estadoID || existingEnvio.getEstado().getID(), ''),
       existingEnvio.getOrigen(), // Este origen es provisorio, se reemplaza en el servicio
       existingEnvio.getDestino(), // Este destino es provisorio, se reemplaza en el servicio
-      cliente
+      existingEnvio.getCliente()
     );
   }
 
