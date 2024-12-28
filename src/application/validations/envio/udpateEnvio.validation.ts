@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PostDomicilioSchema } from '../domicilio/postDomicilio.validation';
+import { UpdateDomicilioSchema } from '../domicilio/updateEnvio.validation';
 
 
 export const UpdateEnvioSchema = z.object({
@@ -9,8 +9,8 @@ export const UpdateEnvioSchema = z.object({
   pesoGramos: z.number().int().positive(),
   monto: z.number().positive(),
   estadoID: z.number().int().positive(),
-  origen: PostDomicilioSchema,
-  destino: PostDomicilioSchema
+  origen: UpdateDomicilioSchema,
+  destino: UpdateDomicilioSchema
 });
 
 export const updateEnvioValidation = (envio: any) => {

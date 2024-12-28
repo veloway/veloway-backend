@@ -8,10 +8,9 @@ export class DomiciliosRepository implements IDomicilioRepository {
   }
 
   getall: () => Promise<Domicilio[]>;
-  update: (id: number, domicilio: Domicilio) => Promise<Domicilio>;
   delete: (id: number) => Promise<Domicilio>;
 
-  public async getDomicilioID(domicilio: Domicilio): Promise<Domicilio | null> {
+  public async getDomicilioByProperties(domicilio: Domicilio): Promise<Domicilio | null> {
     const domicilioData = await this.prisma.domicilios.findFirst({
       where: {
         calle: domicilio.getCalle(),
@@ -39,6 +38,36 @@ export class DomiciliosRepository implements IDomicilioRepository {
 
   public async create(domicilio: Domicilio): Promise<Domicilio> {
     const domicilioPrisma = await this.prisma.domicilios.create({
+      data: {
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
+        descripcion: domicilio.getDescripcion(),
+        localidades: {
+          connect: {
+            id_localidad: domicilio.getLocalidad().getID()
+          }
+        }
+      }
+    });
+
+    return new Domicilio(
+      domicilioPrisma.id_domicilio,
+      domicilioPrisma.calle,
+      domicilioPrisma.numero,
+      domicilio.getLocalidad(),
+      domicilioPrisma.piso,
+      domicilioPrisma.depto,
+      domicilioPrisma.descripcion
+    );
+  }
+
+  public async update(idDomicilio: number, domicilio: Domicilio): Promise<Domicilio> {
+    const domicilioPrisma = await this.prisma.domicilios.update({
+      where: {
+        id_domicilio: idDomicilio
+      },
       data: {
         calle: domicilio.getCalle(),
         numero: domicilio.getNumero(),

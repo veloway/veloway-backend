@@ -15,12 +15,12 @@ export class EnviosService {
     private readonly envioMapper: EnvioMapper
   ) {}
 
-  async getAll(): Promise<Envio[]> {
+  public async getAll(): Promise<Envio[]> {
     const envios = await this.enviosRepository.getAll();
     return envios;
   }
 
-  async create(envioDto: PostEnvioDto): Promise<number> {
+  public async create(envioDto: PostEnvioDto): Promise<number> {
     const newNroSeguimiento = randomInt(10000000, 99999999);
     const envio = await this.envioMapper.fromPostDtoToEntity(
       envioDto,
@@ -30,11 +30,10 @@ export class EnviosService {
 
     // TODO: Validar que el peso no exceda los 20000 gramos??
 
-    // Validar que el origen y destino no sean iguales
     if (
       envio.getOrigen().getCalle() === envio.getDestino().getCalle() &&
-        envio.getOrigen().getNumero() === envio.getDestino().getNumero() &&
-        envio.getOrigen().getLocalidad().getID() === envio.getDestino().getLocalidad().getID()
+      envio.getOrigen().getNumero() === envio.getDestino().getNumero() &&
+      envio.getOrigen().getLocalidad().getID() === envio.getDestino().getLocalidad().getID()
     ) {
       throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
     }
@@ -50,26 +49,24 @@ export class EnviosService {
         Si lo hay crear el viaje con el envio y el conductor, si no, mandar un mensaje al cliente que no hay conductores disponibles
       */
 
-    // Validar que el domicilio de origen y destino existan en la base de datos, si no, crearlos
-    const domicilioOrigen = await this.domicilioRepository.getDomicilioID(envio.getOrigen());
+    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envio.getOrigen());
 
-    if (domicilioOrigen) {
+    if (domicilioOrigen) { // Validar domicilios origen repetidos
       envio.setOrigen(domicilioOrigen);
     } else {
       const origenCreated = await this.domicilioRepository.create(envio.getOrigen());
       envio.setOrigen(origenCreated);
     }
 
-    const domicilioDestino = await this.domicilioRepository.getDomicilioID(envio.getDestino());
+    const domicilioDestino = await this.domicilioRepository.getDomicilioByProperties(envio.getDestino());
 
-    if (domicilioDestino) {
+    if (domicilioDestino) { // Validar domicilios destino repetidos
       envio.setDestino(domicilioDestino);
     } else {
       const destinoCreated = await this.domicilioRepository.create(envio.getDestino());
       envio.setDestino(destinoCreated);
     }
 
-    // Validar que no haya un envio con los mismos datos
     if (domicilioOrigen && domicilioDestino) {
       const envioExistente = await this.enviosRepository.buscarEnvioIgual(envio);
       if (envioExistente) {
@@ -77,7 +74,6 @@ export class EnviosService {
       }
     }
 
-    // Crear el envio
     const nroSeguimiento = await this.enviosRepository.create(envio);
     return nroSeguimiento;
   }
@@ -105,31 +101,13 @@ export class EnviosService {
     }
 
     const envioToUpdate = await this.envioMapper.fromUpdateDtoToEntity(nroSeguimiento, envioDto, existingEnvio);
-
-    // TODO: Crear una validacion de zod para domicilio, localidad y provincia.
     if (envioDto.origen) {
-      const existingDomicilio = await this.domicilioRepository.getDomicilioID(envioToUpdate.getOrigen());
-      if (!existingDomicilio) {
-        const domicilioOrigen = await this.domicilioRepository.create(envioToUpdate.getOrigen());
-        envioToUpdate.setOrigen(domicilioOrigen);
-      }
-      if (existingDomicilio) {
-        const origenUpdated = await this.domicilioRepository.update(existingDomicilio.getID(), envioToUpdate.getOrigen());
-        envioToUpdate.setOrigen(origenUpdated);
-      }
+      const origenUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getOrigen());
+      envioToUpdate.setOrigen(origenUpdated);
     }
-
     if (envioDto.destino) {
-      const existingDomicilio = await this.domicilioRepository.getDomicilioID(envioToUpdate.getDestino());
-      if (!existingDomicilio) {
-        const domicilioDestino = await this.domicilioRepository.create(envioToUpdate.getDestino());
-        envioToUpdate.setDestino(domicilioDestino);
-      }
-      if (existingDomicilio) {
-        // TODO: IMPLEMENTAR UPDATE DE DOMICILIO
-        const destinoUpdated = await this.domicilioRepository.update(existingDomicilio.getID(), envioToUpdate.getDestino());
-        envioToUpdate.setDestino(destinoUpdated);
-      }
+      const destinoUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getDestino());
+      envioToUpdate.setDestino(destinoUpdated);
     }
 
     const envioUpdate = await this.enviosRepository.update(envioToUpdate);
@@ -139,7 +117,5 @@ export class EnviosService {
 
   // TODO: Implementar eliminar envio
 
-  // TODO: Que solo actalize una parte del envio, no todo
-
-  // TODO: Implementar buscar envios por estado, origen y destino, paginado, ordenado por fecha, etc.
+  // TODO: Implementar filtros de busqueda.
 }

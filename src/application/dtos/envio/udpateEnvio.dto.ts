@@ -1,5 +1,5 @@
-import { type PostDomicilioDto } from '../domicilio/postDomicilio.dto';
 import { updateEnvioValidation } from '../../validations/envio/udpateEnvio.validation';
+import { type UpdateDomicilioDto } from '../domicilio/updateDomicilio.dto';
 
 export class UpdateEnvioDto {
   private constructor(
@@ -9,8 +9,8 @@ export class UpdateEnvioDto {
     public pesoGramos?: number,
     public monto?: number,
     public estadoID?: number,
-    public origen?: PostDomicilioDto,
-    public destino?: PostDomicilioDto
+    public origen?: UpdateDomicilioDto,
+    public destino?: UpdateDomicilioDto
   ) {}
 
   public static create(envio: any): [string?, UpdateEnvioDto?] {

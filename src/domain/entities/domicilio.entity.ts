@@ -53,6 +53,10 @@ export class Domicilio {
   }
 
   // Setters
+  public setCalle(calle: string): void {
+    this.calle = calle;
+  }
+
   public setNumero(numero: number): void {
     this.numero = numero;
   }
@@ -61,19 +65,19 @@ export class Domicilio {
     this.localidad = localidad;
   }
 
-  public setPiso(piso: number): void {
+  public setPiso(piso: number | null): void {
     this.piso = piso;
   }
 
-  public setDepto(depto: string): void {
+  public setDepto(depto: string | null): void {
     this.depto = depto;
   }
 
-  public setDescripcion(descripcion: string): void {
+  public setDescripcion(descripcion: string | null): void {
     this.descripcion = descripcion;
   }
 
-  public setUsuario(usuario: Usuario): void {
+  public setUsuario(usuario: Usuario | null): void {
     this.usuario = usuario;
   }
 
