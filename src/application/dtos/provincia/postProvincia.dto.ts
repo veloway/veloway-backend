@@ -1,5 +1,5 @@
 export class PostProvinciaDto {
-  constructor(
+  private constructor(
     public nombre: string
   ) {}
 }

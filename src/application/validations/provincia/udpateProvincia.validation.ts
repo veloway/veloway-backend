@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-export const PostProvinciaSchema = z.object({
+export const UpdateProvinciaSchema = z.object({
   nombre: z.string()
 });
 
 export const postProvinciaValidation = (provincia: any) => {
-  return PostProvinciaSchema.safeParse(provincia);
+  return UpdateProvinciaSchema.safeParse(provincia);
 };

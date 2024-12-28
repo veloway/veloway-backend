@@ -2,7 +2,7 @@ import { type Envio } from './envio.entity';
 
 export class Usuario {
   constructor(
-    private idUsuario: string,
+    private readonly id: string,
     private dni: number,
     private email: string,
     private password: string,
@@ -15,8 +15,8 @@ export class Usuario {
   ) {}
 
   // Getters
-  public getIdUsuario(): string {
-    return this.idUsuario;
+  public getID(): string {
+    return this.id;
   }
 
   public getDni(): number {

@@ -2,11 +2,16 @@ import { type Localidad } from './localidad.entity';
 
 export class Provincia {
   constructor(
+    private readonly id: number,
     private nombre: string,
     private localidades?: Localidad[]
   ) {}
 
   // Getter
+  public getID(): number {
+    return this.id;
+  }
+
   public getNombre(): string {
     return this.nombre;
   }

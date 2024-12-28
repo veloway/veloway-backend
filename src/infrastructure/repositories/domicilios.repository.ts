@@ -1,92 +1,96 @@
 import { type PrismaClient } from '@prisma/client';
-import { type Domicilio } from '../../domain/entities/domicilio.entity';
-import { type DomicilioI } from '../../domain/interfaces/domicilio.interface';
-import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
-import { normalizeText } from '../../utils/normalizeText';
+import { Domicilio } from '../../domain/entities/domicilio.entity';
+import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 
-export class DomiciliosRepository implements DomicilioI {
+export class DomiciliosRepository implements IDomicilioRepository {
   constructor(private readonly prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
   getall: () => Promise<Domicilio[]>;
+  delete: (id: number) => Promise<Domicilio>;
 
-  public async getDomicilio(
-    calle: string,
-    numero: number,
-    codigoPostal: number,
-    provincia: string,
-    piso: number | null,
-    depto: string | null
-  ): Promise<number | null> {
-    const domicilio = await this.prisma.domicilios.findFirst({
+  public async getDomicilioByProperties(domicilio: Domicilio): Promise<Domicilio | null> {
+    const domicilioData = await this.prisma.domicilios.findFirst({
       where: {
-        calle,
-        numero,
-        piso,
-        depto,
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
         localidades: {
-          provincias: {
-            nombre: provincia
-          },
-          codigo_postal: codigoPostal
+          id_localidad: domicilio.getLocalidad().getID()// Al saber la localidad, se sabe la provincia
         }
       }
     });
 
-    return domicilio ? domicilio.id_domicilio : null;
+    if (!domicilioData) return null;
+
+    return new Domicilio(
+      domicilioData.id_domicilio,
+      domicilioData.calle,
+      domicilioData.numero,
+      domicilio.getLocalidad(),
+      domicilioData.piso,
+      domicilioData.depto,
+      domicilioData.descripcion
+    );
   };
 
-  public async create(domicilio: PostDomicilioDto): Promise<number> {
-    return await this.prisma.$transaction(async (prisma) => {
-      // Busca la provincia en la base de datos, si no existe la crea
-      let provincia = await prisma.provincias.findFirst({
-        where: {
-          nombre: normalizeText(domicilio.localidad.provincia.nombre)
-        }
-      });
-
-      if (!provincia) {
-        provincia = await prisma.provincias.create({
-          data: {
-            nombre: normalizeText(domicilio.localidad.provincia.nombre)
+  public async create(domicilio: Domicilio): Promise<Domicilio> {
+    const domicilioPrisma = await this.prisma.domicilios.create({
+      data: {
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
+        descripcion: domicilio.getDescripcion(),
+        localidades: {
+          connect: {
+            id_localidad: domicilio.getLocalidad().getID()
           }
-        });
+        }
       }
-      // Busca la localidad en la base de datos, si no existe la crea
-      let localidad = await prisma.localidades.findFirst({
-        where: {
-          codigo_postal: domicilio.localidad.codigoPostal
-        }
-      });
-
-      if (!localidad) {
-        localidad = await prisma.localidades.create({
-          data: {
-            codigo_postal: domicilio.localidad.codigoPostal,
-            nombre: domicilio.localidad.nombre,
-            provincias: {
-              connect: { id_provincia: provincia.id_provincia }
-            }
-          }
-        });
-      }
-
-      const domicilioPrisma = await prisma.domicilios.create({
-        data: {
-          calle: domicilio.calle,
-          numero: domicilio.numero,
-          piso: domicilio.piso,
-          depto: domicilio.depto,
-          descripcion: domicilio.descripcion,
-          localidades: {
-            connect: { id_localidad: localidad.id_localidad }
-          }
-        }
-      });
-
-      return domicilioPrisma.id_domicilio;
     });
+
+    return new Domicilio(
+      domicilioPrisma.id_domicilio,
+      domicilioPrisma.calle,
+      domicilioPrisma.numero,
+      domicilio.getLocalidad(),
+      domicilioPrisma.piso,
+      domicilioPrisma.depto,
+      domicilioPrisma.descripcion
+    );
+  }
+
+  public async update(idDomicilio: number, domicilio: Domicilio): Promise<Domicilio> {
+    const domicilioPrisma = await this.prisma.domicilios.update({
+      where: {
+        id_domicilio: idDomicilio
+      },
+      data: {
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
+        descripcion: domicilio.getDescripcion(),
+        localidades: {
+          connect: {
+            id_localidad: domicilio.getLocalidad().getID()
+          }
+        }
+      }
+    });
+
+    return new Domicilio(
+      domicilioPrisma.id_domicilio,
+      domicilioPrisma.calle,
+      domicilioPrisma.numero,
+      domicilio.getLocalidad(),
+      domicilioPrisma.piso,
+      domicilioPrisma.depto,
+      domicilioPrisma.descripcion
+    );
   }
 }
 

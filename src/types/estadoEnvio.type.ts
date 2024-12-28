@@ -1,7 +1,7 @@
-export const enum EstadoEnvio {
-  CONFIRMADO = 1,
-  CANCELADO = 2,
-  RETIRO = 3,
-  TRANSLADO = 4,
-  ENTREGADO = 5
-}
+export const EstadoEnvioEnum = {
+  Confirmado: 1,
+  Cancelado: 2,
+  EnProcesoDeRetiro: 3,
+  EnTrasladoADestino: 4,
+  Entregado: 5
+};
