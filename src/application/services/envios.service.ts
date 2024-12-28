@@ -30,6 +30,8 @@ export class EnviosService {
 
     // TODO: Validar que el peso no exceda los 20000 gramos??
 
+    envio.setMonto(envio.calcularMonto());
+
     if (
       envio.getOrigen().getCalle() === envio.getDestino().getCalle() &&
       envio.getOrigen().getNumero() === envio.getDestino().getNumero() &&
@@ -101,6 +103,7 @@ export class EnviosService {
     }
 
     const envioToUpdate = await this.envioMapper.fromUpdateDtoToEntity(nroSeguimiento, envioDto, existingEnvio);
+
     if (envioDto.origen) {
       const origenUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getOrigen());
       envioToUpdate.setOrigen(origenUpdated);
@@ -108,6 +111,10 @@ export class EnviosService {
     if (envioDto.destino) {
       const destinoUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getDestino());
       envioToUpdate.setDestino(destinoUpdated);
+    }
+    if (envioDto.pesoGramos) {
+      // Ver si validar que no se exceda el peso maximo
+      envioToUpdate.setMonto(envioToUpdate.calcularMonto());
     }
 
     const envioUpdate = await this.enviosRepository.update(envioToUpdate);
