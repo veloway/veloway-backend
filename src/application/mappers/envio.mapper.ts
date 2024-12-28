@@ -34,7 +34,7 @@ export class EnvioMapper {
       postEnvioDto.fecha,
       postEnvioDto.hora,
       postEnvioDto.pesoGramos,
-      postEnvioDto.monto,
+      0,
       new EstadoEnvio(estadoEnvioID, ''),
       origen,
       destino,

@@ -1,5 +1,5 @@
 import { randomInt } from 'crypto';
-import { type Envio } from '../../domain/entities/envio.entity';
+import { PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
@@ -17,10 +17,24 @@ export class EnviosService {
 
   public async getAll(): Promise<Envio[]> {
     const envios = await this.enviosRepository.getAll();
+    if (envios.length === 0) throw CustomError.notFound('No se encontraron envíos');
     return envios;
   }
 
-  public async create(envioDto: PostEnvioDto): Promise<number> {
+  public async getAllByClienteId(clienteID: string): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
+    const envios = await this.enviosRepository.getAllByClienteID(clienteID);
+    if (envios.length === 0) throw CustomError.badRequest(`No se encontraron envíos para el cliente con id: ${clienteID}`);
+    return envios;
+  }
+
+  public async getEnvio(nroSeguimiento: number): Promise<Envio> {
+    const envio = await this.enviosRepository.getEnvio(nroSeguimiento);
+
+    if (!envio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
+    return envio;
+  }
+
+  public async create(envioDto: PostEnvioDto): Promise<number> { // TODO: Implementar validaciones
     const newNroSeguimiento = randomInt(10000000, 99999999);
     const envio = await this.envioMapper.fromPostDtoToEntity(
       envioDto,
@@ -28,7 +42,7 @@ export class EnviosService {
       EstadoEnvioEnum.Confirmado
     );
 
-    // TODO: Validar que el peso no exceda los 20000 gramos??
+    if (!envio.verificarPesoGramos()) throw CustomError.badRequest(`Solo se pueden realizar envíos hasta ${PESO_GRAMOS_MAX / 1000} kilos`);
 
     envio.setMonto(envio.calcularMonto());
 
@@ -46,11 +60,7 @@ export class EnviosService {
       envio.setFecha(new Date(envio.getFecha().getTime() + 86400000)); // 86400000 = 24 horas en milisegundos (1 dia)
       envio.setHora(new Date(envio.getHora().setHours(8, 0, 0, 0))); // TODO: Verificar si la hora esta bien
     }
-
-    /* TODO: Buscar si hay un conductor disponible para el envio a la misma fecha y hora (Que la busqueda tenga un tiempo limite de 1 minuto)
-        Si lo hay crear el viaje con el envio y el conductor, si no, mandar un mensaje al cliente que no hay conductores disponibles
-      */
-
+    // TODO: Implementar crear envio ()
     const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envio.getOrigen());
 
     if (domicilioOrigen) { // Validar domicilios origen repetidos
@@ -72,7 +82,7 @@ export class EnviosService {
     if (domicilioOrigen && domicilioDestino) {
       const envioExistente = await this.enviosRepository.buscarEnvioIgual(envio);
       if (envioExistente) {
-        throw CustomError.badRequest('Ya existe un envio con los mismos datos');
+        throw CustomError.badRequest('Ya existe un envío con los mismos datos');
       }
     }
 
@@ -80,25 +90,13 @@ export class EnviosService {
     return nroSeguimiento;
   }
 
-  public async getEnvio(nroSeguimiento: number): Promise<Envio> {
-    const envio = await this.enviosRepository.getEnvio(nroSeguimiento);
-
-    if (!envio) throw CustomError.notFound('No se encontró un envío con ese número');
-    return envio;
-  }
-
-  public async getEnvioByCliente(idCliente: string): Promise<Envio[]> {
-    const envios = await this.enviosRepository.getAllByClienteID(idCliente);
-    return envios;
-  }
-
-  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> {
+  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> { // TODO: VERIFICAR
     const existingEnvio = await this.enviosRepository.getEnvio(nroSeguimiento);
-    if (!existingEnvio) throw CustomError.notFound('No se encontró un envío con ese número');
+    if (!existingEnvio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
 
     if (envioDto.destino || envioDto.origen) {
       if (existingEnvio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
-        throw CustomError.badRequest('No se puede modificar un envio en viaje');
+        throw CustomError.badRequest(`No se puede modificar un envío con estado: ${existingEnvio.getEstado().getNombre()}`);
       }
     }
 
@@ -121,8 +119,7 @@ export class EnviosService {
     return envioUpdate;
   }
 
-
-  // TODO: Implementar eliminar envio
-
-  // TODO: Implementar filtros de busqueda.
+  public async updateEstadoEnvio(nroSeguimiento: number, estadoEnvioID: number) {
+    await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
+  }
 }

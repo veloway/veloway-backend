@@ -2,6 +2,9 @@ import { type Domicilio } from './domicilio.entity';
 import { type EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
 
+export const PESO_GRAMOS_MAX = 20000;
+export const PRECIO_CADA_100_GRAMOS = 500;
+
 export class Envio {
   constructor(
     private readonly nroSeguimiento: number,
@@ -97,12 +100,19 @@ export class Envio {
   // Methods
   public calcularMonto(): number {
     // Cada 100 gramos cuesta $1000
-    return this.pesoGramos * 1000 / 100;
+    return this.pesoGramos * PRECIO_CADA_100_GRAMOS / 100;
   }
 
   public verificarRangoHorario(): boolean {
     const hora = this.hora.getHours();
     if (hora < 8 || hora > 18) {
+      return false;
+    }
+    return true;
+  }
+
+  public verificarPesoGramos(): boolean {
+    if (this.pesoGramos > PESO_GRAMOS_MAX) {
       return false;
     }
     return true;

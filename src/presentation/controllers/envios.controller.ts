@@ -20,6 +20,28 @@ export class EnviosController {
     }
   };
 
+  getAllByClienteId = async (req: Request, res: Response) => {
+    const { clienteID } = req.params;
+    try {
+      const envios = await this.enviosService.getAllByClienteId(clienteID);
+      const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
+      res.status(200).json(enviosDto);
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+
+  getEnvio = async (req: Request, res: Response) => {
+    const { nroSeguimiento } = req.params;
+    try {
+      const envio = await this.enviosService.getEnvio(Number(nroSeguimiento));
+      const envioDto = GetEnvioDto.create(envio);
+      res.status(200).json(envioDto);
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+
   create = async (req: Request, res: Response) => {
     const newEnvio = req.body;
     if (!newEnvio) {
@@ -65,6 +87,17 @@ export class EnviosController {
       } catch (error) {
         HandleError.throw(error, res);
       }
+    }
+  };
+
+  updateEstadoEnvio = async (req: Request, res: Response) => {
+    const { nroSeguimiento } = req.params;
+    const { estadoEnvioID } = req.body;
+    try {
+      await this.enviosService.updateEstadoEnvio(Number(nroSeguimiento), Number(estadoEnvioID));
+      res.status(200).json({ message: 'Estado de envío actualizado' });
+    } catch (error) {
+      HandleError.throw(error, res);
     }
   };
 }

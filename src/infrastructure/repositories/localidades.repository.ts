@@ -8,7 +8,7 @@ export class LocalidadesRepository implements ILocalidadRepository {
     this.prisma = prisma;
   }
 
-  getAll: () => Promise<Localidad[]>;
+  getAll: () => Promise<Localidad[]>; // TODO: Implementar
   getAllByProvincia: (provinciaID: number) => Promise<Localidad[]>;
   create: (localidad: Localidad) => Promise<void>;
   update: (id: string, localidad: Localidad) => Promise<void>;

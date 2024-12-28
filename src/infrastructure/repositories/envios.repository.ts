@@ -6,9 +6,6 @@ import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
 export class EnviosRepository implements IEnviosRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  getAllByClienteID: (clienteID: string) => Promise<Envio[]>;
-  delete: (nroSeguimiento: number) => Promise<Envio>;
-
   public async getAll(): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
       {
@@ -38,6 +35,76 @@ export class EnviosRepository implements IEnviosRepository {
     );
 
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
+  }
+
+  public async getAllByClienteID(clienteID: string): Promise<Envio[]> {
+    const enviosPrisma = await this.prisma.envios.findMany(
+      {
+        where: {
+          id_cliente: clienteID
+        },
+        include: {
+          usuarios: true,
+          estados_envio: true,
+          domicilios_envios_id_origenTodomicilios: {
+            include: {
+              localidades: {
+                include: {
+                  provincias: true
+                }
+              }
+            }
+          },
+          domicilios_envios_id_destinoTodomicilios: {
+            include: {
+              localidades: {
+                include: {
+                  provincias: true
+                }
+              }
+            }
+          }
+        }
+      }
+    );
+
+    return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
+  }
+
+  public async getEnvio(nroSeguimiento: number): Promise<Envio | null> {
+    const envioPrisma = await this.prisma.envios.findUnique({
+      where: {
+        nro_seguimiento: nroSeguimiento
+      },
+      include: {
+        usuarios: true,
+        estados_envio: true,
+        domicilios_envios_id_origenTodomicilios: {
+          include: {
+            localidades: {
+              include: {
+                provincias: true
+              }
+            }
+          }
+        },
+        domicilios_envios_id_destinoTodomicilios: {
+          include: {
+            localidades: {
+              include: {
+                provincias: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!envioPrisma) {
+      return null;
+    }
+
+    return EnvioPrismaMapper.fromPrismaToEntity(envioPrisma);
   }
 
   public async create(envio: Envio): Promise<number> {
@@ -123,39 +190,14 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaToEntity(envioUpdatePrisma);
   }
 
-  public async getEnvio(nroSeguimiento: number): Promise<Envio | null> {
-    const envioPrisma = await this.prisma.envios.findUnique({
+  public async updateEstadoEnvio(nroSeguimiento: number, estadoEnvioID: number): Promise<void> {
+    await this.prisma.envios.update({
       where: {
         nro_seguimiento: nroSeguimiento
       },
-      include: {
-        usuarios: true,
-        estados_envio: true,
-        domicilios_envios_id_origenTodomicilios: {
-          include: {
-            localidades: {
-              include: {
-                provincias: true
-              }
-            }
-          }
-        },
-        domicilios_envios_id_destinoTodomicilios: {
-          include: {
-            localidades: {
-              include: {
-                provincias: true
-              }
-            }
-          }
-        }
+      data: {
+        id_estado: estadoEnvioID
       }
     });
-
-    if (!envioPrisma) {
-      return null;
-    }
-
-    return EnvioPrismaMapper.fromPrismaToEntity(envioPrisma);
   }
 }

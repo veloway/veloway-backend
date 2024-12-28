@@ -6,8 +6,11 @@ export class EnviosRoutes {
     const router = Router();
 
     router.get('/all', enviosController.getAll);
+    router.get('/all/cliente/:clienteID', enviosController.getAllByClienteId);
+    router.get('/nro-seguimiento/:nroSeguimiento', enviosController.getEnvio);
     router.post('/create', enviosController.create);
-    router.patch('/update/:nroSeguimiento', enviosController.update);
+    router.put('/update/:nroSeguimiento', enviosController.update);
+    router.patch('/update/:nroSeguimiento/estado/:estadoEnvioID', enviosController.updateEstadoEnvio);
 
     return router;
   }
