@@ -8,5 +8,5 @@ export const UpdateLocalidadSchema = z.object({
 });
 
 export const postLocalidadValidation = (localidad: any) => {
-  return UpdateLocalidadSchema.partial().safeParse(localidad);
+  return UpdateLocalidadSchema.safeParse(localidad);
 };

@@ -34,7 +34,7 @@ export class EnviosService {
     return envio;
   }
 
-  public async create(envioDto: PostEnvioDto): Promise<number> { // TODO: Implementar validaciones
+  public async create(envioDto: PostEnvioDto): Promise<number> { // TODO: Implementar crear viaje
     const newNroSeguimiento = randomInt(10000000, 99999999);
     const envio = await this.envioMapper.fromPostDtoToEntity(
       envioDto,
@@ -54,15 +54,11 @@ export class EnviosService {
       throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
     }
 
-    /* Validar que la hora en que se quiera realizar el envio este entre las 8:00 y 18:00,
-       si no queda para el dia siguiente entre el mismo rango horario. */
-    if (envio.verificarRangoHorario()) {
-      envio.setFecha(new Date(envio.getFecha().getTime() + 86400000)); // 86400000 = 24 horas en milisegundos (1 dia)
-      envio.setHora(new Date(envio.getHora().setHours(8, 0, 0, 0))); // TODO: Verificar si la hora esta bien
-    }
-    // TODO: Implementar crear envio ()
-    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envio.getOrigen());
+    envio.verificarRangoHorario();
 
+    // TODO: Implementar crear viaje() para el envio
+
+    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envio.getOrigen());
     if (domicilioOrigen) { // Validar domicilios origen repetidos
       envio.setOrigen(domicilioOrigen);
     } else {
@@ -71,7 +67,6 @@ export class EnviosService {
     }
 
     const domicilioDestino = await this.domicilioRepository.getDomicilioByProperties(envio.getDestino());
-
     if (domicilioDestino) { // Validar domicilios destino repetidos
       envio.setDestino(domicilioDestino);
     } else {
@@ -90,29 +85,41 @@ export class EnviosService {
     return nroSeguimiento;
   }
 
-  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> { // TODO: VERIFICAR
+  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> {
     const existingEnvio = await this.enviosRepository.getEnvio(nroSeguimiento);
     if (!existingEnvio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
 
-    if (envioDto.destino || envioDto.origen) {
-      if (existingEnvio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
-        throw CustomError.badRequest(`No se puede modificar un envío con estado: ${existingEnvio.getEstado().getNombre()}`);
-      }
+    if (existingEnvio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
+      throw CustomError.badRequest(`No se puede modificar un envío con estado: ${existingEnvio.getEstado().getNombre()}`);
     }
 
     const envioToUpdate = await this.envioMapper.fromUpdateDtoToEntity(nroSeguimiento, envioDto, existingEnvio);
 
-    if (envioDto.origen) {
-      const origenUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getOrigen());
-      envioToUpdate.setOrigen(origenUpdated);
+    /* Si el domicilio origen o destino no existen, se crean para evitar modificar los existentes
+        y que se modifiquen en otros envios.
+    */
+    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envioToUpdate.getOrigen());
+    if (domicilioOrigen) {
+      envioToUpdate.setOrigen(domicilioOrigen);
+    } else {
+      const origenCreated = await this.domicilioRepository.create(envioToUpdate.getOrigen());
+      envioToUpdate.setOrigen(origenCreated);
     }
-    if (envioDto.destino) {
-      const destinoUpdated = await this.domicilioRepository.update(envioToUpdate.getOrigen().getID(), envioToUpdate.getDestino());
-      envioToUpdate.setDestino(destinoUpdated);
+    const domicilioDestino = await this.domicilioRepository.getDomicilioByProperties(envioToUpdate.getDestino());
+    if (domicilioDestino) {
+      envioToUpdate.setDestino(domicilioDestino);
+    } else {
+      const destinoCreated = await this.domicilioRepository.create(envioToUpdate.getDestino());
+      envioToUpdate.setDestino(destinoCreated);
     }
-    if (envioDto.pesoGramos) {
-      // Ver si validar que no se exceda el peso maximo
+
+    if (envioDto.pesoGramos !== existingEnvio.getPesoGramos()) {
+      envioToUpdate.verificarPesoGramos();
       envioToUpdate.setMonto(envioToUpdate.calcularMonto());
+    }
+
+    if (envioDto.hora.getHours() !== existingEnvio.getHora().getHours()) {
+      envioToUpdate.verificarRangoHorario();
     }
 
     const envioUpdate = await this.enviosRepository.update(envioToUpdate);

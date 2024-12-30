@@ -47,22 +47,17 @@ export class EnvioMapper {
     updateEnvioDto: UpdateEnvioDto,
     existingEnvio: Envio
   ): Promise<Envio> {
-    const origen = updateEnvioDto.origen
-      ? await this.mapToUpdateDomicilio(existingEnvio.getOrigen(), updateEnvioDto.origen)
-      : existingEnvio.getOrigen();
-
-    const destino = updateEnvioDto.destino
-      ? await this.mapToUpdateDomicilio(existingEnvio.getDestino(), updateEnvioDto.destino)
-      : existingEnvio.getDestino();
+    const origen = await this.mapToUpdateDomicilio(existingEnvio.getOrigen(), updateEnvioDto.origen);
+    const destino = await this.mapToUpdateDomicilio(existingEnvio.getDestino(), updateEnvioDto.destino);
 
     return new Envio(
       nroSeguimiento,
-      updateEnvioDto.descripcion ?? existingEnvio.getDescripcion(),
-      updateEnvioDto.fecha ?? existingEnvio.getFecha(),
-      updateEnvioDto.hora ?? existingEnvio.getHora(),
-      updateEnvioDto.pesoGramos ?? existingEnvio.getPesoGramos(),
-      updateEnvioDto.monto ?? existingEnvio.getMonto(),
-      new EstadoEnvio(updateEnvioDto.estadoID ?? existingEnvio.getEstado().getID(), ''),
+      updateEnvioDto.descripcion,
+      updateEnvioDto.fecha,
+      updateEnvioDto.hora,
+      updateEnvioDto.pesoGramos,
+      existingEnvio.calcularMonto(),
+      existingEnvio.getEstado(),
       origen,
       destino,
       existingEnvio.getCliente()
@@ -113,26 +108,26 @@ export class EnvioMapper {
     existingDomicilio: Domicilio,
     updateDomicilio: UpdateDomicilioDto
   ): Promise<Domicilio> {
-    existingDomicilio.setCalle(updateDomicilio.calle ?? existingDomicilio.getCalle());
-    existingDomicilio.setNumero(updateDomicilio.numero ?? existingDomicilio.getNumero());
-    existingDomicilio.setPiso(updateDomicilio.piso ?? existingDomicilio.getPiso() ?? null);
-    existingDomicilio.setDepto(updateDomicilio.depto ?? existingDomicilio.getDepto() ?? null);
-    existingDomicilio.setDescripcion(updateDomicilio.descripcion ?? existingDomicilio.getDescripcion() ?? null);
-    if (updateDomicilio.localidadID) {
-      const localidad = await this.localidadRepository.getLocalidad(updateDomicilio.localidadID);
-      if (!localidad) throw CustomError.notFound('La localidad no existe');
-      existingDomicilio.setLocalidad(
-        new Localidad(
-          localidad.getID(),
-          localidad.getCodigoPostal(),
-          localidad.getNombre(),
-          new Provincia(
-            localidad.getProvincia().getID(),
-            localidad.getProvincia().getNombre()
-          )
+    existingDomicilio.setCalle(updateDomicilio.calle);
+    existingDomicilio.setNumero(updateDomicilio.numero);
+    existingDomicilio.setPiso(updateDomicilio.piso);
+    existingDomicilio.setDepto(updateDomicilio.depto);
+    existingDomicilio.setDescripcion(updateDomicilio.descripcion);
+
+    const localidad = await this.localidadRepository.getLocalidad(updateDomicilio.localidadID);
+    if (!localidad) throw CustomError.notFound('La localidad no existe');
+    existingDomicilio.setLocalidad(
+      new Localidad(
+        localidad.getID(),
+        localidad.getCodigoPostal(),
+        localidad.getNombre(),
+        new Provincia(
+          localidad.getProvincia().getID(),
+          localidad.getProvincia().getNombre()
         )
-      );
-    }
+      )
+    );
+
     return existingDomicilio;
   }
 }
