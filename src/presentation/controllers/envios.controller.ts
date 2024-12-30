@@ -93,6 +93,7 @@ export class EnviosController {
   updateEstadoEnvio = async (req: Request, res: Response) => {
     const { nroSeguimiento } = req.params;
     const { estadoEnvioID } = req.body;
+
     try {
       await this.enviosService.updateEstadoEnvio(Number(nroSeguimiento), Number(estadoEnvioID));
       res.status(200).json({ message: 'Estado de envío actualizado' });

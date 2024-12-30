@@ -10,7 +10,7 @@ export class EnviosRoutes {
     router.get('/nro-seguimiento/:nroSeguimiento', enviosController.getEnvio);
     router.post('/create', enviosController.create);
     router.put('/update/:nroSeguimiento', enviosController.update);
-    router.patch('/update/:nroSeguimiento/estado/:estadoEnvioID', enviosController.updateEstadoEnvio);
+    router.patch('/update-estado/:nroSeguimiento', enviosController.updateEstadoEnvio);
 
     return router;
   }
