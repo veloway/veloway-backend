@@ -148,15 +148,20 @@ CREATE TABLE viajes (
 	fecha_fin TIMESTAMP,
 	id_conductor UUID NOT NULL,
 	nro_seguimiento BIGINT UNIQUE NOT NULL, 
+	origen_cord DOUBLE PRECISION,
+	destino_cord DOUBLE PRECISION,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor),
-	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento)
+	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento),
+	FOREIGN KEY (origen_cord) REFERENCES checkpoints(id_checkpoint),
+	FOREIGN KEY (destino_cord) REFERENCES checkpoints(id_checkpoint),
 );
 
 CREATE TABLE checkpoints (
 	id_checkpoint SERIAL PRIMARY KEY,
+	tipo VARCHAR(10), 
 	latitud DOUBLE PRECISION NOT NULL,
 	longitud DOUBLE PRECISION NOT NULL,
-	numero INT NOT NULL,
+	numero INT,
 	id_viaje INT NOT NULL,
 	FOREIGN KEY (id_viaje) REFERENCES viajes(id_viaje)
 );
