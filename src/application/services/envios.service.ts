@@ -5,14 +5,17 @@ import { type IEnviosRepository } from '../../domain/repositories/envios.interfa
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
 import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
-import { type EnvioMapper } from '../mappers/envio.mapper';
+import { EnvioMapper } from '../mappers/envio.mapper';
 import { EstadoEnvioEnum } from '../../types/estadoEnvio.type';
+import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
+import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
 
 export class EnviosService {
   constructor (
     private readonly enviosRepository: IEnviosRepository,
     private readonly domicilioRepository: IDomicilioRepository,
-    private readonly envioMapper: EnvioMapper
+    private readonly localidadRepository: ILocalidadRepository,
+    private readonly clienteRepository: IUsuarioRepository
   ) {}
 
   public async getAll(): Promise<Envio[]> {
@@ -34,13 +37,26 @@ export class EnviosService {
     return envio;
   }
 
-  public async create(envioDto: PostEnvioDto): Promise<number> { // TODO: Implementar crear viaje
+  public async create(postEnvioDto: PostEnvioDto): Promise<number> { // TODO: Implementar crear viaje
+    const localidadOrigen = await this.localidadRepository.getLocalidad(postEnvioDto.origen.localidadID);
+    if (!localidadOrigen) throw CustomError.notFound('La localidad de origen no existe');
+
+    const localidadDestino = await this.localidadRepository.getLocalidad(postEnvioDto.destino.localidadID);
+    if (!localidadDestino) throw CustomError.notFound('La localidad de destino no existe');
+
+    const cliente = await this.clienteRepository.getUsuario(postEnvioDto.clienteID);
+    if (!cliente) throw CustomError.notFound('El cliente no existe');
+
     const newNroSeguimiento = randomInt(10000000, 99999999);
-    const envio = await this.envioMapper.fromPostDtoToEntity(
-      envioDto,
-      newNroSeguimiento,
-      EstadoEnvioEnum.Confirmado
-    );
+    const envio = EnvioMapper.fromPostDtoToEntity({
+      postEnvioDto,
+      nroSeguimiento: newNroSeguimiento,
+      localidadOrigen,
+      localidadDestino,
+      cliente
+    });
+
+    envio.getEstado().setID(EstadoEnvioEnum.Confirmado);
 
     if (!envio.verificarPesoGramos()) throw CustomError.badRequest(`Solo se pueden realizar envíos hasta ${PESO_GRAMOS_MAX / 1000} kilos`);
 
@@ -85,7 +101,7 @@ export class EnviosService {
     return nroSeguimiento;
   }
 
-  public async update(nroSeguimiento: number, envioDto: UpdateEnvioDto): Promise<Envio> {
+  public async update(nroSeguimiento: number, updateEnvioDto: UpdateEnvioDto): Promise<Envio> {
     const existingEnvio = await this.enviosRepository.getEnvio(nroSeguimiento);
     if (!existingEnvio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
 
@@ -93,7 +109,18 @@ export class EnviosService {
       throw CustomError.badRequest(`No se puede modificar un envío con estado: ${existingEnvio.getEstado().getNombre()}`);
     }
 
-    const envioToUpdate = await this.envioMapper.fromUpdateDtoToEntity(nroSeguimiento, envioDto, existingEnvio);
+    const localidadOrigen = await this.localidadRepository.getLocalidad(updateEnvioDto.origen.localidadID);
+    if (!localidadOrigen) throw CustomError.notFound('La localidad de origen no existe');
+
+    const localidadDestino = await this.localidadRepository.getLocalidad(updateEnvioDto.destino.localidadID);
+    if (!localidadDestino) throw CustomError.notFound('La localidad de destino no existe');
+
+    const envioToUpdate = EnvioMapper.fromUpdateDtoToEntity({
+      updateEnvioDto,
+      existingEnvio,
+      localidadOrigen,
+      localidadDestino
+    });
 
     /* Si el domicilio origen o destino no existen, se crean para evitar modificar los existentes
         y que se modifiquen en otros envios.
@@ -113,12 +140,12 @@ export class EnviosService {
       envioToUpdate.setDestino(destinoCreated);
     }
 
-    if (envioDto.pesoGramos !== existingEnvio.getPesoGramos()) {
+    if (updateEnvioDto.pesoGramos !== existingEnvio.getPesoGramos()) {
       envioToUpdate.verificarPesoGramos();
       envioToUpdate.setMonto(envioToUpdate.calcularMonto());
     }
 
-    if (envioDto.hora.getHours() !== existingEnvio.getHora().getHours()) {
+    if (updateEnvioDto.hora.getHours() !== existingEnvio.getHora().getHours()) {
       envioToUpdate.verificarRangoHorario();
     }
 

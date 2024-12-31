@@ -1,133 +1,84 @@
-import { type PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
 import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
-import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { Envio } from '../../domain/entities/envio.entity';
 import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
-import { Localidad } from '../../domain/entities/localidad.entity';
-import { Provincia } from '../../domain/entities/provincia.entity';
+import { type Localidad } from '../../domain/entities/localidad.entity';
 import { type Usuario } from '../../domain/entities/usuario.entity';
-import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
-import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
-import { type UpdateDomicilioDto } from '../dtos/domicilio/updateDomicilio.dto';
 import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
-import { CustomError } from '../errors/custom.errors';
+import { DomicilioMapper } from './domicilio.mapper';
+
+interface IFromPostDtoToEntity {
+  postEnvioDto: PostEnvioDto
+  nroSeguimiento: number
+  localidadOrigen: Localidad
+  localidadDestino: Localidad
+  cliente: Usuario
+}
+
+interface IFromUpdateDtoToEntity {
+  updateEnvioDto: UpdateEnvioDto
+  existingEnvio: Envio
+  localidadOrigen: Localidad
+  localidadDestino: Localidad
+}
 
 export class EnvioMapper {
-  constructor(
-    private readonly clienteRepository: IUsuarioRepository,
-    private readonly localidadRepository: ILocalidadRepository
-  ) {}
+  public static fromPostDtoToEntity(
+    {
+      postEnvioDto,
+      nroSeguimiento,
+      localidadOrigen,
+      localidadDestino,
+      cliente
+    }: IFromPostDtoToEntity): Envio {
+    const origen = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.origen, localidadOrigen);
+    const destino = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.destino, localidadDestino);
 
-  public async fromPostDtoToEntity(
-    postEnvioDto: PostEnvioDto,
-    newNroSeguimiento: number,
-    estadoEnvioID: number
-  ): Promise<Envio> {
-    const [cliente, origen, destino] = await this.getClienteDomicilios(
-      postEnvioDto.clienteID,
-      postEnvioDto.origen,
-      postEnvioDto.destino
-    );
     return new Envio(
-      newNroSeguimiento,
+      nroSeguimiento,
       postEnvioDto.descripcion,
       postEnvioDto.fecha,
       postEnvioDto.hora,
       postEnvioDto.pesoGramos,
       0,
-      new EstadoEnvio(estadoEnvioID, ''),
+      new EstadoEnvio(0, ''),
       origen,
       destino,
       cliente
     );
   }
 
-  public async fromUpdateDtoToEntity(
-    nroSeguimiento: number,
-    updateEnvioDto: UpdateEnvioDto,
-    existingEnvio: Envio
-  ): Promise<Envio> {
-    const origen = await this.mapToUpdateDomicilio(existingEnvio.getOrigen(), updateEnvioDto.origen);
-    const destino = await this.mapToUpdateDomicilio(existingEnvio.getDestino(), updateEnvioDto.destino);
+  public static fromUpdateDtoToEntity(
+    {
+      updateEnvioDto,
+      existingEnvio,
+      localidadOrigen,
+      localidadDestino
+    }: IFromUpdateDtoToEntity): Envio {
+    existingEnvio.getOrigen().setCalle(updateEnvioDto.origen.calle);
+    existingEnvio.getOrigen().setNumero(updateEnvioDto.origen.numero);
+    existingEnvio.getOrigen().setPiso(updateEnvioDto.origen.piso);
+    existingEnvio.getOrigen().setDepto(updateEnvioDto.origen.depto);
+    existingEnvio.getOrigen().setDescripcion(updateEnvioDto.origen.descripcion);
+    existingEnvio.getOrigen().setLocalidad(localidadOrigen);
+
+    existingEnvio.getDestino().setCalle(updateEnvioDto.destino.calle);
+    existingEnvio.getDestino().setNumero(updateEnvioDto.destino.numero);
+    existingEnvio.getDestino().setPiso(updateEnvioDto.destino.piso);
+    existingEnvio.getDestino().setDepto(updateEnvioDto.destino.depto);
+    existingEnvio.getDestino().setDescripcion(updateEnvioDto.destino.descripcion);
+    existingEnvio.getDestino().setLocalidad(localidadDestino);
 
     return new Envio(
-      nroSeguimiento,
+      existingEnvio.getNroSeguimiento(),
       updateEnvioDto.descripcion,
       updateEnvioDto.fecha,
       updateEnvioDto.hora,
       updateEnvioDto.pesoGramos,
       existingEnvio.calcularMonto(),
       existingEnvio.getEstado(),
-      origen,
-      destino,
+      existingEnvio.getOrigen(),
+      existingEnvio.getDestino(),
       existingEnvio.getCliente()
     );
-  }
-
-  private async getClienteDomicilios(
-    clienteID: string,
-    origen: PostDomicilioDto,
-    destino: PostDomicilioDto
-  ): Promise<[Usuario, Domicilio, Domicilio]> {
-    const cliente = await this.mapToCliente(clienteID);
-    const origenDomicilio = await this.mapToDomicilio(origen);
-    const destinoDomicilio = await this.mapToDomicilio(destino);
-    return [cliente, origenDomicilio, destinoDomicilio];
-  }
-
-  private async mapToCliente(clienteId: string): Promise<Usuario> {
-    const cliente = await this.clienteRepository.getUsuario(clienteId);
-    if (!cliente) throw CustomError.notFound('El cliente no existe');
-    return cliente;
-  }
-
-  private async mapToDomicilio(domicilioDto: PostDomicilioDto): Promise<Domicilio> {
-    const localidad = await this.localidadRepository.getLocalidad(domicilioDto.localidadID);
-    if (!localidad) throw CustomError.notFound('La localidad no existe');
-
-    return new Domicilio(
-      0,
-      domicilioDto.calle,
-      domicilioDto.numero,
-      new Localidad(
-        localidad.getID(),
-        localidad.getCodigoPostal(),
-        localidad.getNombre(),
-        new Provincia(
-          localidad.getProvincia().getID(),
-          localidad.getProvincia().getNombre()
-        )
-      ),
-      domicilioDto.piso,
-      domicilioDto.depto,
-      domicilioDto.descripcion
-    );
-  }
-
-  private async mapToUpdateDomicilio(
-    existingDomicilio: Domicilio,
-    updateDomicilio: UpdateDomicilioDto
-  ): Promise<Domicilio> {
-    existingDomicilio.setCalle(updateDomicilio.calle);
-    existingDomicilio.setNumero(updateDomicilio.numero);
-    existingDomicilio.setPiso(updateDomicilio.piso);
-    existingDomicilio.setDepto(updateDomicilio.depto);
-    existingDomicilio.setDescripcion(updateDomicilio.descripcion);
-
-    const localidad = await this.localidadRepository.getLocalidad(updateDomicilio.localidadID);
-    if (!localidad) throw CustomError.notFound('La localidad no existe');
-    existingDomicilio.setLocalidad(
-      new Localidad(
-        localidad.getID(),
-        localidad.getCodigoPostal(),
-        localidad.getNombre(),
-        new Provincia(
-          localidad.getProvincia().getID(),
-          localidad.getProvincia().getNombre()
-        )
-      )
-    );
-
-    return existingDomicilio;
   }
 }
