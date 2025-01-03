@@ -6,7 +6,7 @@ import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
 import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
 import { EnvioMapper } from '../mappers/envio.mapper';
-import { EstadoEnvioEnum } from '../../types/estadoEnvio.type';
+import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
 import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
 

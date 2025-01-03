@@ -1,5 +1,7 @@
+import { randomInt } from 'crypto';
+import { EstadoEnvioEnum } from '../types/estadoEnvio.enum';
 import { type Domicilio } from './domicilio.entity';
-import { type EstadoEnvio } from './estadoEnvio.entity';
+import { EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
 
 export const PESO_GRAMOS_MAX = 20000;
@@ -19,7 +21,10 @@ export class Envio {
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
-  ) {}
+  ) {
+    this.nroSeguimiento ||= randomInt(10000000, 99999999);
+    this.estado ||= new EstadoEnvio(EstadoEnvioEnum.Confirmado, '');
+  }
 
   // Getters
   public getNroSeguimiento(): number {
