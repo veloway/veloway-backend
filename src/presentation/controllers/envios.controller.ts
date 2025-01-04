@@ -2,9 +2,11 @@ import { type Request, type Response } from 'express';
 import { GetEnvioDto } from '../../application/dtos/envio/getEnvio.dto';
 import { PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
 import { HandleError } from '../errors/handle.error';
-import { type EnviosService } from '../../application/services/envios.service';
+import { EnviosService } from '../../application/services/envios.service';
 import { UpdateEnvioDto } from '../../application/dtos/envio/udpateEnvio.dto';
+import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 
+@Injectable()
 export class EnviosController {
   constructor(
     private readonly enviosService: EnviosService

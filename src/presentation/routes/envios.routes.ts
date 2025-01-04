@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { enviosController } from '../../infrastructure/dependencies/envios.dependencies';
+import { enviosController } from '../../infrastructure/dependencies/container.dependency';
 
 export class EnviosRoutes {
   static get routes(): Router {

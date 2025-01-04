@@ -1,8 +1,10 @@
-import { type PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { type Envio } from '../../domain/entities/envio.entity';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
+import { Injectable } from '../dependencies/injectable.dependency';
 
+@Injectable()
 export class EnviosRepository implements IEnviosRepository {
   constructor(private readonly prisma: PrismaClient) {}
 

@@ -1,12 +1,12 @@
-import { type PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
+import { Injectable } from '../dependencies/injectable.dependency';
 
+@Injectable()
 export class LocalidadesRepository implements ILocalidadRepository {
-  constructor(private readonly prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
+  constructor(private readonly prisma: PrismaClient) {}
 
   getAll: () => Promise<Localidad[]>; // TODO: Implementar
   getAllByProvincia: (provinciaID: number) => Promise<Localidad[]>;

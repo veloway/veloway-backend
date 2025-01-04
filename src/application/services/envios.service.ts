@@ -2,20 +2,23 @@ import { randomInt } from 'crypto';
 import { PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
+import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
+import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
 import { type PostEnvioDto } from '../dtos/envio/postEnvio.dto';
 import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
 import { CustomError } from '../errors/custom.errors';
 import { EnvioMapper } from '../mappers/envio.mapper';
 import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
-import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
-import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
+import { Inject, Injectable } from '../../infrastructure/dependencies/injectable.dependency';
+import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 
+@Injectable()
 export class EnviosService {
   constructor (
-    private readonly enviosRepository: IEnviosRepository,
-    private readonly domicilioRepository: IDomicilioRepository,
-    private readonly localidadRepository: ILocalidadRepository,
-    private readonly clienteRepository: IUsuarioRepository
+    @Inject(REPOSITORIES_TOKENS.IEnviosRepository) private readonly enviosRepository: IEnviosRepository,
+    @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository) private readonly domicilioRepository: IDomicilioRepository,
+    @Inject(REPOSITORIES_TOKENS.ILocalidadesRepository) private readonly localidadRepository: ILocalidadRepository,
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository
   ) {}
 
   public async getAll(): Promise<Envio[]> {
