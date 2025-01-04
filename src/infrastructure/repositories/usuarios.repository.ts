@@ -1,11 +1,11 @@
-import { type PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { type IUsuarioRepository } from '../../domain/repositories/usuario.interface';
+import { Injectable } from '../dependencies/injectable.dependency';
 
+@Injectable()
 export class UsuariosRepository implements IUsuarioRepository {
-  constructor(private readonly prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
+  constructor(private readonly prisma: PrismaClient) {}
 
   getall: () => Promise<Usuario[]>;
 

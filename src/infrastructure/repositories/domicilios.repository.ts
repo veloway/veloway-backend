@@ -1,11 +1,11 @@
-import { type PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
+import { Injectable } from '../dependencies/injectable.dependency';
 
+@Injectable()
 export class DomiciliosRepository implements IDomicilioRepository {
-  constructor(private readonly prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
+  constructor(private readonly prisma: PrismaClient) {}
 
   getall: () => Promise<Domicilio[]>;
   delete: (id: number) => Promise<Domicilio>;

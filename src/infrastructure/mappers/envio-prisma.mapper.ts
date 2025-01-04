@@ -4,7 +4,7 @@ import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
-import { type usuarios, type Prisma } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 
 interface IEnviosPrismaMapper extends Prisma.enviosGetPayload<
 {
@@ -35,72 +35,80 @@ interface IEnviosPrismaMapper extends Prisma.enviosGetPayload<
 
 export class EnvioPrismaMapper {
   public static fromPrismaToEntity(envio: IEnviosPrismaMapper): Envio {
+    const {
+      nro_seguimiento,
+      descripcion,
+      fecha,
+      hora,
+      peso_gramos,
+      monto,
+      estados_envio,
+      domicilios_envios_id_origenTodomicilios: origen,
+      domicilios_envios_id_destinoTodomicilios: destino,
+      usuarios
+    } = envio;
+
     return new Envio(
-      Number(envio.nro_seguimiento.toString()),
-      envio.descripcion,
-      envio.fecha,
-      envio.hora,
-      parseFloat(envio.peso_gramos.toString()),
-      Number(envio.monto),
+      Number(nro_seguimiento.toString()),
+      descripcion,
+      fecha,
+      hora,
+      parseFloat(peso_gramos.toString()),
+      Number(monto),
       new EstadoEnvio(
-        envio.estados_envio.id_estado,
-        envio.estados_envio.nombre
+        estados_envio.id_estado,
+        estados_envio.nombre
       ),
-      this.mapDomicilio(
-        envio.domicilios_envios_id_origenTodomicilios,
-        envio.domicilios_envios_id_origenTodomicilios.localidades
+      new Domicilio(
+        origen.id_domicilio,
+        origen.calle,
+        origen.numero,
+        new Localidad(
+          origen.localidades.id_localidad,
+          origen.localidades.codigo_postal,
+          origen.localidades.nombre,
+          new Provincia(
+            origen.localidades.provincias.id_provincia,
+            origen.localidades.provincias.nombre
+          )
+        ),
+        origen.piso,
+        origen.depto,
+        origen.descripcion
+      )
+      ,
+      new Domicilio(
+        destino.id_domicilio,
+        destino.calle,
+        destino.numero,
+        new Localidad(
+          destino.localidades.id_localidad,
+          destino.localidades.codigo_postal,
+          destino.localidades.nombre,
+          new Provincia(
+            destino.localidades.provincias.id_provincia,
+            destino.localidades.provincias.nombre
+          )
+        ),
+        destino.piso,
+        destino.depto,
+        destino.descripcion
       ),
-      this.mapDomicilio(
-        envio.domicilios_envios_id_destinoTodomicilios,
-        envio.domicilios_envios_id_destinoTodomicilios.localidades
-      ),
-      this.mapUsuario(envio.usuarios)
+      new Usuario(
+        usuarios.id_usuario,
+        usuarios.dni,
+        usuarios.email,
+        usuarios.password,
+        usuarios.fecha_nac,
+        usuarios.nombre,
+        usuarios.apellido,
+        usuarios.es_conductor,
+        usuarios.telefono
+      )
     );
   }
 
   public static fromPrismaArrayToEntity(envios: IEnviosPrismaMapper[]): Envio[] {
     return envios.map((envio) => this.fromPrismaToEntity(envio));
-  }
-
-  private static mapDomicilio(
-    domicilio: Prisma.domiciliosGetPayload<{
-      include: { localidades: { include: { provincias: true } } }
-    }>,
-    localidad: Prisma.localidadesGetPayload<{
-      include: { provincias: true }
-    }>
-
-  ): Domicilio {
-    return new Domicilio(
-      domicilio.id_domicilio,
-      domicilio.calle,
-      domicilio.numero,
-      new Localidad(
-        localidad.id_localidad,
-        localidad.codigo_postal,
-        localidad.nombre,
-        new Provincia(
-          localidad.provincias.id_provincia,
-          localidad.provincias.nombre
-        )
-      ),
-      domicilio.piso,
-      domicilio.depto,
-      domicilio.descripcion
-    );
-  }
-
-  private static mapUsuario(usuario: usuarios): Usuario {
-    return new Usuario(
-      usuario.id_usuario,
-      usuario.dni,
-      usuario.email,
-      usuario.password,
-      usuario.fecha_nac,
-      usuario.nombre,
-      usuario.apellido,
-      usuario.es_conductor,
-      usuario.telefono
-    );
   }
 }
