@@ -9,6 +9,8 @@ import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
 import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
+import { LocalidadesService } from '../../application/services/localidades.service';
+import { LocalidadesController } from '../../presentation/controllers/localidades.controller';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -19,7 +21,10 @@ container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: Usuarios
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
+container.register(LocalidadesService, { useClass: LocalidadesService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
 export const enviosController = container.resolve(EnviosController);
+container.register(LocalidadesController, { useClass: LocalidadesController });
+export const localidadesController = container.resolve(LocalidadesController);
