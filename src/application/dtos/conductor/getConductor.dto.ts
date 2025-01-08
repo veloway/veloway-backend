@@ -1,7 +1,7 @@
 import { type Conductor } from '../../../domain/entities/conductor.entity';
 import { postConductorValidation } from '../../validations/conductor/postConductor.validation';
 
-export class PostConductorDto {
+export class GetConductorDto {
   private constructor(
     public compartirFichaMedica: boolean
     /* foreign que necesito
@@ -13,14 +13,14 @@ export class PostConductorDto {
 */
   ) {}
 
-  public static create(conductor: Conductor): [string?, PostConductorDto?] {
+  public static create(conductor: Conductor): [string?, GetConductorDto?] {
     const conductorValidation = postConductorValidation(conductor);
 
     if (!conductorValidation.success) {
       return [JSON.parse(conductorValidation.error.message)];
     }
 
-    return [undefined, new PostConductorDto(
+    return [undefined, new GetConductorDto(
       conductorValidation.data.compartirFichaMedica
       /* foreign que necesito
         public dni: PostUsuariosDto,

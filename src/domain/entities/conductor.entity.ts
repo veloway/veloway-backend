@@ -1,19 +1,43 @@
+import { type Envio } from './envio.entity';
+import { type EstadoConductor } from './estadoConductor.entity';
+import { Usuario } from './usuario.entity';
 
-export class Conductor {
+export class Conductor extends Usuario {
   constructor(
-    private readonly idConductor: number,
-    private compartirFichaMedica: boolean
+    private readonly idConductor: string,
+    private compartirFichaMedica: boolean,
+    private estadoConductor: EstadoConductor,
+    id: string,
+    dni: number,
+    email: string,
+    password: string,
+    fechaNac: Date,
+    nombre: string,
+    apellido: string,
+    esConductor: boolean,
+    telefono?: string | null,
+    envios?: Envio[] | null
   /* foreign que necesito
-    private dni: Usuarios,
-    private idEstado: Estaado_conductores,
-    private numeroLicencia: Licencias,
-    private idFichaMedica: Fichas_medicas,
     private patente: Vehiculos,
 */
-  ) {}
+  ) {
+    super(
+      id,
+      dni,
+      email,
+      password,
+      fechaNac,
+      nombre,
+      apellido,
+      esConductor,
+      telefono,
+      envios
+    );
+    this.idConductor = id;
+  }
 
   // Getters
-  public getIdConductor(): number {
+  public getIdConductor(): string {
     return this.idConductor;
   }
 
@@ -21,23 +45,11 @@ export class Conductor {
     return this.compartirFichaMedica;
   }
 
+  public getEstadoConductor(): EstadoConductor {
+    return this.estadoConductor;
+  }
+
   /*
-  public getDni(): Usuarios {
-    return this.dni;
-  }
-
-  public getIdEstado(): Estado_conductores {
-    return this.idEstado;
-  }
-
-  public getNumeroLicencia(): Licencias {
-    return this.NumeroLIcencia;
-  }
-
-  public getIdFichaMedica(): Fichas_medicas {
-    return this.idFichaMedica;
-  }
-
   public getPatente(): Vehiculos {
     return this.patente;
   }
@@ -46,23 +58,11 @@ export class Conductor {
   public setCompartirFichaMedica(compartirFichaMedica: boolean): void {
     this.compartirFichaMedica = compartirFichaMedica;
   }
+
+  public setEstadoConductor(estadoConductor: EstadoConductor): void {
+    this.estadoConductor = estadoConductor;
+  }
 /*
-  public getDni(dni: Usuarios): void {
-    this.dni = dni;
-  }
-
-  public getIdEstado(idEstado: Estado_conductores): void {
-    this.idEstado = idEstado;
-  }
-
-  public getNumeroLicencia(numeroLicencia: Licencias): void {
-    this.NumeroLIcencia = numeroLicencia;
-  }
-
-  public getIdFichaMedica(fichaMedica: Fichas_medicas): void {
-    this.idFichaMedica = fichaMedica;
-  }
-
   public getPatente(patente: Vehiculos): void {
     this.patente = patente;
   }

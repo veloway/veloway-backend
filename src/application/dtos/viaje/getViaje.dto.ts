@@ -1,39 +1,30 @@
-import { type Checkpoint } from '../../../domain/entities/checkpoint.entity';
-import { type Conductor } from '../../../domain/entities/conductor.entity';
-import { type Envio } from '../../../domain/entities/envio.entity';
+import { type Coordenadas } from '../../../domain/entities/coordenadas.entity';
 import { type Viaje } from '../../../domain/entities/viaje.entity';
-import { getViajeValidation } from '../../validations/viaje/getViaje.validation';
 
 export class GetViajeDto {
   private constructor(
     public checkpointActual: number,
-    public fechaFin: Date,
-    public fechaInicio: Date,
-    public idConductor: Conductor,
-    public nroSeguimiento: Envio,
-    public origenCord: Checkpoint,
-    public destinoCord: Checkpoint
+    public fechaFin: string,
+    public fechaInicio: string,
+    public idConductor: number,
+    public nroSeguimiento: number,
+    public origenCord: Coordenadas,
+    public destinoCord: Coordenadas
   ) {}
 
-  public static create(viaje: Viaje): [string?, GetViajeDto?] {
-    const viajeValidation = getViajeValidation(viaje);
+  public static create(viaje: Viaje): GetViajeDto {
+    const fechaFin = viaje.getFechaFin().toISOString().split('T')[0];
+    const fechaInicio = viaje.getFechaInicio().toISOString().split('T')[0];
 
-    if (!viajeValidation.success) {
-      return [JSON.parse(viajeValidation.error.message)];
-    }
-
-    const fechaFin = new Date(viajeValidation.data.fechaFin);
-    const fechaInicio = new Date(viajeValidation.data.fechaInicio);
-
-    return [undefined, new GetViajeDto(
+    return new GetViajeDto(
       viaje.getCheckpointActual(),
       fechaFin,
       fechaInicio,
-      viaje.getConductor(),
-      viaje.getNroSeguimiento(),
+      viaje.getConductor().getIdConductor(),
+      viaje.getEnvio().getNroSeguimiento(),
       viaje.getOrigenCord(),
       viaje.getDestinoCord()
-    )];
+    );
   }
 }
 

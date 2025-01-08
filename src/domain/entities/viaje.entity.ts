@@ -1,17 +1,17 @@
-import { type Checkpoint } from './checkpoint.entity';
 import { type Envio } from './envio.entity';
 import { type Conductor } from './conductor.entity';
+import { type Coordenadas } from './coordenadas.entity';
 
 export class Viaje {
   constructor(
     private readonly idViaje: number,
     private checkpointActual: number,
-    private fechaInicio: Date,
-    private fechaFin: Date,
+    private fechaInicio: Date | null,
+    private fechaFin: Date | null,
     private idConductor: Conductor,
-    private nroSeguimiento: Envio,
-    private origenCord: Checkpoint,
-    private destinoCord: Checkpoint
+    private envio: Envio,
+    private origenCord: Coordenadas,
+    private destinoCord: Coordenadas
   ) {}
 
   // Getters
@@ -23,11 +23,11 @@ export class Viaje {
     return this.checkpointActual;
   }
 
-  public getFechaInicio(): Date {
+  public getFechaInicio(): Date | null {
     return this.fechaInicio;
   }
 
-  public getFechaFin(): Date {
+  public getFechaFin(): Date | null {
     return this.fechaFin;
   }
 
@@ -36,15 +36,15 @@ export class Viaje {
   }
 
 
-  public getNroSeguimiento(): Envio {
-    return this.nroSeguimiento;
+  public getEnvio(): Envio {
+    return this.envio;
   }
 
-  public getOrigenCord(): Checkpoint {
+  public getOrigenCord(): Coordenadas {
     return this.origenCord;
   }
 
-  public getDestinoCord(): Checkpoint {
+  public getDestinoCord(): Coordenadas {
     return this.destinoCord;
   }
 
@@ -66,15 +66,15 @@ export class Viaje {
   }
 
 
-  public setNroSeguimiento(nroSeguimiento: Envio): void {
-    this.nroSeguimiento = nroSeguimiento;
+  public setEnvio(envio: Envio): void {
+    this.envio = envio;
   }
 
-  public setOrigenCord(origenCord: Checkpoint): void {
+  public setOrigenCord(origenCord: Coordenadas): void {
     this.origenCord = origenCord;
   }
 
-  public setDestinoCord(destinoCord: Checkpoint): void {
+  public setDestinoCord(destinoCord: Coordenadas): void {
     this.destinoCord = destinoCord;
   }
 }
