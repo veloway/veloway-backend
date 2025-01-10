@@ -30,7 +30,7 @@ export class EnvioMapper {
     return new Envio(
       0,
       postEnvioDto.descripcion,
-      postEnvioDto.fecha,
+      undefined, // fecha actual por defecto
       postEnvioDto.hora,
       postEnvioDto.pesoGramos,
       undefined, // monto calculado en el constructor

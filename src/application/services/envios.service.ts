@@ -1,5 +1,5 @@
 import { randomInt } from 'crypto';
-import { PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
+import { HORA_FIN, HORA_INICIO, PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
@@ -74,8 +74,9 @@ export class EnviosService {
       throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
     }
 
-    envio.verificarRangoHorario();
+    if (!envio.verificarRangoHorario()) throw CustomError.badRequest(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
 
+    envio.verificarReserva();
     // TODO: Implementar crear viaje() para el envio
 
     // Setea los domicilios con sus IDs si existen, sino los crea

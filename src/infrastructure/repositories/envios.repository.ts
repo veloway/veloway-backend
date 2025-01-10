@@ -137,6 +137,7 @@ export class EnviosRepository implements IEnviosRepository {
         fecha: envio.getFecha(),
         hora: envio.getHora(),
         peso_gramos: envio.getPesoGramos(),
+        reserva: envio.getReserva(),
         id_estado: envio.getEstado().getID(),
         id_cliente: envio.getCliente().getID(),
         id_origen: envio.getOrigen().getID(),

@@ -3,17 +3,18 @@ import { EstadoEnvioEnum } from '../types/estadoEnvio.enum';
 import { type Domicilio } from './domicilio.entity';
 import { EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
+import { DateTime } from 'luxon';
 
 export const PESO_GRAMOS_MAX = 20000;
 const PRECIO_CADA_100_GRAMOS = 500;
-const HORA_INICIO = 8;
-const HORA_FIN = 18;
+export const HORA_INICIO = 8;
+export const HORA_FIN = 18;
 
 export class Envio {
   constructor(
     private nroSeguimiento: number,
     private descripcion: string,
-    private fecha: Date,
+    private fecha: Date = DateTime.now().setZone('America/Argentina/Buenos_Aires').toJSDate(),
     private hora: Date,
     private pesoGramos: number,
     private monto: number = this.calcularMonto(),
@@ -121,16 +122,28 @@ export class Envio {
     return this.pesoGramos * PRECIO_CADA_100_GRAMOS / 100;
   }
 
-  /* Validar que la hora en que se quiera realizar el envio este entre las 8:00 y 18:00,
-       si no queda para el dia siguiente entre el mismo rango horario. */
-  public verificarRangoHorario() {
+  // Verificacion del rango horario que viene en el json
+  public verificarRangoHorario(): boolean {
     if (this.hora.getUTCHours() < HORA_INICIO || this.hora.getUTCHours() > HORA_FIN) {
-      const newDate = new Date(this.getFecha().getTime() + 86400000); // 86400000 = 24 horas en milisegundos (1 dia)
-      const newHour = new Date(this.getFecha());
-      newHour.setUTCHours(8, 0, 0, 0);
+      return false;
+    }
+    return true;
+  }
 
-      this.setFecha(newDate);
-      this.setHora(newHour);
+  /* Si se manda un rango horario valido se verifica que:
+    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual
+    2) Si el envio es reserva, se verifica la fecha:
+      - Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
+      - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia
+  */
+  public verificarReserva(): void {
+    if (!this.reserva) {
+      console.log('Fecha y Hora actual: ', this.fecha);
+      this.hora = this.fecha; // Hora de la fecha actual por defecto
+      return;
+    }
+    if (this.fecha.getUTCHours() < HORA_INICIO || this.fecha.getUTCHours() > HORA_FIN) {
+      this.fecha.setDate(this.fecha.getDate() + 1);
     }
   }
 
