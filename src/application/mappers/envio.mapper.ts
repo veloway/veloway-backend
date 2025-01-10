@@ -1,16 +1,14 @@
 import { type PostEnvioDto } from '../../application/dtos/envio/postEnvio.dto';
+import { type Domicilio } from '../../domain/entities/domicilio.entity';
 import { Envio } from '../../domain/entities/envio.entity';
-import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
 import { type Localidad } from '../../domain/entities/localidad.entity';
 import { type Usuario } from '../../domain/entities/usuario.entity';
 import { type UpdateEnvioDto } from '../dtos/envio/udpateEnvio.dto';
-import { DomicilioMapper } from './domicilio.mapper';
 
 interface IFromPostDtoToEntity {
   postEnvioDto: PostEnvioDto
-  nroSeguimiento: number
-  localidadOrigen: Localidad
-  localidadDestino: Localidad
+  origen: Domicilio
+  destino: Domicilio
   cliente: Usuario
 }
 
@@ -25,22 +23,18 @@ export class EnvioMapper {
   public static fromPostDtoToEntity(
     {
       postEnvioDto,
-      nroSeguimiento,
-      localidadOrigen,
-      localidadDestino,
+      origen,
+      destino,
       cliente
     }: IFromPostDtoToEntity): Envio {
-    const origen = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.origen, localidadOrigen);
-    const destino = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.destino, localidadDestino);
-
     return new Envio(
-      nroSeguimiento,
+      0,
       postEnvioDto.descripcion,
       postEnvioDto.fecha,
       postEnvioDto.hora,
       postEnvioDto.pesoGramos,
-      0,
-      new EstadoEnvio(0, ''),
+      undefined, // monto calculado en el constructor
+      undefined, // estado por defecto
       origen,
       destino,
       cliente

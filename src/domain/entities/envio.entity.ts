@@ -11,19 +11,18 @@ const HORA_FIN = 18;
 
 export class Envio {
   constructor(
-    private readonly nroSeguimiento: number,
+    private nroSeguimiento: number,
     private descripcion: string,
     private fecha: Date,
     private hora: Date,
     private pesoGramos: number,
-    private monto: number,
-    private estado: EstadoEnvio,
+    private monto: number = this.calcularMonto(),
+    private estado: EstadoEnvio = new EstadoEnvio(EstadoEnvioEnum.Confirmado, ''),
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
   ) {
     this.nroSeguimiento ||= randomInt(10000000, 99999999);
-    this.estado ||= new EstadoEnvio(EstadoEnvioEnum.Confirmado, '');
   }
 
   // Getters
@@ -68,6 +67,10 @@ export class Envio {
   }
 
   // Setters
+  public setNroSeguimiento(nroSeguimiento: number): void {
+    this.nroSeguimiento = nroSeguimiento;
+  }
+
   public setDescripcion(descripcion: string): void {
     this.descripcion = descripcion;
   }
