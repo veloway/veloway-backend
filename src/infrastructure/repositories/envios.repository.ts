@@ -3,6 +3,7 @@ import { type Envio } from '../../domain/entities/envio.entity';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
 import { Injectable } from '../dependencies/injectable.dependency';
+import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
 
 @Injectable()
 export class EnviosRepository implements IEnviosRepository {
@@ -118,6 +119,7 @@ export class EnviosRepository implements IEnviosRepository {
         hora: envio.getHora(),
         peso_gramos: envio.getPesoGramos(),
         monto: envio.getMonto(),
+        reserva: envio.getReserva(),
         id_cliente: envio.getCliente().getID(),
         id_estado: envio.getEstado().getID(),
         id_origen: envio.getOrigen().getID(),
@@ -199,6 +201,17 @@ export class EnviosRepository implements IEnviosRepository {
       },
       data: {
         id_estado: estadoEnvioID
+      }
+    });
+  }
+
+  public async cancelarEnvio(nroSeguimiento: number): Promise<void> {
+    await this.prisma.envios.update({
+      where: {
+        nro_seguimiento: nroSeguimiento
+      },
+      data: {
+        id_estado: EstadoEnvioEnum.Cancelado
       }
     });
   }

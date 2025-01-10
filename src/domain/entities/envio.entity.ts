@@ -17,6 +17,7 @@ export class Envio {
     private hora: Date,
     private pesoGramos: number,
     private monto: number = this.calcularMonto(),
+    private reserva: boolean = false,
     private estado: EstadoEnvio = new EstadoEnvio(EstadoEnvioEnum.Confirmado, ''),
     private origen: Domicilio,
     private destino: Domicilio,
@@ -48,6 +49,10 @@ export class Envio {
 
   public getMonto(): number {
     return this.monto;
+  }
+
+  public getReserva(): boolean {
+    return this.reserva;
   }
 
   public getEstado(): EstadoEnvio {
@@ -89,6 +94,10 @@ export class Envio {
 
   public setMonto(monto: number): void {
     this.monto = monto;
+  }
+
+  public setReserva(reserva: boolean): void {
+    this.reserva = reserva;
   }
 
   public setEstado(estado: EstadoEnvio): void {

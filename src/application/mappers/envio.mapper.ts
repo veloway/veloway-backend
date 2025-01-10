@@ -34,6 +34,7 @@ export class EnvioMapper {
       postEnvioDto.hora,
       postEnvioDto.pesoGramos,
       undefined, // monto calculado en el constructor
+      postEnvioDto.reserva,
       undefined, // estado por defecto
       origen,
       destino,
@@ -69,6 +70,7 @@ export class EnvioMapper {
       updateEnvioDto.hora,
       updateEnvioDto.pesoGramos,
       existingEnvio.calcularMonto(),
+      existingEnvio.getReserva(),
       existingEnvio.getEstado(),
       existingEnvio.getOrigen(),
       existingEnvio.getDestino(),

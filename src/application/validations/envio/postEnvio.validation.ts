@@ -6,6 +6,7 @@ export const PostEnvioSchema = z.object({
   fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha en formato YYYY-MM-DD'),
   hora: z.string().regex(/^\d{2}:\d{2}$/, 'Hora en formato HH:mm'),
   pesoGramos: z.number().int().positive(),
+  reserva: z.boolean(),
   origen: PostDomicilioSchema,
   destino: PostDomicilioSchema,
   cliente: z.string()

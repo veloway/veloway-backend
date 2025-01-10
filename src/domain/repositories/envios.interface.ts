@@ -8,4 +8,5 @@ export interface IEnviosRepository {
   update: (envio: Envio) => Promise<Envio>
   buscarEnvioIgual: (envio: Envio) => Promise<boolean>
   updateEstadoEnvio: (numeroSeguimiento: number, estadoEnvioID: number) => Promise<void>
+  cancelarEnvio: (nroSeguimiento: number) => Promise<void>
 }

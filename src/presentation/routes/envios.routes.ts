@@ -9,9 +9,9 @@ export class EnviosRoutes {
     router.get('/cliente/:clienteID', enviosController.getAllByClienteId);
     router.get('/nro-seguimiento/:nroSeguimiento', enviosController.getEnvio);
     router.post('/create', enviosController.create);
-    router.put('/update/:nroSeguimiento', enviosController.update);
-    router.patch('/update-estado/:nroSeguimiento', enviosController.updateEstadoEnvio);
-
+    router.put('/update/nro-seguimiento/:nroSeguimiento', enviosController.update);
+    router.patch('/update-estado/nro-seguimiento/:nroSeguimiento', enviosController.updateEstadoEnvio);
+    router.patch('/cancelar/nro-seguimiento/:nroSeguimiento', enviosController.cancelarEnvio);
     return router;
   }
 }

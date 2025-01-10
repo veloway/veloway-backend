@@ -135,6 +135,16 @@ export class EnviosService {
     await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
   }
 
+  public async cancelarEnvio(nroSeguimiento: number): Promise<void> {
+    const envio = await this.enviosRepository.getEnvio(nroSeguimiento);
+    if (!envio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
+
+    if (envio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
+      throw CustomError.badRequest(`No se puede cancelar un envío en estado: ${envio.getEstado().getNombre()}`);
+    }
+    await this.enviosRepository.cancelarEnvio(nroSeguimiento);
+  }
+
   private async getOrCreateDomicilio(domicilio: Domicilio): Promise<Domicilio> {
     const domicilioExistente = await this.domicilioRepository.getDomicilioByProperties(domicilio);
     if (domicilioExistente) return domicilioExistente;

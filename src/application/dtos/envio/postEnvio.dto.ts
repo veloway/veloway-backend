@@ -7,6 +7,7 @@ export class PostEnvioDto {
     public fecha: Date,
     public hora: Date,
     public pesoGramos: number,
+    public reserva: boolean,
     public origen: PostDomicilioDto,
     public destino: PostDomicilioDto,
     public clienteID: string
@@ -28,6 +29,7 @@ export class PostEnvioDto {
       fecha,
       hora,
       envioValidation.data.pesoGramos,
+      envioValidation.data.reserva,
       envioValidation.data.origen,
       envioValidation.data.destino,
       envioValidation.data.cliente
