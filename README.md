@@ -1,16 +1,15 @@
 # Veloway API
 
-## Description
-Nuestra API brinda un servicio donde se podra realizar y consultar envios de paquetes a domicilio.
+## Descripción
+Nuestra API brinda un servicio donde se podrá realizar y consultar envios a domicilio.
 
-## Enpoints
+## Endpoints
 ### Para realizar un envio
 - POST /api/envios/create
 - Request Body:
 ```json
 {
   "descripcion": "Envio de paquete",
-  "fecha": "2024-12-21",
   "hora": "19:30",
   "pesoGramos": 500,
   "origen": {
@@ -37,5 +36,5 @@ Nuestra API brinda un servicio donde se podra realizar y consultar envios de paq
 - GET /api/envios/nro-seguimiento/{nro_seguimiento}
 
 ### Para obtener todas las localidades
-- GET /api/localidades/all
+- GET /api/localidades
 

@@ -42,6 +42,7 @@ export class EnvioPrismaMapper {
       hora,
       peso_gramos,
       monto,
+      reserva,
       estados_envio,
       domicilios_envios_id_origenTodomicilios: origen,
       domicilios_envios_id_destinoTodomicilios: destino,
@@ -55,6 +56,7 @@ export class EnvioPrismaMapper {
       hora,
       parseFloat(peso_gramos.toString()),
       Number(monto),
+      reserva,
       new EstadoEnvio(
         estados_envio.id_estado,
         estados_envio.nombre

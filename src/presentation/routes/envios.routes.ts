@@ -5,13 +5,13 @@ export class EnviosRoutes {
   static get routes(): Router {
     const router = Router();
 
-    router.get('/all', enviosController.getAll);
-    router.get('/all/cliente/:clienteID', enviosController.getAllByClienteId);
+    router.get('/', enviosController.getAll);
+    router.get('/cliente/:clienteID', enviosController.getAllByClienteId);
     router.get('/nro-seguimiento/:nroSeguimiento', enviosController.getEnvio);
     router.post('/create', enviosController.create);
-    router.put('/update/:nroSeguimiento', enviosController.update);
-    router.patch('/update-estado/:nroSeguimiento', enviosController.updateEstadoEnvio);
-
+    router.put('/update/nro-seguimiento/:nroSeguimiento', enviosController.update);
+    router.patch('/update-estado/nro-seguimiento/:nroSeguimiento', enviosController.updateEstadoEnvio);
+    router.patch('/cancelar/nro-seguimiento/:nroSeguimiento', enviosController.cancelarEnvio);
     return router;
   }
 }
