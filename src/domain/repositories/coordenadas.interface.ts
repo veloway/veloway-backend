@@ -1,6 +1,7 @@
-import { type Coordenadas } from '../entities/coordenadas.entity';
+import { type Coordenada } from '../entities/coordenada.entity';
 
-export interface ICoordenadasasRepository {
-  getAll: () => Promise<Coordenadas[]>
-  getCoordendas: (idCoordenadas: number) => Promise<Coordenadas | null>
+export interface ICoordenadaRepository {
+  create: (coordenada: Coordenada) => Promise<number>
+  getAll: () => Promise<Coordenada[]>
+  getCoordenadas: (idCoordenadas: number) => Promise<Coordenada | null>
 }

@@ -1,6 +1,5 @@
 import { type Envio } from './envio.entity';
-import { type Conductor } from './conductor.entity';
-import { type Coordenadas } from './coordenadas.entity';
+import { type Coordenadas } from './coordenada.entity';
 
 export class Viaje {
   constructor(
@@ -8,7 +7,7 @@ export class Viaje {
     private checkpointActual: number,
     private fechaInicio: Date | null,
     private fechaFin: Date | null,
-    private idConductor: Conductor,
+    private idConductor: string,
     private envio: Envio,
     private origenCord: Coordenadas,
     private destinoCord: Coordenadas
@@ -31,7 +30,7 @@ export class Viaje {
     return this.fechaFin;
   }
 
-  public getConductor(): Conductor {
+  public getIdConductor(): string {
     return this.idConductor;
   }
 
@@ -61,7 +60,7 @@ export class Viaje {
     this.fechaFin = fechaFin;
   }
 
-  public setConductor(conductor: Conductor): void {
+  public setIdConductor(conductor: string): void {
     this.idConductor = conductor;
   }
 

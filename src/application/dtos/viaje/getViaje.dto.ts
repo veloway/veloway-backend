@@ -1,4 +1,4 @@
-import { type Coordenadas } from '../../../domain/entities/coordenadas.entity';
+import { type Coordenadas } from '../../../domain/entities/coordenada.entity';
 import { type Viaje } from '../../../domain/entities/viaje.entity';
 
 export class GetViajeDto {
@@ -6,21 +6,21 @@ export class GetViajeDto {
     public checkpointActual: number,
     public fechaFin: string,
     public fechaInicio: string,
-    public idConductor: number,
+    public idConductor: string,
     public nroSeguimiento: number,
     public origenCord: Coordenadas,
     public destinoCord: Coordenadas
   ) {}
 
   public static create(viaje: Viaje): GetViajeDto {
-    const fechaFin = viaje.getFechaFin().toISOString().split('T')[0];
-    const fechaInicio = viaje.getFechaInicio().toISOString().split('T')[0];
+    const fechaFin = viaje.getFechaFin()?.toISOString().split('T')[0] || '';
+    const fechaInicio = viaje.getFechaInicio()?.toISOString().split('T')[0] || '';
 
     return new GetViajeDto(
       viaje.getCheckpointActual(),
       fechaFin,
       fechaInicio,
-      viaje.getConductor().getIdConductor(),
+      viaje.getIdConductor(),
       viaje.getEnvio().getNroSeguimiento(),
       viaje.getOrigenCord(),
       viaje.getDestinoCord()

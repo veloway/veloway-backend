@@ -148,13 +148,13 @@ VALUES
 
 
 -- Domicilios
-INSERT INTO domicilios (id_domicilio, calle, numero, piso, depto, descripcion, id_localidad, id_usuario)
+INSERT INTO domicilios (calle, numero, piso, depto, descripcion, id_localidad, id_usuario)
 VALUES 
-    (1, 'Av. Rivadavia', 1234, NULL, NULL, 'Casa principal', 1, '123e4567-e89b-12d3-a456-426614174000'),
-    (2, 'San Martín', 5678, 3, 'B', 'Departamento', 2, '987f6543-e21c-54d3-b789-426614174001'),
-    (3, 'Córdoba', 91011, NULL, NULL, 'Casa secundaria', 3, '456e7890-e21c-78d3-b456-426614174002'),
-    (4, 'Santa Fe', 1213, 2, 'A', 'Oficina', 1, '789a1234-e21c-98d3-b123-426614174003'),
-    (5, 'Mendoza', 1387, 3, 'A', 'Oficina', 1, NULL);
+    ('Av. Rivadavia', 1234, NULL, NULL, 'Casa principal', 1, '123e4567-e89b-12d3-a456-426614174000'),
+    ('San Martín', 5678, 3, 'B', 'Departamento', 2, '987f6543-e21c-54d3-b789-426614174001'),
+    ('Córdoba', 91011, NULL, NULL, 'Casa secundaria', 3, '456e7890-e21c-78d3-b456-426614174002'),
+    ('Santa Fe', 1213, 2, 'A', 'Oficina', 1, '789a1234-e21c-98d3-b123-426614174003'),
+    ('Mendoza', 1387, 3, 'A', 'Oficina', 1, NULL);
 
 
 -- Marcas

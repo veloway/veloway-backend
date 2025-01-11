@@ -1,4 +1,4 @@
-import { Coordenadas } from './coordenadas.entity';
+import { Coordenadas } from './coordenada.entity';
 import { type Viaje } from './viaje.entity';
 
 export class Checkpoint extends Coordenadas {

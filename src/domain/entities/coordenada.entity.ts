@@ -1,12 +1,12 @@
-export class Coordenadas {
+export class Coordenada {
   constructor(
-    private readonly idCoordenadas: number,
+    private idCoordenadas: number,
     private latitud: number,
     private longitud: number
   ) {}
 
   // Geters
-  public getIdCoordenas(): number {
+  public getIdCoordenadas(): number {
     return this.idCoordenadas;
   }
 
@@ -19,6 +19,10 @@ export class Coordenadas {
   }
 
   // Setters
+  public setIdCoordenada(idCoordenadas: number): void {
+    this.idCoordenadas = idCoordenadas;
+  }
+
   public setLatitud(latitud: number): void {
     this.latitud = latitud;
   }

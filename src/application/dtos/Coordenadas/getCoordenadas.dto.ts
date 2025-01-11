@@ -1,4 +1,4 @@
-import { type Coordenadas } from '../../../domain/entities/coordenadas.entity';
+import { type Coordenada } from '../../../domain/entities/coordenada.entity';
 
 export class GetCoordendasDto {
   private constructor (
@@ -7,7 +7,7 @@ export class GetCoordendasDto {
     public longitud: number
   ) {}
 
-  public static create(coordenadas: Coordenadas): GetCoordendasDto {
+  public static create(coordenadas: Coordenada): GetCoordendasDto {
     return new GetCoordendasDto(
       coordenadas.getIdCoordenas(),
       coordenadas.getLatitud(),

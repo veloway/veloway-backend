@@ -5,19 +5,16 @@ import { type Viaje } from '../../domain/entities/viaje.entity';
 import { ViajePrismaMapper } from '../mappers/viaje-prisma.mapper';
 
 @Injectable()
-export class viajesRepository implements IViajeRepository {
+export class ViajesRepository implements IViajeRepository {
   constructor(private readonly prisma: PrismaClient) {}
-
-
 
   async create(viaje: Viaje): Promise<number> {
     const viajeData = await this.prisma.viajes.create({
       data: {
-        id_viaje: viaje.getIdViaje(),
         checkpoint_actual: viaje.getCheckpointActual(),
         fecha_inicio: viaje.getFechaInicio(),
         fecha_fin: viaje.getFechaFin(),
-        id_conductor: viaje.getConductor().getIdConductor(),
+        id_conductor: viaje.getIdConductor(),
         nro_seguimiento: viaje.getEnvio().getNroSeguimiento(),
         origen_cord: viaje.getOrigenCord().getIdCoordenas(),
         destino_cord: viaje.getDestinoCord().getIdCoordenas()

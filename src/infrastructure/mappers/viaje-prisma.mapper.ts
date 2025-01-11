@@ -1,24 +1,16 @@
 import { type Prisma } from '@prisma/client';
 import { Viaje } from '../../domain/entities/viaje.entity';
-import { Conductor } from '../../domain/entities/conductor.entity';
-import { EstadoConductor } from '../../domain/entities/estadoConductor.entity';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { Envio } from '../../domain/entities/envio.entity';
 import { EstadoEnvio } from '../../domain/entities/estadoEnvio.entity';
 import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { Localidad } from '../../domain/entities/localidad.entity';
 import { Provincia } from '../../domain/entities/provincia.entity';
-import { Coordenadas } from '../../domain/entities/coordenadas.entity';
+import { Coordenada } from '../../domain/entities/coordenada.entity';
 
 interface IViajesPrismaMapper extends Prisma.viajesGetPayload<
 {
   include: {
-    conductores: {
-      include: {
-        estados_conductores: true
-        usuarios: true
-      }
-    }
     envios: {
       include: {
         usuarios: true
@@ -56,7 +48,7 @@ export class ViajePrismaMapper {
       checkpoint_actual,
       fecha_inicio,
       fecha_fin,
-      conductores,
+      id_conductor,
       envios,
       coordenadas_viajes_origen_cordTocoordenadas: origen_cord,
       coordenadas_viajes_destino_cordTocoordenadas: destino_cord
@@ -67,23 +59,7 @@ export class ViajePrismaMapper {
       checkpoint_actual,
       fecha_inicio,
       fecha_fin,
-      new Conductor(
-        conductores.id_conductor,
-        conductores.compartirfichamedica,
-        new EstadoConductor(
-          conductores.estados_conductores.id_estado,
-          conductores.estados_conductores.nombre
-        ),
-        conductores.usuarios.id_usuario,
-        conductores.usuarios.dni,
-        conductores.usuarios.email,
-        conductores.usuarios.password,
-        conductores.usuarios.fecha_nac,
-        conductores.usuarios.nombre,
-        conductores.usuarios.apellido,
-        conductores.usuarios.es_conductor,
-        conductores.usuarios.telefono
-      ),
+      id_conductor,
       new Envio(
         Number(envios.nro_seguimiento.toString()),
         envios.descripcion,
@@ -135,12 +111,12 @@ export class ViajePrismaMapper {
           envios.usuarios.telefono
         )
       ),
-      new Coordenadas(
+      new Coordenada(
         origen_cord.id_coordenadas,
         origen_cord.latitud,
         origen_cord.longitud
       ),
-      new Coordenadas(
+      new Coordenada(
         destino_cord.id_coordenadas,
         destino_cord.latitud,
         destino_cord.longitud

@@ -9,6 +9,10 @@ import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
 import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
+import { ViajesRepository } from '../repositories/viajes.repository';
+import { ViajesService } from '../../application/services/viajes.service';
+import { ViajesController } from '../../presentation/controllers/viajes.controller';
+import { CoordenadasRepository } from '../repositories/coordenadas.repository';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -16,10 +20,15 @@ container.register(REPOSITORIES_TOKENS.IEnviosRepository, { useClass: EnviosRepo
 container.register(REPOSITORIES_TOKENS.IDomiciliosRepository, { useClass: DomiciliosRepository });
 container.register(REPOSITORIES_TOKENS.ILocalidadesRepository, { useClass: LocalidadesRepository });
 container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuariosRepository });
+container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepository });
+container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: CoordenadasRepository });
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
+container.register(ViajesService, { useClass: ViajesService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
 export const enviosController = container.resolve(EnviosController);
+container.register(ViajesController, { useClass: ViajesController });
+export const viajesController = container.resolve(ViajesController);

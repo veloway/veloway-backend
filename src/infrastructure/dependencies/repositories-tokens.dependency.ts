@@ -4,5 +4,6 @@ export const REPOSITORIES_TOKENS = {
   ILocalidadesRepository: Symbol.for('ILocalidadesRepository'),
   IUsuariosRepository: Symbol.for('IUsuariosRepository'),
   IViajesRepository: Symbol.for('IViajesRespository'),
-  IConductoresRepository: Symbol.for('IConductoresRepository')
+  IConductoresRepository: Symbol.for('IConductoresRepository'),
+  ICoordenadasRepository: Symbol.for('ICoordenadasRepository')
 };
