@@ -1,20 +1,19 @@
-import { randomInt } from 'crypto';
 import { EstadoEnvioEnum } from '../types/estadoEnvio.enum';
 import { type Domicilio } from './domicilio.entity';
 import { EstadoEnvio } from './estadoEnvio.entity';
 import { type Usuario } from './usuario.entity';
-import { DateTime } from 'luxon';
 
 export const PESO_GRAMOS_MAX = 20000;
 const PRECIO_CADA_100_GRAMOS = 500;
 export const HORA_INICIO = 8;
 export const HORA_FIN = 18;
+const DIFERENCIA_HORARIA = 3;
 
 export class Envio {
   constructor(
     private nroSeguimiento: number,
     private descripcion: string,
-    private fecha: Date = DateTime.now().setZone('America/Argentina/Buenos_Aires').toJSDate(),
+    private fecha: Date = new Date(),
     private hora: Date,
     private pesoGramos: number,
     private monto: number = this.calcularMonto(),
@@ -23,9 +22,7 @@ export class Envio {
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
-  ) {
-    this.nroSeguimiento ||= randomInt(10000000, 99999999);
-  }
+  ) {}
 
   // Getters
   public getNroSeguimiento(): number {
@@ -131,18 +128,14 @@ export class Envio {
   }
 
   /* Si se manda un rango horario valido se verifica que:
-    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual
+    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto, hora actual pasada por json)
     2) Si el envio es reserva, se verifica la fecha:
       - Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
-      - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia
+      - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia (fecha actual por defecto)
   */
   public verificarReserva(): void {
-    if (!this.reserva) {
-      console.log('Fecha y Hora actual: ', this.fecha);
-      this.hora = this.fecha; // Hora de la fecha actual por defecto
-      return;
-    }
-    if (this.fecha.getUTCHours() < HORA_INICIO || this.fecha.getUTCHours() > HORA_FIN) {
+    const horaActual = this.fecha.getUTCHours() - DIFERENCIA_HORARIA;
+    if (horaActual < HORA_INICIO || horaActual > HORA_FIN) {
       this.fecha.setDate(this.fecha.getDate() + 1);
     }
   }
