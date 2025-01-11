@@ -15,7 +15,7 @@ export class GetAllByConductorIdDto {
 
     return new GetAllByConductorIdDto(
       viaje.getIdViaje(),
-      viaje.getConductor().getIdConductor(),
+      viaje.getIdConductor(),
       viaje.getEnvio().getNroSeguimiento(),
       fechaFin,
       fechaInicio

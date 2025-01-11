@@ -1,4 +1,4 @@
-import { type Coordenadas } from '../../../domain/entities/coordenada.entity';
+import { type Coordenada } from '../../../domain/entities/coordenada.entity';
 import { type Viaje } from '../../../domain/entities/viaje.entity';
 
 export class GetViajeDto {
@@ -8,8 +8,8 @@ export class GetViajeDto {
     public fechaInicio: string,
     public idConductor: string,
     public nroSeguimiento: number,
-    public origenCord: Coordenadas,
-    public destinoCord: Coordenadas
+    public origenCord: Coordenada,
+    public destinoCord: Coordenada
   ) {}
 
   public static create(viaje: Viaje): GetViajeDto {

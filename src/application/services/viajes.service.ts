@@ -8,8 +8,6 @@ import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositor
 import { obtenerCoordDestino, obtenerCoordOrigen } from '../../infrastructure/geocodingAPI/geocodingApi';
 import { CustomError } from '../errors/custom.errors';
 
-
-
 @Injectable()
 export class ViajesService {
   constructor (

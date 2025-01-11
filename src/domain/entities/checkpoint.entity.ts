@@ -1,7 +1,7 @@
-import { Coordenadas } from './coordenada.entity';
+import { Coordenada } from './coordenada.entity';
 import { type Viaje } from './viaje.entity';
 
-export class Checkpoint extends Coordenadas {
+export class Checkpoint extends Coordenada {
   constructor(
     private readonly idCheckpoint: number,
     private numero: number,
