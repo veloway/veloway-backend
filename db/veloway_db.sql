@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS fichas_medicas CASCADE;
 DROP TABLE IF EXISTS licencias CASCADE; 
 DROP TABLE IF EXISTS estados_envio CASCADE;
 DROP TABLE IF EXISTS envios CASCADE;
+DROP TABLE IF EXISTS coordenadas CASCADE;
 DROP TABLE IF EXISTS viajes CASCADE;
 DROP TABLE IF EXISTS checkpoints CASCADE;  
 
@@ -92,7 +93,6 @@ VALUES ('Libre'), ('Ocupado'), ('Deshabilitado');
 
 CREATE TABLE conductores (
 	id_conductor UUID PRIMARY KEY,
-	dni INT UNIQUE NOT NULL,
 	compartirFichaMedica BOOLEAN NOT NULL,
 	id_estado INT NOT NULL,
 	id_vehiculo INT UNIQUE NOT NULL,
@@ -131,6 +131,7 @@ CREATE TABLE envios (
 	hora TIME NOT NULL,
 	peso_gramos NUMERIC(10, 2) NOT NULL,
 	monto NUMERIC(10, 2) NOT NULL,
+	reserva BOOLEAN NOT NULL DEFAULT false,	
 	id_cliente UUID NOT NULL,
 	id_estado INT NOT NULL DEFAULT 1,
 	id_origen INT NOT NULL,
@@ -141,6 +142,12 @@ CREATE TABLE envios (
 	FOREIGN KEY (id_destino) REFERENCES domicilios(id_domicilio)
 );
 
+CREATE TABLE coordenadas (
+	id_coordenadas SERIAL PRIMARY KEY,
+	latitud DOUBLE PRECISION NOT NULL,
+	longitud DOUBLE PRECISION NOT NULL
+);
+
 CREATE TABLE viajes (
 	id_viaje SERIAL PRIMARY KEY,
 	checkpoint_actual INT NOT NULL DEFAULT 1,
@@ -148,15 +155,18 @@ CREATE TABLE viajes (
 	fecha_fin TIMESTAMP,
 	id_conductor UUID NOT NULL,
 	nro_seguimiento BIGINT UNIQUE NOT NULL, 
+	origen_cord INT NOT NULL,
+	destino_cord INT NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor),
-	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento)
+	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento),
+	FOREIGN KEY (origen_cord) REFERENCES coordenadas(id_coordenadas),
+	FOREIGN KEY (destino_cord) REFERENCES coordenadas(id_coordenadas)
 );
 
 CREATE TABLE checkpoints (
-	id_checkpoint SERIAL PRIMARY KEY,
-	latitud DOUBLE PRECISION NOT NULL,
-	longitud DOUBLE PRECISION NOT NULL,
+	id_checkpoint INT PRIMARY KEY,
 	numero INT NOT NULL,
 	id_viaje INT NOT NULL,
+	FOREIGN KEY (id_checkpoint) REFERENCES coordenadas(id_coordenadas),
 	FOREIGN KEY (id_viaje) REFERENCES viajes(id_viaje)
-);
+); 
