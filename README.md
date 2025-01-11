@@ -10,7 +10,6 @@ Nuestra API brinda un servicio donde se podrá realizar y consultar envios a dom
 ```json
 {
   "descripcion": "Envio de paquete",
-  "fecha": "2024-12-21",
   "hora": "19:30",
   "pesoGramos": 500,
   "origen": {
