@@ -13,6 +13,9 @@ import { ViajesRepository } from '../repositories/viajes.repository';
 import { ViajesService } from '../../application/services/viajes.service';
 import { ViajesController } from '../../presentation/controllers/viajes.controller';
 import { CoordenadasRepository } from '../repositories/coordenadas.repository';
+import { LocalidadesService } from '../../application/services/localidades.service';
+import { LocalidadesController } from '../../presentation/controllers/localidades.controller';
+
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -26,9 +29,15 @@ container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: Coord
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
 container.register(ViajesService, { useClass: ViajesService });
+container.register(LocalidadesService, { useClass: LocalidadesService });
+
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
 export const enviosController = container.resolve(EnviosController);
+
 container.register(ViajesController, { useClass: ViajesController });
 export const viajesController = container.resolve(ViajesController);
+
+container.register(LocalidadesController, { useClass: LocalidadesController });
+export const localidadesController = container.resolve(LocalidadesController);

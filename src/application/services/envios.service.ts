@@ -1,5 +1,5 @@
 import { randomInt } from 'crypto';
-import { PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
+import { HORA_FIN, HORA_INICIO, PESO_GRAMOS_MAX, type Envio } from '../../domain/entities/envio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { type ILocalidadRepository } from '../../domain/repositories/localidad.interface';
@@ -11,6 +11,8 @@ import { EnvioMapper } from '../mappers/envio.mapper';
 import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
 import { Inject, Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
+import { type Domicilio } from '../../domain/entities/domicilio.entity';
+import { DomicilioMapper } from '../mappers/domicilio.mapper';
 
 @Injectable()
 export class EnviosService {
@@ -50,19 +52,18 @@ export class EnviosService {
     const cliente = await this.clienteRepository.getUsuario(postEnvioDto.clienteID);
     if (!cliente) throw CustomError.notFound('El cliente no existe');
 
-    const newNroSeguimiento = randomInt(10000000, 99999999);
+    const origen = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.origen, localidadOrigen);
+    const destino = DomicilioMapper.fromPostDtoToEntity(postEnvioDto.destino, localidadDestino);
     const envio = EnvioMapper.fromPostDtoToEntity({
       postEnvioDto,
-      nroSeguimiento: newNroSeguimiento,
-      localidadOrigen,
-      localidadDestino,
+      origen,
+      destino,
       cliente
     });
 
-    envio.getEstado().setID(EstadoEnvioEnum.Confirmado);
+    envio.setNroSeguimiento(randomInt(10000000, 99999999));
 
     if (!envio.verificarPesoGramos()) throw CustomError.badRequest(`Solo se pueden realizar envíos hasta ${PESO_GRAMOS_MAX / 1000} kilos`);
-
     envio.setMonto(envio.calcularMonto());
 
     if (
@@ -73,31 +74,18 @@ export class EnviosService {
       throw CustomError.badRequest('El origen y destino no pueden ser iguales, ni en el mismo edificio');
     }
 
-    envio.verificarRangoHorario();
+    if (!envio.verificarRangoHorario()) throw CustomError.badRequest(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
 
+    envio.verificarReserva();
     // TODO: Implementar crear viaje() para el envio
 
-    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envio.getOrigen());
-    if (domicilioOrigen) { // Validar domicilios origen repetidos
-      envio.setOrigen(domicilioOrigen);
-    } else {
-      const origenCreated = await this.domicilioRepository.create(envio.getOrigen());
-      envio.setOrigen(origenCreated);
-    }
+    // Setea los domicilios con sus IDs si existen, sino los crea
+    envio.setOrigen(await this.getOrCreateDomicilio(envio.getOrigen()));
+    envio.setDestino(await this.getOrCreateDomicilio(envio.getDestino()));
 
-    const domicilioDestino = await this.domicilioRepository.getDomicilioByProperties(envio.getDestino());
-    if (domicilioDestino) { // Validar domicilios destino repetidos
-      envio.setDestino(domicilioDestino);
-    } else {
-      const destinoCreated = await this.domicilioRepository.create(envio.getDestino());
-      envio.setDestino(destinoCreated);
-    }
-
-    if (domicilioOrigen && domicilioDestino) {
-      const envioExistente = await this.enviosRepository.buscarEnvioIgual(envio);
-      if (envioExistente) {
-        throw CustomError.badRequest('Ya existe un envío con los mismos datos');
-      }
+    const envioExistente = await this.enviosRepository.buscarEnvioIgual(envio);
+    if (envioExistente) {
+      throw CustomError.badRequest('Ya existe un envío con los mismos datos');
     }
 
     const nroSeguimiento = await this.enviosRepository.create(envio);
@@ -128,20 +116,8 @@ export class EnviosService {
     /* Si el domicilio origen o destino no existen, se crean para evitar modificar los existentes
         y que se modifiquen en otros envios.
     */
-    const domicilioOrigen = await this.domicilioRepository.getDomicilioByProperties(envioToUpdate.getOrigen());
-    if (domicilioOrigen) {
-      envioToUpdate.setOrigen(domicilioOrigen);
-    } else {
-      const origenCreated = await this.domicilioRepository.create(envioToUpdate.getOrigen());
-      envioToUpdate.setOrigen(origenCreated);
-    }
-    const domicilioDestino = await this.domicilioRepository.getDomicilioByProperties(envioToUpdate.getDestino());
-    if (domicilioDestino) {
-      envioToUpdate.setDestino(domicilioDestino);
-    } else {
-      const destinoCreated = await this.domicilioRepository.create(envioToUpdate.getDestino());
-      envioToUpdate.setDestino(destinoCreated);
-    }
+    envioToUpdate.setOrigen(await this.getOrCreateDomicilio(envioToUpdate.getOrigen()));
+    envioToUpdate.setDestino(await this.getOrCreateDomicilio(envioToUpdate.getDestino()));
 
     if (updateEnvioDto.pesoGramos !== existingEnvio.getPesoGramos()) {
       envioToUpdate.verificarPesoGramos();
@@ -158,5 +134,23 @@ export class EnviosService {
 
   public async updateEstadoEnvio(nroSeguimiento: number, estadoEnvioID: number) {
     await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
+  }
+
+  public async cancelarEnvio(nroSeguimiento: number): Promise<void> {
+    const envio = await this.enviosRepository.getEnvio(nroSeguimiento);
+    if (!envio) throw CustomError.notFound(`No se encontró un envío con el número: ${nroSeguimiento}`);
+
+    if (envio.getEstado().getID() !== EstadoEnvioEnum.Confirmado) {
+      throw CustomError.badRequest(`No se puede cancelar un envío en estado: ${envio.getEstado().getNombre()}`);
+    }
+    await this.enviosRepository.cancelarEnvio(nroSeguimiento);
+  }
+
+  private async getOrCreateDomicilio(domicilio: Domicilio): Promise<Domicilio> {
+    const domicilioExistente = await this.domicilioRepository.getDomicilioByProperties(domicilio);
+    if (domicilioExistente) return domicilioExistente;
+
+    const domicilioCreated = await this.domicilioRepository.create(domicilio);
+    return domicilioCreated;
   }
 }

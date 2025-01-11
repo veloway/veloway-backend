@@ -103,4 +103,14 @@ export class EnviosController {
       HandleError.throw(error, res);
     }
   };
+
+  cancelarEnvio = async (req: Request, res: Response) => {
+    const { nroSeguimiento } = req.params;
+    try {
+      await this.enviosService.cancelarEnvio(Number(nroSeguimiento));
+      res.status(200).json({ message: 'Envío cancelado' });
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
 }
