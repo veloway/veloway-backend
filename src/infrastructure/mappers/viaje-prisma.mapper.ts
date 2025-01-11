@@ -67,6 +67,7 @@ export class ViajePrismaMapper {
         envios.hora,
         parseFloat(envios.peso_gramos.toString()),
         Number(envios.monto),
+        envios.reserva,
         new EstadoEnvio(
           envios.estados_envio.id_estado,
           envios.estados_envio.nombre

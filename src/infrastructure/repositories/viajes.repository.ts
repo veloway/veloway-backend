@@ -16,8 +16,8 @@ export class ViajesRepository implements IViajeRepository {
         fecha_fin: viaje.getFechaFin(),
         id_conductor: viaje.getIdConductor(),
         nro_seguimiento: viaje.getEnvio().getNroSeguimiento(),
-        origen_cord: viaje.getOrigenCord().getIdCoordenas(),
-        destino_cord: viaje.getDestinoCord().getIdCoordenas()
+        origen_cord: viaje.getOrigenCord().getIdCoordenadas(),
+        destino_cord: viaje.getDestinoCord().getIdCoordenadas()
       }
     });
     return Number(viajeData.id_viaje);

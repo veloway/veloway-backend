@@ -1,5 +1,5 @@
 import { type Envio } from './envio.entity';
-import { type Coordenadas } from './coordenada.entity';
+import { type Coordenada } from './coordenada.entity';
 
 export class Viaje {
   constructor(
@@ -9,8 +9,8 @@ export class Viaje {
     private fechaFin: Date | null,
     private idConductor: string,
     private envio: Envio,
-    private origenCord: Coordenadas,
-    private destinoCord: Coordenadas
+    private origenCord: Coordenada,
+    private destinoCord: Coordenada
   ) {}
 
   // Getters
@@ -39,11 +39,11 @@ export class Viaje {
     return this.envio;
   }
 
-  public getOrigenCord(): Coordenadas {
+  public getOrigenCord(): Coordenada {
     return this.origenCord;
   }
 
-  public getDestinoCord(): Coordenadas {
+  public getDestinoCord(): Coordenada {
     return this.destinoCord;
   }
 
@@ -69,11 +69,11 @@ export class Viaje {
     this.envio = envio;
   }
 
-  public setOrigenCord(origenCord: Coordenadas): void {
+  public setOrigenCord(origenCord: Coordenada): void {
     this.origenCord = origenCord;
   }
 
-  public setDestinoCord(destinoCord: Coordenadas): void {
+  public setDestinoCord(destinoCord: Coordenada): void {
     this.destinoCord = destinoCord;
   }
 }

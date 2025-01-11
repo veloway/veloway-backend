@@ -9,7 +9,7 @@ export class GetCoordendasDto {
 
   public static create(coordenadas: Coordenada): GetCoordendasDto {
     return new GetCoordendasDto(
-      coordenadas.getIdCoordenas(),
+      coordenadas.getIdCoordenadas(),
       coordenadas.getLatitud(),
       coordenadas.getLongitud()
     );
