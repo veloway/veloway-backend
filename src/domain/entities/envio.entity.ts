@@ -7,14 +7,16 @@ export const PESO_GRAMOS_MAX = 20000;
 const PRECIO_CADA_100_GRAMOS = 500;
 export const HORA_INICIO = 8;
 export const HORA_FIN = 18;
-const DIFERENCIA_HORARIA = 3;
+
+const fechaHoraActualTipoDate = new Date();
+const fechaHoraActual = fechaHoraActualTipoDate.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false });
 
 export class Envio {
   constructor(
     private nroSeguimiento: number,
     private descripcion: string,
-    private fecha: Date = new Date(),
-    private hora: Date,
+    private fecha: string = fechaHoraActual.split(',')[0].trim(),
+    private hora: string,
     private pesoGramos: number,
     private monto: number = this.calcularMonto(),
     private reserva: boolean = false,
@@ -33,11 +35,11 @@ export class Envio {
     return this.descripcion;
   }
 
-  public getFecha(): Date {
+  public getFecha(): string {
     return this.fecha;
   }
 
-  public getHora(): Date {
+  public getHora(): string {
     return this.hora;
   }
 
@@ -78,11 +80,11 @@ export class Envio {
     this.descripcion = descripcion;
   }
 
-  public setFecha(fecha: Date): void {
+  public setFecha(fecha: string): void {
     this.fecha = fecha;
   }
 
-  public setHora(hora: Date): void {
+  public setHora(hora: string): void {
     this.hora = hora;
   }
 
@@ -121,22 +123,31 @@ export class Envio {
 
   // Verificacion del rango horario que viene en el json
   public verificarRangoHorario(): boolean {
-    if (this.hora.getUTCHours() < HORA_INICIO || this.hora.getUTCHours() > HORA_FIN) {
+    const hora = Number(this.hora.split(':')[0]); // HH:mm
+    if (hora < HORA_INICIO || hora > HORA_FIN) {
       return false;
     }
     return true;
   }
 
   /* Si se manda un rango horario valido se verifica que:
-    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto, hora actual pasada por json)
+    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto)
     2) Si el envio es reserva, se verifica la fecha:
       - Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
       - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia (fecha actual por defecto)
   */
   public verificarReserva(): void {
-    const horaActual = this.fecha.getUTCHours() - DIFERENCIA_HORARIA;
+    if (!this.reserva) {
+      this.hora = fechaHoraActual.split(',')[1].trim();
+      return;
+    }
+    const horaActual = Number(fechaHoraActual.split(',')[1].trim().split(':')[0]); // hh:mm:ss
+    console.log(horaActual);
     if (horaActual < HORA_INICIO || horaActual > HORA_FIN) {
-      this.fecha.setDate(this.fecha.getDate() + 1);
+      const nextDay = new Date(fechaHoraActualTipoDate);
+      nextDay.setDate(fechaHoraActualTipoDate.getDate() + 1);
+      const nextDayToString = nextDay.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false }).split(',')[0].trim();
+      this.fecha = nextDayToString;
     }
   }
 

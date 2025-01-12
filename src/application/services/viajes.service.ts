@@ -31,7 +31,7 @@ export class ViajesService {
   }
 
   // crea un viaje
-  public async create(envio: Envio): Promise<number> {
+  public async create(envio: Envio, idConductor: string): Promise<number> {
     const origenData = await obtenerCoordOrigen(envio);
     const destinoData = await obtenerCoordDestino(envio);
 
@@ -53,18 +53,12 @@ export class ViajesService {
     origen.setIdCoordenada(origenId);
     destino.setIdCoordenada(destinoId);
 
-    // gardo fecha y hora en una sola variable
-    const fechaHoraInicio = `${envio.getFecha().getDay()} ${envio.getHora().getTime()}`;
-    const fechaHoraInicioDate = new Date(fechaHoraInicio);
-
-    // llamar a la funcion de buscar un conductor disponible
-
     const newViaje = new Viaje(
       0,
       1,
-      fechaHoraInicioDate,
+      envio.getHora(), // Despues lo cambio
       null,
-      '0', // Buscar conductor disponible
+      idConductor,
       envio,
       origen,
       destino
