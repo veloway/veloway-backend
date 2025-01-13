@@ -13,6 +13,7 @@ import { Inject, Injectable } from '../../infrastructure/dependencies/injectable
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { type Domicilio } from '../../domain/entities/domicilio.entity';
 import { DomicilioMapper } from '../mappers/domicilio.mapper';
+import { ViajesService } from './viajes.service';
 
 @Injectable()
 export class EnviosService {
@@ -20,7 +21,8 @@ export class EnviosService {
     @Inject(REPOSITORIES_TOKENS.IEnviosRepository) private readonly enviosRepository: IEnviosRepository,
     @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository) private readonly domicilioRepository: IDomicilioRepository,
     @Inject(REPOSITORIES_TOKENS.ILocalidadesRepository) private readonly localidadRepository: ILocalidadRepository,
-    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository,
+    private readonly viajeService: ViajesService
   ) {}
 
   public async getAll(): Promise<Envio[]> {
@@ -77,7 +79,8 @@ export class EnviosService {
     if (!envio.verificarRangoHorario()) throw CustomError.badRequest(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
 
     envio.verificarReserva();
-    // TODO: Implementar crear viaje() para el envio
+
+    // TODO: Implementar buscar conductor disponible
 
     // Setea los domicilios con sus IDs si existen, sino los crea
     envio.setOrigen(await this.getOrCreateDomicilio(envio.getOrigen()));
@@ -89,6 +92,9 @@ export class EnviosService {
     }
 
     const nroSeguimiento = await this.enviosRepository.create(envio);
+
+    await this.viajeService.create(envio, '789a1234-e21c-98d3-b123-426614174003');
+
     return nroSeguimiento;
   }
 
