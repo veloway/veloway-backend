@@ -5,8 +5,8 @@ export class Viaje {
   constructor(
     private readonly idViaje: number,
     private checkpointActual: number,
-    private fechaInicio: string | null,
-    private fechaFin: string | null,
+    private fechaInicio: Date | null,
+    private fechaFin: Date | null,
     private idConductor: string,
     private envio: Envio,
     private origenCord: Coordenada,
@@ -22,11 +22,11 @@ export class Viaje {
     return this.checkpointActual;
   }
 
-  public getFechaInicio(): string | null {
+  public getFechaInicio(): Date | null {
     return this.fechaInicio;
   }
 
-  public getFechaFin(): string | null {
+  public getFechaFin(): Date | null {
     return this.fechaFin;
   }
 
@@ -52,11 +52,11 @@ export class Viaje {
     this.checkpointActual = checkpointActual;
   }
 
-  public setFechaInicio(fechaInicio: string): void {
+  public setFechaInicio(fechaInicio: Date): void {
     this.fechaInicio = fechaInicio;
   }
 
-  public setFechaFin(fechaFin: string): void {
+  public setFechaFin(fechaFin: Date): void {
     this.fechaFin = fechaFin;
   }
 

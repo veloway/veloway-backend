@@ -8,15 +8,12 @@ const PRECIO_CADA_100_GRAMOS = 500;
 export const HORA_INICIO = 8;
 export const HORA_FIN = 18;
 
-const fechaHoraActualTipoDate = new Date();
-const fechaHoraActual = fechaHoraActualTipoDate.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false });
-
 export class Envio {
   constructor(
     private nroSeguimiento: number,
     private descripcion: string,
-    private fecha: string = fechaHoraActual.split(',')[0].trim(),
-    private hora: string,
+    private fecha: Date = new Date(),
+    private hora: Date,
     private pesoGramos: number,
     private monto: number = this.calcularMonto(),
     private reserva: boolean = false,
@@ -35,11 +32,11 @@ export class Envio {
     return this.descripcion;
   }
 
-  public getFecha(): string {
+  public getFecha(): Date {
     return this.fecha;
   }
 
-  public getHora(): string {
+  public getHora(): Date {
     return this.hora;
   }
 
@@ -80,11 +77,11 @@ export class Envio {
     this.descripcion = descripcion;
   }
 
-  public setFecha(fecha: string): void {
+  public setFecha(fecha: Date): void {
     this.fecha = fecha;
   }
 
-  public setHora(hora: string): void {
+  public setHora(hora: Date): void {
     this.hora = hora;
   }
 
@@ -121,10 +118,13 @@ export class Envio {
     return this.pesoGramos * PRECIO_CADA_100_GRAMOS / 100;
   }
 
-  // Verificacion del rango horario que viene en el json
+  /* - Verificacion del rango horario que viene en el json
+   *- Se maneja en UTC porque en el mapper se convierte la hora enviada
+    a UTC para poder guardarla en la base de datos
+  */
   public verificarRangoHorario(): boolean {
-    const hora = Number(this.hora.split(':')[0]); // HH:mm
-    if (hora < HORA_INICIO || hora > HORA_FIN) {
+    const horaArg = this.getArgentinaHour(this.hora);
+    if (horaArg < HORA_INICIO || horaArg >= HORA_FIN) {
       return false;
     }
     return true;
@@ -138,16 +138,16 @@ export class Envio {
   */
   public verificarReserva(): void {
     if (!this.reserva) {
-      this.hora = fechaHoraActual.split(',')[1].trim();
+      this.hora = this.fecha; // Horario de la fecha actual
+      this.hora = new Date(this.hora.setSeconds(0, 0)); // HH:mm:00
+      if (!this.verificarRangoHorario()) {
+        throw new Error(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
+      }
       return;
     }
-    const horaActual = Number(fechaHoraActual.split(',')[1].trim().split(':')[0]); // hh:mm:ss
-    console.log(horaActual);
-    if (horaActual < HORA_INICIO || horaActual > HORA_FIN) {
-      const nextDay = new Date(fechaHoraActualTipoDate);
-      nextDay.setDate(fechaHoraActualTipoDate.getDate() + 1);
-      const nextDayToString = nextDay.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false }).split(',')[0].trim();
-      this.fecha = nextDayToString;
+    const horaArg = this.getArgentinaHour(this.fecha);
+    if (horaArg < HORA_INICIO || horaArg > HORA_FIN) {
+      this.fecha.setDate(this.fecha.getDate() + 1);
     }
   }
 
@@ -156,5 +156,15 @@ export class Envio {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Por defecto new Date() devuelve la hora en UTC, por eso se convierte a la hora de Argentina
+   * para hacer los calculos correspondientes.
+   */
+  private getArgentinaHour(date: Date): number {
+    const tiempoArg = date.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false, hour: '2-digit', minute: '2-digit' });
+    const horaArg = Number(tiempoArg.split(':')[0]);
+    return horaArg;
   }
 }

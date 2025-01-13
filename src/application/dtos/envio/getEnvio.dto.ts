@@ -18,8 +18,21 @@ export class GetEnvioDto {
   ) {}
 
   public static create(envio: Envio): GetEnvioDto {
-    const fecha = envio.getFecha().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-    const hora = envio.getHora().toISOString().split('T')[1].slice(0, 5); // 'HH:mm'
+    /**
+     * Se crea una nueva fecha con la fecha y hora del envío, para que pueda
+     * detectar el cambio de día. Si no siempre venia con horario
+     * en 00:00:00:000, y no se podía detectar si el utc era del día anterior o del actual.
+     */
+    const fechaHora = new Date(envio.getFecha().getTime() + envio.getHora().getTime());
+    const fecha = fechaHora.toLocaleDateString(
+      'es-AR',
+      { timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: '2-digit', day: '2-digit' }
+    );
+
+    const hora = envio.getHora().toLocaleTimeString(
+      'es-AR',
+      { timeZone: 'America/Argentina/Buenos_Aires', hour12: false }
+    ).slice(0, 5);
 
     return new GetEnvioDto(
       envio.getNroSeguimiento(),

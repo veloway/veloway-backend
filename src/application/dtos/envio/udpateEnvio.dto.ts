@@ -4,8 +4,7 @@ import { type UpdateDomicilioDto } from '../domicilio/updateDomicilio.dto';
 export class UpdateEnvioDto {
   private constructor(
     public descripcion: string,
-    public fecha: string,
-    public hora: string,
+    public hora: Date,
     public pesoGramos: number,
     public origen: UpdateDomicilioDto,
     public destino: UpdateDomicilioDto
@@ -18,10 +17,15 @@ export class UpdateEnvioDto {
       return [JSON.parse(envioValidation.error.message)];
     }
 
+    // Convierte la hora en formato Date para poder guardarla en la base de datos
+    const horaDate = new Date();
+    horaDate.setHours(Number(envioValidation.data.hora.split(':')[0]));
+    horaDate.setMinutes(Number(envioValidation.data.hora.split(':')[1]));
+    horaDate.setSeconds(0, 0);
+
     return [undefined, new UpdateEnvioDto(
       envioValidation.data.descripcion,
-      envioValidation.data.fecha,
-      envioValidation.data.hora,
+      horaDate,
       envioValidation.data.pesoGramos,
       envioValidation.data.origen,
       envioValidation.data.destino

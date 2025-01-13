@@ -130,7 +130,7 @@ export class EnviosService {
       envioToUpdate.setMonto(envioToUpdate.calcularMonto());
     }
 
-    if (updateEnvioDto.hora !== existingEnvio.getHora()) {
+    if (updateEnvioDto.hora.getHours() !== existingEnvio.getHora().getHours()) {
       envioToUpdate.verificarRangoHorario();
     }
 

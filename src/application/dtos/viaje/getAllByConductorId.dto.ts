@@ -10,12 +10,15 @@ export class GetAllByConductorIdDto {
   ) {}
 
   public static create(viaje: Viaje): GetAllByConductorIdDto {
+    const fechaFin = viaje.getFechaFin()?.toISOString().split('T')[0];
+    const fechaInicio = viaje.getFechaInicio()?.toISOString().split('T')[0];
+
     return new GetAllByConductorIdDto(
       viaje.getIdViaje(),
       viaje.getIdConductor(),
       viaje.getEnvio().getNroSeguimiento(),
-      viaje.getFechaFin(),
-      viaje.getFechaInicio()
+      fechaFin,
+      fechaInicio
     );
   }
 }

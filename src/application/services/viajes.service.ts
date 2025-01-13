@@ -53,10 +53,18 @@ export class ViajesService {
     origen.setIdCoordenada(origenId);
     destino.setIdCoordenada(destinoId);
 
+    // Crear un nuevo objeto Date con la fecha y la hora combinada
+    const fecha = envio.getFecha();
+    const hora = envio.getHora();
+    const fechaHora = new Date(fecha);
+    fechaHora.setHours(Number(hora.getHours()));
+    fechaHora.setMinutes(Number(hora.getMinutes()));
+    fechaHora.setSeconds(0, 0);
+
     const newViaje = new Viaje(
       0,
       1,
-      envio.getHora(), // Despues lo cambio
+      fechaHora, // Despues lo cambio
       null,
       idConductor,
       envio,
