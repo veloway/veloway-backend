@@ -75,6 +75,11 @@ export class ViajesService {
     const viajeId = await this.viajeRepository.create(newViaje);
     return viajeId;
   }
-}
 
-// modificar la base de datos real
+  public async getViajeByNroSeguimiento(nroSeguimiento: number): Promise<Viaje> {
+    const viajeEncontrado = await this.viajeRepository.getViajeByNroSeguimiento(nroSeguimiento);
+
+    if (!viajeEncontrado) throw CustomError.notFound('No se encontro el viaje con ese nro de seguimiento');
+    return viajeEncontrado;
+  }
+}
