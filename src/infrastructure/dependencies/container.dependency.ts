@@ -4,7 +4,9 @@ import { prismaClient } from '../data/prismaClient';
 import { EnviosRepository } from '../repositories/envios.repository';
 import { DomiciliosRepository } from '../repositories/domicilios.repository';
 import { LocalidadesRepository } from '../repositories/localidades.repository';
-import { UsuariosRepository } from '../repositories/usuarios.repository';
+import { UsuarioRepository } from '../repositories/usuarios.repository';
+import { UsuarioService } from "../../application/services/usuario.service"
+import { UsuarioController } from '../../presentation/controllers/usuario.controller';
 import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
@@ -22,7 +24,7 @@ container.register(PrismaClient, { useValue: prismaClient });
 container.register(REPOSITORIES_TOKENS.IEnviosRepository, { useClass: EnviosRepository });
 container.register(REPOSITORIES_TOKENS.IDomiciliosRepository, { useClass: DomiciliosRepository });
 container.register(REPOSITORIES_TOKENS.ILocalidadesRepository, { useClass: LocalidadesRepository });
-container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuariosRepository });
+container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuarioRepository });
 container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepository });
 container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: CoordenadasRepository });
 
@@ -30,6 +32,7 @@ container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: Coord
 container.register(EnviosService, { useClass: EnviosService });
 container.register(ViajesService, { useClass: ViajesService });
 container.register(LocalidadesService, { useClass: LocalidadesService });
+container.register(UsuarioService, { useClass: UsuarioService })
 
 
 // Controladores
@@ -41,3 +44,7 @@ export const viajesController = container.resolve(ViajesController);
 
 container.register(LocalidadesController, { useClass: LocalidadesController });
 export const localidadesController = container.resolve(LocalidadesController);
+
+container.register(UsuarioController, { useClass: UsuarioController});
+export const usuariosController = container.resolve(UsuarioController)
+

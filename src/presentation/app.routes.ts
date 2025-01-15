@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { EnviosRoutes } from './routes/envios.routes';
 import { ViajesRoutes } from './routes/viajes.routes';
 import { LocalidadesRoutes } from './routes/localidades.routes';
+import { UsuarioRoutes } from './routes/usuario.routes'
 
 export class AppRoutes {
   static get routes(): Router {
@@ -10,6 +11,7 @@ export class AppRoutes {
     router.use('/api/envios', EnviosRoutes.routes);
     router.use('/api/viajes', ViajesRoutes.routes);
     router.use('/api/localidades', LocalidadesRoutes.routes);
+    router.use('/api/usuarios', UsuarioRoutes.routes)
 
     return router;
   }
