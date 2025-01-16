@@ -77,7 +77,7 @@ export class UsuarioRepository implements IUsuarioRepository {
     return null;
   }
 
-  public async create(usuario: Usuario): Promise<null> {
+  public async create(usuario: Usuario): Promise<void> {
     await this.prisma.usuarios.create({
       data: {
         id_usuario: usuario.getID(),
@@ -91,7 +91,6 @@ export class UsuarioRepository implements IUsuarioRepository {
         telefono: usuario.getTelefono(),
       },
     });
-    return null
   }
 
   public async update(usuario: Usuario): Promise<void> {
