@@ -56,7 +56,7 @@ export class UsuarioController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 1 día
+        maxAge:  60 * 60 * 1000, // 1 hs
       });
       // Enviar respuesta con el token
       res.status(200).json({ message: 'Login exitoso', usuario });
@@ -77,6 +77,27 @@ export class UsuarioController {
        res.status(200).json({ message: 'Logout exitoso' });
     } catch (error) {
        res.status(500).json({ message: 'Hubo un error al cerrar sesión' });
+    }
+  };
+
+
+  requestPasswordReset = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      await this.usuarioService.requestPasswordReset(email);
+      res.status(200).json({ message: 'Correo de recuperación enviado.' });
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+
+   resetPassword = async (req: Request, res: Response) => {
+    try {
+      const { token, newPassword } = req.body;
+      await this.usuarioService.resetPassword(token, newPassword);
+      res.status(200).json({ message: 'Contraseña restablecida correctamente.' });
+    } catch (error) {
+      HandleError.throw(error, res);
     }
   };
 

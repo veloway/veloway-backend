@@ -11,6 +11,8 @@ export class UsuarioRoutes {
     router.post('/register', usuariosController.register);
     router.post('/login', usuariosController.login);
     router.post('/logout', usuariosController.logout);
+    router.post('/password-reset/request', usuariosController.requestPasswordReset);
+    router.post('/password-reset/reset', usuariosController.resetPassword);
 
     return router;
   }

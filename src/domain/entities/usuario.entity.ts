@@ -54,4 +54,13 @@ export class Usuario {
   public getEnvios(): Envio[] | null | undefined {
     return this.envios;
   }
+
+
+//Setter
+
+public setPassword(newPassword: string) {
+ this.password = newPassword;
+}
+
+
 }
