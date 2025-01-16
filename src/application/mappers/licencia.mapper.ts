@@ -4,10 +4,14 @@ import { Licencia } from "../../domain/entities/licencia.entity";
 
 export class LicenciaMapper{
     public static fromPostDtoToEntity(postLicenciaDto: PostLicenciaDto): Licencia {
-        
+
         const { categoria, fechaVenc, numero } = postLicenciaDto;
 
-        return new Licencia(categoria, new Date(fechaVenc), numero);
+        return new Licencia(
+            categoria, 
+            new Date(fechaVenc), 
+            numero
+        );
     }
 }
 
