@@ -4,8 +4,6 @@ import { BcryptHashProvider  } from '../../utils/bcrypt-hash.provider';
 import { Injectable, Inject} from '../../infrastructure/dependencies/injectable.dependency';
 import { randomUUID } from 'crypto';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
-import { JwtService } from '../../utils/jwtService';
-
 
 interface RegisterUsuarioDto {
   dni: number;
@@ -20,36 +18,79 @@ interface RegisterUsuarioDto {
 
 @Injectable()
 export class UsuarioService {
+  resetTokens: Map<string, string>;
   constructor(
     @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)
     private readonly usuarioRepository: UsuarioRepository,
-    @Inject(BcryptHashProvider) private readonly hashProvider: BcryptHashProvider,
-    private readonly jwtService: JwtService
-  ) {}
+    private readonly hashProvider: BcryptHashProvider
+  ) {
+    this.resetTokens = new Map<string, string>();}
 
 
-  public async login(email: string, password: string): Promise<{ token: string; usuario: Usuario } | null> {
-    // Buscar al usuario por email
-    const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
+  // public async login(email: string, password: string): Promise<{ token: string; usuario: Usuario } | null> {
+  //   // Buscar al usuario por email
+  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
 
-    // Si no se encuentra el usuario
-    if (!usuario) {
-      return null;
-    }
+  //   // Si no se encuentra el usuario
+  //   if (!usuario) {
+  //     return null;
+  //   }
 
-    // Comparar la contraseña con la almacenada (suponiendo que la contraseña está cifrada)
-    const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
+  //   // Comparar la contraseña con la almacenada (suponiendo que la contraseña está cifrada)
+  //   const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
 
-    if (!validPassword) {
-      return null; // Si la contraseña no coincide, retornamos null
-    }
-    const token = await this.jwtService.generateToken({ usuario: Usuario });
+  //   if (!validPassword) {
+  //     return null; // Si la contraseña no coincide, retornamos null
+  //   }
+  //   const token = await this.jwtService.generateToken({ usuario: Usuario });
 
-    return { token, usuario }; // Si la autenticación es exitosa, retornamos el usuario
-  }
+  //   return { token, usuario }; // Si la autenticación es exitosa, retornamos el usuario
+  // }
+
+  // async requestPasswordReset(email: string): Promise<void> {
+  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
+
+  //   if (!usuario) {
+  //     throw new Error('El correo no está registrado.');
+  //   }
+
+  //   // Generar un token único
+  //   const token = crypto.randomBytes(32).toString('hex');
+  //   this.resetTokens.set(token, email);
+
+  //   // Enviar el correo con el enlace
+  //   const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  //   await this.emailService.sendEmail({
+  //     to: email,
+  //     subject: 'Recuperación de Contraseña',
+  //     html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+  //            <a href="${resetLink}">${resetLink}</a>`,
+  //   });
+  // }
+
+  // async resetPassword(token: string, newPassword: string): Promise<void> {
+  //   const email = this.resetTokens.get(token);
+
+  //   if (!email) {
+  //     throw new Error('Token inválido o expirado.');
+  //   }
+
+  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
+
+  //   if (!usuario) {
+  //     throw new Error('Usuario no encontrado.');
+  //   }
+
+  //   const newHashedPassword = await this.hashProvider.hash(newPassword);
+
+  //   this.usuarioRepository.resetPassword(newHashedPassword, usuario);
+
+  //   // Eliminar el token después de usarlo
+  //   this.resetTokens.delete(token);
+  // }
 
 
-  public async execute(data: RegisterUsuarioDto): Promise<Usuario> {
+  public async register(data: RegisterUsuarioDto): Promise<Usuario> {
     const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = data;
 
     

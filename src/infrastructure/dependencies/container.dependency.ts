@@ -7,6 +7,8 @@ import { LocalidadesRepository } from '../repositories/localidades.repository';
 import { UsuarioRepository } from '../repositories/usuarios.repository';
 import { UsuarioService } from "../../application/services/usuario.service"
 import { UsuarioController } from '../../presentation/controllers/usuario.controller';
+import { AuthController } from '../../presentation/auth/auth.controller';
+import { AuthService } from '../../application/services/auth.service';
 import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
@@ -35,6 +37,7 @@ container.register(EnviosService, { useClass: EnviosService });
 container.register(ViajesService, { useClass: ViajesService });
 container.register(LocalidadesService, { useClass: LocalidadesService });
 container.register(UsuarioService, { useClass: UsuarioService })
+container.register(AuthService, {useClass: AuthService})
 
 
 // Controladores
@@ -48,5 +51,8 @@ container.register(LocalidadesController, { useClass: LocalidadesController });
 export const localidadesController = container.resolve(LocalidadesController);
 
 container.register(UsuarioController, { useClass: UsuarioController});
-export const usuariosController = container.resolve(UsuarioController)
+export const usuariosController = container.resolve(UsuarioController);
+
+container.register(AuthController, {useClass: AuthController});
+export const authController = container.resolve(AuthController);
 
