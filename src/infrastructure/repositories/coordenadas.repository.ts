@@ -37,4 +37,16 @@ export class CoordenadasRepository implements ICoordenadaRepository {
 
     return CoordenadaPrismaMapper.fromPrismaToEntity(coordenadaPrisma);
   }
+
+  public async delete(idCoordenada: number) {
+    console.log(idCoordenada);
+
+    await this.prisma.coordenadas.delete(
+      {
+        where: {
+          id_coordenadas: idCoordenada
+        }
+      }
+    );
+  }
 }

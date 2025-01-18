@@ -13,6 +13,9 @@ import { Inject, Injectable } from '../../infrastructure/dependencies/injectable
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { type Domicilio } from '../../domain/entities/domicilio.entity';
 import { DomicilioMapper } from '../mappers/domicilio.mapper';
+import { ViajesService } from './viajes.service';
+import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
+import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 
 @Injectable()
 export class EnviosService {
@@ -20,7 +23,10 @@ export class EnviosService {
     @Inject(REPOSITORIES_TOKENS.IEnviosRepository) private readonly enviosRepository: IEnviosRepository,
     @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository) private readonly domicilioRepository: IDomicilioRepository,
     @Inject(REPOSITORIES_TOKENS.ILocalidadesRepository) private readonly localidadRepository: ILocalidadRepository,
-    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository,
+    @Inject(REPOSITORIES_TOKENS.IConductoresRepository) private readonly conductorRepository: IConductoresRepository,
+    @Inject(REPOSITORIES_TOKENS.ICoordenadasRepository) private readonly coordenadasRepository: ICoordenadaRepository,
+    private readonly viajeService: ViajesService
   ) {}
 
   public async getAll(): Promise<Envio[]> {
@@ -42,7 +48,7 @@ export class EnviosService {
     return envio;
   }
 
-  public async create(postEnvioDto: PostEnvioDto): Promise<number> { // TODO: Implementar crear viaje
+  public async create(postEnvioDto: PostEnvioDto): Promise<number> {
     const localidadOrigen = await this.localidadRepository.getLocalidad(postEnvioDto.origen.localidadID);
     if (!localidadOrigen) throw CustomError.notFound('La localidad de origen no existe');
 
@@ -77,7 +83,9 @@ export class EnviosService {
     if (!envio.verificarRangoHorario()) throw CustomError.badRequest(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
 
     envio.verificarReserva();
-    // TODO: Implementar crear viaje() para el envio
+
+    const conductorId = await this.conductorRepository.buscarConductor();
+    if (!conductorId) throw CustomError.notFound('No hay conductores disponibles');
 
     // Setea los domicilios con sus IDs si existen, sino los crea
     envio.setOrigen(await this.getOrCreateDomicilio(envio.getOrigen()));
@@ -89,6 +97,9 @@ export class EnviosService {
     }
 
     const nroSeguimiento = await this.enviosRepository.create(envio);
+
+    await this.viajeService.create(envio, conductorId);
+
     return nroSeguimiento;
   }
 
@@ -133,7 +144,17 @@ export class EnviosService {
   }
 
   public async updateEstadoEnvio(nroSeguimiento: number, estadoEnvioID: number) {
+    if (!(estadoEnvioID === 5)) {
+      await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
+    }
+
     await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
+
+    // const viajeEncontrado = await this.viajeService.getViajeByNroSeguimiento(nroSeguimiento);
+    // console.log(viajeEncontrado);
+
+
+    // TODO: falta borrar los checkpoints que tambien son del viaje
   }
 
   public async cancelarEnvio(nroSeguimiento: number): Promise<void> {

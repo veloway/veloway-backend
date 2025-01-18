@@ -20,11 +20,14 @@ export class PostEnvioDto {
     }
 
     // Convierte la hora en formato Date para poder guardarla en la base de datos
-    const hora = new Date(`1970-01-01T${envioValidation.data.hora}Z`); // La z es para que tome la hora en UTC
+    const horaDate = new Date();
+    horaDate.setHours(Number(envioValidation.data.hora.split(':')[0]));
+    horaDate.setMinutes(Number(envioValidation.data.hora.split(':')[1]));
+    horaDate.setSeconds(0, 0);
 
     return [undefined, new PostEnvioDto(
       envioValidation.data.descripcion,
-      hora,
+      horaDate,
       envioValidation.data.pesoGramos,
       envioValidation.data.reserva,
       envioValidation.data.origen,

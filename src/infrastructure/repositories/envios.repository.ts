@@ -110,6 +110,8 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaToEntity(envioPrisma);
   }
 
+
+  // La bd guarda la fecha y hora en UTC
   public async create(envio: Envio): Promise<number> {
     const envioData = await this.prisma.envios.create({
       data: {
