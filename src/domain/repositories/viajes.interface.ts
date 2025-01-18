@@ -5,4 +5,5 @@ export interface IViajeRepository {
   updateCheckpointActual(idViaje: number): Promise<number>
   getViaje(viajeId: number): Promise<Viaje | null>
   getAllByConductorId(conductorId: string): Promise<Viaje[]>
+  getViajeByNroSeguimiento(nroSeguimiento: number): Promise<Viaje | null>
 }

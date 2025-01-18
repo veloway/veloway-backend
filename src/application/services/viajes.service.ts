@@ -31,7 +31,7 @@ export class ViajesService {
   }
 
   // crea un viaje
-  public async create(envio: Envio): Promise<number> {
+  public async create(envio: Envio, idConductor: string): Promise<number> {
     const origenData = await obtenerCoordOrigen(envio);
     const destinoData = await obtenerCoordDestino(envio);
 
@@ -53,18 +53,20 @@ export class ViajesService {
     origen.setIdCoordenada(origenId);
     destino.setIdCoordenada(destinoId);
 
-    // gardo fecha y hora en una sola variable
-    const fechaHoraInicio = `${envio.getFecha().getDay()} ${envio.getHora().getTime()}`;
-    const fechaHoraInicioDate = new Date(fechaHoraInicio);
-
-    // llamar a la funcion de buscar un conductor disponible
+    // Crear un nuevo objeto Date con la fecha y la hora combinada
+    const fecha = envio.getFecha();
+    const hora = envio.getHora();
+    const fechaHora = new Date(fecha);
+    fechaHora.setHours(Number(hora.getHours()));
+    fechaHora.setMinutes(Number(hora.getMinutes()));
+    fechaHora.setSeconds(0, 0);
 
     const newViaje = new Viaje(
       0,
       1,
-      fechaHoraInicioDate,
+      fechaHora, // Despues lo cambio
       null,
-      '0', // Buscar conductor disponible
+      idConductor,
       envio,
       origen,
       destino
@@ -73,6 +75,11 @@ export class ViajesService {
     const viajeId = await this.viajeRepository.create(newViaje);
     return viajeId;
   }
-}
 
-// modificar la base de datos real
+  public async getViajeByNroSeguimiento(nroSeguimiento: number): Promise<Viaje> {
+    const viajeEncontrado = await this.viajeRepository.getViajeByNroSeguimiento(nroSeguimiento);
+
+    if (!viajeEncontrado) throw CustomError.notFound('No se encontro el viaje con ese nro de seguimiento');
+    return viajeEncontrado;
+  }
+}

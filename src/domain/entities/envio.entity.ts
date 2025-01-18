@@ -7,7 +7,6 @@ export const PESO_GRAMOS_MAX = 20000;
 const PRECIO_CADA_100_GRAMOS = 500;
 export const HORA_INICIO = 8;
 export const HORA_FIN = 18;
-const DIFERENCIA_HORARIA = 3;
 
 export class Envio {
   constructor(
@@ -119,23 +118,35 @@ export class Envio {
     return this.pesoGramos * PRECIO_CADA_100_GRAMOS / 100;
   }
 
-  // Verificacion del rango horario que viene en el json
+  /* - Verificacion del rango horario que viene en el json
+   *- Se maneja en UTC porque en el mapper se convierte la hora enviada
+    a UTC para poder guardarla en la base de datos
+  */
   public verificarRangoHorario(): boolean {
-    if (this.hora.getUTCHours() < HORA_INICIO || this.hora.getUTCHours() > HORA_FIN) {
+    const horaArg = this.getArgentinaHour(this.hora);
+    if (horaArg < HORA_INICIO || horaArg >= HORA_FIN) {
       return false;
     }
     return true;
   }
 
   /* Si se manda un rango horario valido se verifica que:
-    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto, hora actual pasada por json)
+    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto)
     2) Si el envio es reserva, se verifica la fecha:
       - Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
       - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia (fecha actual por defecto)
   */
   public verificarReserva(): void {
-    const horaActual = this.fecha.getUTCHours() - DIFERENCIA_HORARIA;
-    if (horaActual < HORA_INICIO || horaActual > HORA_FIN) {
+    if (!this.reserva) {
+      this.hora = this.fecha; // Horario de la fecha actual
+      this.hora = new Date(this.hora.setSeconds(0, 0)); // HH:mm:00
+      if (!this.verificarRangoHorario()) {
+        throw new Error(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
+      }
+      return;
+    }
+    const horaArg = this.getArgentinaHour(this.fecha);
+    if (horaArg < HORA_INICIO || horaArg > HORA_FIN) {
       this.fecha.setDate(this.fecha.getDate() + 1);
     }
   }
@@ -145,5 +156,15 @@ export class Envio {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Por defecto new Date() devuelve la hora en UTC, por eso se convierte a la hora de Argentina
+   * para hacer los calculos correspondientes.
+   */
+  private getArgentinaHour(date: Date): number {
+    const tiempoArg = date.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false, hour: '2-digit', minute: '2-digit' });
+    const horaArg = Number(tiempoArg.split(':')[0]);
+    return horaArg;
   }
 }

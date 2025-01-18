@@ -66,7 +66,7 @@ export class EnvioMapper {
     return new Envio(
       existingEnvio.getNroSeguimiento(),
       updateEnvioDto.descripcion,
-      updateEnvioDto.fecha,
+      existingEnvio.getFecha(),
       updateEnvioDto.hora,
       updateEnvioDto.pesoGramos,
       existingEnvio.calcularMonto(),

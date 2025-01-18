@@ -19,7 +19,7 @@ export class Conductor extends Usuario {
     envios?: Envio[] | null
   /* foreign que necesito
     private patente: Vehiculos,
-*/
+  */
   ) {
     super(
       id,
