@@ -1,5 +1,6 @@
 import express, { type Router } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 export interface Options {
   port?: number
@@ -21,6 +22,7 @@ export class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.use(cors());
+    this.app.use(cookieParser());
 
     // Routes
     this.app.use(this.routes);
