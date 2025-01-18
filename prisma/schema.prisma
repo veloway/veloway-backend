@@ -135,6 +135,8 @@ model usuarios {
   apellido     String       @db.VarChar(50)
   es_conductor Boolean
   telefono     String?      @db.VarChar(20)
+  api_key      String       @unique @db.VarChar(100)
+  is_active    Boolean      @default(true)
   conductores  conductores?
   domicilios   domicilios?
   envios       envios[]

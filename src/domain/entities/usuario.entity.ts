@@ -10,6 +10,8 @@ export class Usuario {
     private nombre: string,
     private apellido: string,
     private esConductor: boolean,
+    private is_active: boolean = true,
+    private api_key: string,
     private telefono?: string | null,
     private envios?: Envio[] | null
   ) {}
@@ -55,12 +57,41 @@ export class Usuario {
     return this.envios;
   }
 
+  public getApiKey(): string {
+    return this.api_key;
+  }
 
-//Setter
+  public getIsActive(): boolean {
+    return this.is_active;
+  }
 
-public setPassword(newPassword: string) {
- this.password = newPassword;
-}
+  // Setter
 
+  public setPassword(newPassword: string) {
+    this.password = newPassword;
+  }
 
+  public setNombre(newNombre: string) {
+    this.nombre = newNombre;
+  }
+
+  public setApellido(newApellido: string) {
+    this.apellido = newApellido;
+  }
+
+  public setTelefono(newTelefono: string) {
+    this.telefono = newTelefono;
+  }
+
+  public setApiKey(newApiKey: string) {
+    this.api_key = newApiKey;
+  }
+
+  public setIsActive(newIsActive: boolean) {
+    this.is_active = newIsActive;
+  }
+
+  public setEnvios(newEnvios: Envio[]) {
+    this.envios = newEnvios;
+  }
 }

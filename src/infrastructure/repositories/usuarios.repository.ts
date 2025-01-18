@@ -22,6 +22,8 @@ export class UsuarioRepository implements IUsuarioRepository {
         usuarioData.nombre,
         usuarioData.apellido,
         usuarioData.es_conductor,
+        usuarioData.is_active,
+        usuarioData.api_key,
         usuarioData.telefono
       );
     });
@@ -30,8 +32,8 @@ export class UsuarioRepository implements IUsuarioRepository {
   public async getUsuario(id: string): Promise<Usuario | null> {
     const usuarioData = await this.prisma.usuarios.findUnique({
       where: {
-        id_usuario: id,
-      },
+        id_usuario: id
+      }
     });
 
     // Si encontramos al usuario, lo convertimos en una instancia de Usuario
@@ -45,6 +47,8 @@ export class UsuarioRepository implements IUsuarioRepository {
         usuarioData.nombre,
         usuarioData.apellido,
         usuarioData.es_conductor,
+        usuarioData.is_active,
+        usuarioData.api_key,
         usuarioData.telefono
       );
     }
@@ -56,8 +60,8 @@ export class UsuarioRepository implements IUsuarioRepository {
   public async getUsuarioByEmail(email: string): Promise<Usuario | null> {
     const usuarioData = await this.prisma.usuarios.findUnique({
       where: {
-        email,
-      },
+        email
+      }
     });
 
     if (usuarioData) {
@@ -70,9 +74,10 @@ export class UsuarioRepository implements IUsuarioRepository {
         usuarioData.nombre,
         usuarioData.apellido,
         usuarioData.es_conductor,
+        usuarioData.is_active,
+        usuarioData.api_key,
         usuarioData.telefono
       );
-      
     }
     return null;
   }
@@ -88,8 +93,10 @@ export class UsuarioRepository implements IUsuarioRepository {
         nombre: usuario.getNombre(),
         apellido: usuario.getApellido(),
         es_conductor: usuario.getEsConductor(),
-        telefono: usuario.getTelefono(),
-      },
+        is_active: usuario.getIsActive(),
+        api_key: usuario.getApiKey(),
+        telefono: usuario.getTelefono()
+      }
     });
   }
 
@@ -97,7 +104,7 @@ export class UsuarioRepository implements IUsuarioRepository {
     try {
       // Prisma realiza una actualización de usuario, usando el ID para buscarlo
       await this.prisma.usuarios.update({
-        where: { id_usuario: usuario.getID() },  // Buscamos por ID para actualizar el usuario
+        where: { id_usuario: usuario.getID() }, // Buscamos por ID para actualizar el usuario
         data: {
           dni: usuario.getDni(),
           email: usuario.getEmail(),
@@ -106,8 +113,8 @@ export class UsuarioRepository implements IUsuarioRepository {
           nombre: usuario.getNombre(),
           apellido: usuario.getApellido(),
           es_conductor: usuario.getEsConductor(),
-          telefono: usuario.getTelefono(),
-        },
+          telefono: usuario.getTelefono()
+        }
       });
     } catch (error) {
       console.error('Error al guardar el usuario:', error);
@@ -118,14 +125,11 @@ export class UsuarioRepository implements IUsuarioRepository {
   public async resetPassword(newPassword: string, usuario: Usuario): Promise<void> {
     try {
       usuario.setPassword(newPassword);
-      await this.update(usuario)
+      await this.update(usuario);
     } catch (error) {
       console.error('Error al resetear contraseña del usuario:', error);
       throw new Error('No se pudo guardar la contraseña');
     }
-
-
   }
-
 }
 

@@ -1,6 +1,6 @@
 import { type Domicilio } from '../../../domain/entities/domicilio.entity';
 import { type Envio } from '../../../domain/entities/envio.entity';
-import { UsuarioDto } from '../usuario/getUsuario.dto';
+import { GetUsuarioDto } from '../usuario/getUsuario.dto';
 
 export class GetEnvioDto {
   private constructor(
@@ -14,7 +14,7 @@ export class GetEnvioDto {
     public estado: string,
     public origen: Domicilio,
     public destino: Domicilio,
-    public cliente: UsuarioDto
+    public cliente: GetUsuarioDto
   ) {}
 
   public static create(envio: Envio): GetEnvioDto {
@@ -45,7 +45,7 @@ export class GetEnvioDto {
       envio.getEstado().getNombre(),
       envio.getOrigen(),
       envio.getDestino(),
-      UsuarioDto.create(envio.getCliente())
+      GetUsuarioDto.create(envio.getCliente())
     );
   }
 }

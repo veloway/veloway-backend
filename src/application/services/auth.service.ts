@@ -1,30 +1,28 @@
 import { UsuarioRepository } from '../../infrastructure/repositories/usuarios.repository';
 import { Usuario } from '../../domain/entities/usuario.entity';
-import { BcryptHashProvider  } from '../../utils/bcrypt-hash.provider';
-import { Injectable, Inject} from '../../infrastructure/dependencies/injectable.dependency';
+import { BcryptHashProvider } from '../../infrastructure/jwt/bcrypt-hash.provider';
+import { Injectable, Inject } from '../../infrastructure/dependencies/injectable.dependency';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
-import { JwtService } from '../../utils/jwtService';
-import { EmailService } from '../../utils/nodeMailerService';
+import { JwtService } from '../../infrastructure/jwt/jwtService';
+import { EmailService } from '../../infrastructure/email/nodeMailerService';
 import crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
   resetTokens: Map<string, string>;
   constructor(
-    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)
-    private readonly usuarioRepository: UsuarioRepository,
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly usuarioRepository: UsuarioRepository,
     private readonly hashProvider: BcryptHashProvider,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService
   ) {
-    this.resetTokens = new Map<string, string>();}
+    this.resetTokens = new Map<string, string>();
+  }
 
 
-  public async login(email: string, password: string): Promise<{ token: string; usuario: Usuario } | null> {
-    // Buscar al usuario por email
+  public async login(email: string, password: string): Promise<{ token: string, usuario: Usuario } | null> {
     const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
 
-    // Si no se encuentra el usuario
     if (!usuario) {
       return null;
     }
@@ -33,11 +31,11 @@ export class AuthService {
     const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
 
     if (!validPassword) {
-      return null; // Si la contraseña no coincide, retornamos null
+      return null;
     }
-    const token = await this.jwtService.generateToken({ usuario: Usuario });
+    const token = this.jwtService.generateToken({ usuario: Usuario });
 
-    return { token, usuario }; // Si la autenticación es exitosa, retornamos el usuario
+    return { token, usuario };
   }
 
   async requestPasswordReset(email: string): Promise<void> {
@@ -57,19 +55,17 @@ export class AuthService {
       to: email,
       subject: 'Recuperación de Contraseña',
       html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-             <a href="${resetLink}">${resetLink}</a>`,
+             <a href="${resetLink}">${resetLink}</a>`
     });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     const email = this.resetTokens.get(token);
-
     if (!email) {
       throw new Error('Token inválido o expirado.');
     }
 
     const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
-
     if (!usuario) {
       throw new Error('Usuario no encontrado.');
     }
@@ -81,5 +77,4 @@ export class AuthService {
     // Eliminar el token después de usarlo
     this.resetTokens.delete(token);
   }
-
 }

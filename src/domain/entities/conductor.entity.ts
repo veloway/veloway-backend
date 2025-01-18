@@ -15,6 +15,8 @@ export class Conductor extends Usuario {
     nombre: string,
     apellido: string,
     esConductor: boolean,
+    is_active: boolean,
+    api_key: string,
     telefono?: string | null,
     envios?: Envio[] | null
   /* foreign que necesito
@@ -30,6 +32,8 @@ export class Conductor extends Usuario {
       nombre,
       apellido,
       esConductor,
+      is_active,
+      api_key,
       telefono,
       envios
     );

@@ -1,10 +1,10 @@
-import nodemailer, { Transporter } from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 
 interface EmailOptions {
-  to: string;
-  subject: string;
-  text?: string;
-  html?: string;
+  to: string
+  subject: string
+  text?: string
+  html?: string
 }
 
 export class EmailService {
@@ -17,8 +17,8 @@ export class EmailService {
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
+        pass: process.env.EMAIL_PASSWORD
+      }
     });
   }
 
@@ -28,7 +28,7 @@ export class EmailService {
       to: options.to,
       subject: options.subject,
       text: options.text,
-      html: options.html,
+      html: options.html
     };
 
     await this.transporter.sendMail(mailOptions);
