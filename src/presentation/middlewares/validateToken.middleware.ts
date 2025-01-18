@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { JwtService } from '../../utils/jwtService';  // Importa el JwtService
+import { JwtService } from '../../infrastructure/jwt/jwtService';  // Importa el JwtService
 
 export function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const token = req.header('Authorization')?.replace('Bearer ', '');

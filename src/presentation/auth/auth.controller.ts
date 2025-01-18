@@ -3,14 +3,11 @@ import { AuthService } from '../../application/services/auth.service';
 import { HandleError } from '../errors/handle.error';
 import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 
-
-
 @Injectable()
 export class AuthController {
-
-    constructor(
-      private readonly authService: AuthService
-    ) { }
+  constructor(
+    private readonly authService: AuthService
+  ) { }
 
   login = async (req: Request, res: Response) => {
     try {
@@ -22,15 +19,14 @@ export class AuthController {
       if (!loginResponse) {
         return res.status(401).json({ message: 'Credenciales inválidas' });
       }
-  
-      const { token, usuario } = loginResponse;
 
+      const { token, usuario } = loginResponse;
 
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge:  60 * 60 * 1000, // 1 hs
+        maxAge: 60 * 60 * 1000 // 1 hs
       });
       // Enviar respuesta con el token
       res.status(200).json({ message: 'Login exitoso', usuario });
@@ -39,21 +35,20 @@ export class AuthController {
     }
   };
 
-  logout = (req: Request, res: Response): void=> {
+  logout = (req: Request, res: Response): void => {
     try {
       res.clearCookie('auth_token', {
-        httpOnly: true,  
-        secure: process.env.NODE_ENV === 'production',  
-        sameSite: 'strict', 
-        path: '/'  
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/'
       });
 
-       res.status(200).json({ message: 'Logout exitoso' });
+      res.status(200).json({ message: 'Logout exitoso' });
     } catch (error) {
-       res.status(500).json({ message: 'Hubo un error al cerrar sesión' });
+      res.status(500).json({ message: 'Hubo un error al cerrar sesión' });
     }
   };
-
 
   requestPasswordReset = async (req: Request, res: Response) => {
     try {
@@ -65,7 +60,7 @@ export class AuthController {
     }
   };
 
-   resetPassword = async (req: Request, res: Response) => {
+  resetPassword = async (req: Request, res: Response) => {
     try {
       const { token, newPassword } = req.body;
       await this.authService.resetPassword(token, newPassword);

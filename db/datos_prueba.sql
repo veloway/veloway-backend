@@ -139,12 +139,12 @@ INSERT INTO localidades (codigo_postal, nombre, id_provincia) VALUES
 (9420, 'Río Grande', 23);
 
 -- Usuarios
-INSERT INTO usuarios (id_usuario, dni, email, password, fecha_nac, nombre, apellido, es_conductor, telefono) 
+INSERT INTO usuarios (id_usuario, dni, email, password, fecha_nac, nombre, apellido, es_conductor, telefono, api_key) 
 VALUES 
-    ('123e4567-e89b-12d3-a456-426614174000', 12345678, 'juan.perez@example.com', 'hashedpassword1', '1990-01-01', 'Juan', 'Pérez', FALSE, '111111111'),
-    ('987f6543-e21c-54d3-b789-426614174001', 87654321, 'ana.gomez@example.com', 'hashedpassword2', '1985-05-15', 'Ana', 'Gómez', TRUE, '222222222'),
-    ('456e7890-e21c-78d3-b456-426614174002', 34567890, 'maria.lopez@example.com', 'hashedpassword3', '1992-03-12', 'María', 'López', FALSE, '333333333'),
-    ('789a1234-e21c-98d3-b123-426614174003', 65432198, 'carlos.martinez@example.com', 'hashedpassword4', '1988-07-08', 'Carlos', 'Martínez', TRUE, '444444444');
+    ('123e4567-e89b-12d3-a456-426614174000', 12345678, 'juan.perez@example.com', 'hashedpassword1', '1990-01-01', 'Juan', 'Pérez', FALSE, '111111111', 'ae07886b-0fcd-4ae8-8674-993e85f10663'),
+    ('987f6543-e21c-54d3-b789-426614174001', 87654321, 'ana.gomez@example.com', 'hashedpassword2', '1985-05-15', 'Ana', 'Gómez', TRUE, '222222222', '684b61b1-b980-46fb-92a6-dcb8c837c5b9'),
+    ('456e7890-e21c-78d3-b456-426614174002', 34567890, 'maria.lopez@example.com', 'hashedpassword3', '1992-03-12', 'María', 'López', FALSE, '333333333', '7fd7a37c-51a8-45f9-a3e0-ad108422bc3b'),
+    ('789a1234-e21c-98d3-b123-426614174003', 65432198, 'carlos.martinez@example.com', 'hashedpassword4', '1988-07-08', 'Carlos', 'Martínez', TRUE, '444444444', '87e9fa7a-3db2-4527-be8b-0f3e23c16f5e');
 
 
 -- Domicilios

@@ -105,6 +105,8 @@ export class EnvioPrismaMapper {
         usuarios.nombre,
         usuarios.apellido,
         usuarios.es_conductor,
+        usuarios.is_active,
+        usuarios.api_key,
         usuarios.telefono
       )
     );

@@ -1,54 +1,34 @@
 import { type Request, type Response } from 'express';
 import { UsuarioService } from '../../application/services/usuario.service';
-import { UsuarioDto } from '../../application/dtos/usuario/getUsuario.dto'
+import { GetUsuarioDto } from '../../application/dtos/usuario/getUsuario.dto';
 import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 import { HandleError } from '../errors/handle.error';
-import { clientSchema } from '../../application/validations/usuario/postUsuario.validation';
-
+import { RegisterUsuarioDto } from '../../application/dtos/usuario/registerUsuario.dto';
 
 @Injectable()
 export class UsuarioController {
   constructor(
     private readonly usuarioService: UsuarioService
-  ) { }
+  ) {}
 
   register = async (req: Request, res: Response) => {
     try {
-      const { dni, email, password, fechaNac, nombre, apellido, telefono } = req.body;
+      const [error, clienteDto] = RegisterUsuarioDto.create(req.body);
 
-      //Hacer validacion de datos
+      if (error) {
+        res.status(400).json({ message: error });
+        return;
+      }
 
-      const validatedClient = clientSchema.parse({
-        email: email,
-        password: password,
-        dni: dni,
-        birthDate: fechaNac,
-        name: nombre,
-        lastName: apellido,
-        phone: telefono,
-      });
-
-      // Llamar al servicio de registro
-      const usuario = await this.usuarioService.register({
-        dni,
-        email,
-        password,
-        fechaNac,
-        nombre,
-        apellido,
-        esConductor: false,
-        telefono,
-      });
-
-      // Convertir la entidad de dominio en un DTO
-      const usuarioDto = UsuarioDto.create(usuario);
-
-      // Enviar respuesta al cliente
-      res.status(201).json(usuarioDto);
+      if (clienteDto) {
+        const usuario = await this.usuarioService.register(clienteDto);
+        const usuarioDto = GetUsuarioDto.create(usuario);
+        res.status(201).json(usuarioDto);
+      }
     } catch (error) {
       HandleError.throw(error, res);
     }
-  }
+  };
 
   // login = async (req: Request, res: Response) => {
   //   try {
@@ -60,7 +40,7 @@ export class UsuarioController {
   //     if (!loginResponse) {
   //       return res.status(401).json({ message: 'Credenciales inválidas' });
   //     }
-  
+
   //     const { token, usuario } = loginResponse;
 
 
@@ -80,10 +60,10 @@ export class UsuarioController {
   // logout = (req: Request, res: Response): void=> {
   //   try {
   //     res.clearCookie('auth_token', {
-  //       httpOnly: true,  
-  //       secure: process.env.NODE_ENV === 'production',  
-  //       sameSite: 'strict', 
-  //       path: '/'  
+  //       httpOnly: true,
+  //       secure: process.env.NODE_ENV === 'production',
+  //       sameSite: 'strict',
+  //       path: '/'
   //     });
 
   //      res.status(200).json({ message: 'Logout exitoso' });
@@ -114,48 +94,38 @@ export class UsuarioController {
   // };
 
 
-  getAll = async (req: Request, res: Response) => {
+  getAll = async (_req: Request, res: Response) => {
     try {
       const usuarios = await this.usuarioService.getAll();
-      const usuariosDto = usuarios.map((usuario) => UsuarioDto.create(usuario));
+      const usuariosDto = usuarios.map((usuario) => GetUsuarioDto.create(usuario));
+
       res.status(200).json(usuariosDto);
     } catch (error) {
       HandleError.throw(error, res);
     }
-  }
+  };
 
   getUsuarioPorId = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-
-      // Obtener el usuario desde el servicio
       const usuario = await this.usuarioService.getUsuarioPorId(id);
+      const usuarioDto = GetUsuarioDto.create(usuario);
 
-      // Convertir a DTO
-      const usuarioDto = UsuarioDto.create(usuario);
-
-      // Responder al cliente
       res.status(200).json(usuarioDto);
     } catch (error) {
       HandleError.throw(error, res);
     }
-  }
+  };
 
   getUsuarioPorEmail = async (req: Request, res: Response) => {
     try {
       const { email } = req.params;
-
-      // Obtener el usuario desde el servicio
       const usuario = await this.usuarioService.getUsuarioPorEmail(email);
+      const usuarioDto = GetUsuarioDto.create(usuario);
 
-      // Convertir a DTO
-      const usuarioDto = UsuarioDto.create(usuario);
-
-      // Responder al cliente
       res.status(200).json(usuarioDto);
     } catch (error) {
       HandleError.throw(error, res);
     }
-  }
-
+  };
 }

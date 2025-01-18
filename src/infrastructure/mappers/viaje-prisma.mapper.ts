@@ -109,6 +109,8 @@ export class ViajePrismaMapper {
           envios.usuarios.nombre,
           envios.usuarios.apellido,
           envios.usuarios.es_conductor,
+          envios.usuarios.is_active,
+          envios.usuarios.api_key,
           envios.usuarios.telefono
         )
       ),

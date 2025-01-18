@@ -38,7 +38,9 @@ CREATE TABLE usuarios (
 	nombre VARCHAR(50) NOT NULL,
 	apellido VARCHAR(50) NOT NULL,
 	es_conductor BOOLEAN NOT NULL,
-	telefono VARCHAR(20)
+	telefono VARCHAR(20),
+	api_key VARCHAR(100) NOT NULL UNIQUE,
+	is_active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE domicilios (

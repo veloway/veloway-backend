@@ -1,20 +1,10 @@
 import { UsuarioRepository } from '../../infrastructure/repositories/usuarios.repository';
 import { Usuario } from '../../domain/entities/usuario.entity';
-import { BcryptHashProvider  } from '../../utils/bcrypt-hash.provider';
-import { Injectable, Inject} from '../../infrastructure/dependencies/injectable.dependency';
+import { BcryptHashProvider } from '../../infrastructure/jwt/bcrypt-hash.provider';
+import { Injectable, Inject } from '../../infrastructure/dependencies/injectable.dependency';
 import { randomUUID } from 'crypto';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
-
-interface RegisterUsuarioDto {
-  dni: number;
-  email: string;
-  password: string;
-  fechaNac: Date;
-  nombre: string;
-  apellido: string;
-  esConductor: boolean;
-  telefono?: string | null;
-}
+import { type RegisterUsuarioDto } from '../dtos/usuario/registerUsuario.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -24,7 +14,8 @@ export class UsuarioService {
     private readonly usuarioRepository: UsuarioRepository,
     private readonly hashProvider: BcryptHashProvider
   ) {
-    this.resetTokens = new Map<string, string>();}
+    this.resetTokens = new Map<string, string>();
+  }
 
 
   // public async login(email: string, password: string): Promise<{ token: string; usuario: Usuario } | null> {
@@ -93,7 +84,7 @@ export class UsuarioService {
   public async register(data: RegisterUsuarioDto): Promise<Usuario> {
     const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = data;
 
-    
+
     const id = randomUUID(); // Generar UUID en el servicio
 
     // Validar si ya existe un usuario con el mismo email
@@ -105,7 +96,7 @@ export class UsuarioService {
     // Encriptar la contraseña
     const hashedPassword = await this.hashProvider.hash(password);
 
-    const fechaNacDate = new Date(fechaNac)
+    const fechaNacDate = new Date(fechaNac);
 
     // Crear la entidad de usuario
     const usuario = new Usuario(
@@ -117,6 +108,8 @@ export class UsuarioService {
       nombre,
       apellido,
       esConductor,
+      true,
+      'asdasd', // TODO: PUSE UN STRING RANDOM PARA QUE NO TIRE ERROR, HAY QUE IMPLEMENTAR LOGICA PARA GENERAR API_KEY
       telefono
     );
 
@@ -128,7 +121,7 @@ export class UsuarioService {
 
   public async getAll(): Promise<Usuario[]> {
     const usuarios = await this.usuarioRepository.getall();
-    return usuarios
+    return usuarios;
   }
 
 
@@ -151,5 +144,4 @@ export class UsuarioService {
 
     return usuario;
   }
-
 }

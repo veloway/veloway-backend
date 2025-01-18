@@ -49,7 +49,7 @@
 //       if (!loginResponse) {
 //         return res.status(401).json({ message: 'Credenciales inválidas' });
 //       }
-  
+
 //       const { token, usuario } = loginResponse;
 
 
@@ -69,10 +69,10 @@
 //   logout = (req: Request, res: Response): void=> {
 //     try {
 //       res.clearCookie('auth_token', {
-//         httpOnly: true,  
-//         secure: process.env.NODE_ENV === 'production',  
-//         sameSite: 'strict', 
-//         path: '/'  
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === 'production',
+//         sameSite: 'strict',
+//         path: '/'
 //       });
 
 //        res.status(200).json({ message: 'Logout exitoso' });
