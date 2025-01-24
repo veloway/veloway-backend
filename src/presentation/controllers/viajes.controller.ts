@@ -23,9 +23,9 @@ export class ViajesController {
   };
 
   getViaje = async (req: Request, res: Response) => {
-    const { viajeId } = req.params;
+    const { idViaje } = req.params;
     try {
-      const viaje = await this.viajesService.getViaje(Number(viajeId));
+      const viaje = await this.viajesService.getViaje(Number(idViaje));
       const viajesDto = GetViajeDto.create(viaje);
       res.status(200).json(viajesDto);
     } catch (error) {

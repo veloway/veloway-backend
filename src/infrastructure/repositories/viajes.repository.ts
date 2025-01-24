@@ -69,11 +69,66 @@ export class ViajesRepository implements IViajeRepository {
   }
 
   async getViaje(viajeId: number): Promise<Viaje | null> {
-    throw new Error('Method not implemented.');
+    const viajeEncontrado = await this.prisma.viajes.findFirst(
+      {
+        where: {
+          id_viaje: viajeId
+        },
+        include: {
+          conductores: {
+            include: {
+              estados_conductores: true,
+              usuarios: true
+            }
+          },
+          envios: {
+            include: {
+              usuarios: true,
+              estados_envio: true,
+              domicilios_envios_id_origenTodomicilios: {
+                include: {
+                  localidades: {
+                    include: {
+                      provincias: true
+                    }
+                  }
+                }
+              },
+              domicilios_envios_id_destinoTodomicilios: {
+                include: {
+                  localidades: {
+                    include: {
+                      provincias: true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          coordenadas_viajes_origen_cordTocoordenadas: true,
+          coordenadas_viajes_destino_cordTocoordenadas: true
+        }
+      }
+    );
+
+    if (!viajeEncontrado) {
+      return null;
+    }
+
+    return viajeEncontrado ? ViajePrismaMapper.fromPrismaToEntity(viajeEncontrado) : null;
   }
 
-  async updateCheckpointActual(idViaje: number): Promise<number> {
-    throw new Error('Method not implemented.');
+  async updateCheckpointActual(idViaje: number, checkpointActual: number): Promise<void> {
+    await this.prisma.viajes.update(
+      {
+        where: {
+          id_viaje: idViaje
+        },
+        data: {
+          checkpoint_actual: checkpointActual
+        }
+      }
+    );
   }
 
   async getViajeByNroSeguimiento(nroSeguimiento: number): Promise<Viaje | null> {
