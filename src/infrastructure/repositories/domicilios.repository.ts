@@ -2,10 +2,12 @@ import { PrismaClient } from '@prisma/client';
 import { Domicilio } from '../../domain/entities/domicilio.entity';
 import { type IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { Injectable } from '../dependencies/injectable.dependency';
+import { Localidad } from '../../domain/entities/localidad.entity';
+import { Provincia } from '../../domain/entities/provincia.entity';
 
 @Injectable()
 export class DomiciliosRepository implements IDomicilioRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient) { }
 
   getall: () => Promise<Domicilio[]>;
   delete: (id: number) => Promise<Domicilio>;
@@ -92,6 +94,64 @@ export class DomiciliosRepository implements IDomicilioRepository {
       domicilioPrisma.descripcion
     );
   }
+
+  public async getById(idDomicilio: number): Promise<Domicilio | null> {
+    try {
+      const domicilioData = await this.prisma.domicilios.findUnique({
+        where: { id_domicilio: idDomicilio },
+        include: {
+          localidades: {
+            include: {
+              provincias: true,  // Incluimos la provincia dentro de la localidad
+            },
+          },
+        },
+      });
+
+      if (!domicilioData) {
+        return null;
+      }
+
+      const provincia = new Provincia(
+        domicilioData.localidades.provincias.id_provincia,
+        domicilioData.localidades.provincias.nombre
+      )
+
+
+      const localidad = new Localidad(
+        domicilioData.localidades.id_localidad,
+        domicilioData.localidades.codigo_postal,
+        domicilioData.localidades.nombre,
+        provincia
+      );
+
+      // Mapear el objeto de Prisma a la clase Domicilio
+      return new Domicilio(
+        domicilioData.id_domicilio,
+        domicilioData.calle,
+        domicilioData.numero,
+        localidad, domicilioData.piso,
+        domicilioData.depto,
+        domicilioData.descripcion
+      );
+
+
+    } catch (error) {
+      console.error(`Error al obtener el domicilio con ID ${idDomicilio}:`, error);
+      throw new Error('Error al obtener el domicilio.');
+    }
+  }
+
+  public async getLastId(): Promise<number> {
+    const result = await this.prisma.domicilios.findFirst({
+      orderBy: { id_domicilio: 'desc' }, // Suponiendo que 'id_domicilio' es el nombre del campo del ID
+      select: { id_domicilio: true },
+    });
+
+    // Retorna el último ID o 0 si no hay domicilios registrados
+    return result?.id_domicilio ? Number(result.id_domicilio) : 0;
+  }
+
 }
 
 

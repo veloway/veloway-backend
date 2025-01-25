@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import { prismaClient } from '../data/prismaClient';
 import { EnviosRepository } from '../repositories/envios.repository';
 import { DomiciliosRepository } from '../repositories/domicilios.repository';
+import { DomicilioService } from '../../application/services/domicilio.service';
 import { LocalidadesRepository } from '../repositories/localidades.repository';
 import { UsuarioRepository } from '../repositories/usuarios.repository';
 import { UsuarioService } from "../../application/services/usuario.service"
@@ -38,6 +39,7 @@ container.register(ViajesService, { useClass: ViajesService });
 container.register(LocalidadesService, { useClass: LocalidadesService });
 container.register(UsuarioService, { useClass: UsuarioService })
 container.register(AuthService, {useClass: AuthService})
+container.register(DomicilioService, {useClass: DomicilioService})
 
 
 // Controladores

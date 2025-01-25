@@ -26,14 +26,16 @@ export class AuthService {
     if (!usuario) {
       return null;
     }
-
+    if (!usuario.getIsActive()) {
+      return null
+    }
     // Comparar la contraseña con la almacenada (suponiendo que la contraseña está cifrada)
     const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
 
     if (!validPassword) {
       return null;
     }
-    const token = this.jwtService.generateToken({ usuario: Usuario });
+    const token = this.jwtService.generateToken(usuario);
 
     return { token, usuario };
   }

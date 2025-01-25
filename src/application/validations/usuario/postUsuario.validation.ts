@@ -69,8 +69,19 @@ export const clientSchema = z.object({
   phone: phoneSchema
 });
 
+export const updateClientSchema = z.object({
+  email: emailSchema,
+  name: nameSchema,
+  lastName: nameSchema,
+  phone: phoneSchema
+});
+
 export const clientValidation = (cliente: any) => {
   return clientSchema.safeParse(cliente);
+};
+
+export const updateClientValidation = (cliente: any) => {
+  return updateClientSchema.safeParse(cliente);
 };
 
 

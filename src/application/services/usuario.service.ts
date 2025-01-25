@@ -5,6 +5,8 @@ import { Injectable, Inject } from '../../infrastructure/dependencies/injectable
 import { randomUUID } from 'crypto';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { type RegisterUsuarioDto } from '../dtos/usuario/registerUsuario.dto';
+import { generateApiKey } from '../../utils/generateApiKey';
+import { DomiciliosRepository } from '../../infrastructure/repositories/domicilios.repository';
 
 @Injectable()
 export class UsuarioService {
@@ -12,82 +14,24 @@ export class UsuarioService {
   constructor(
     @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)
     private readonly usuarioRepository: UsuarioRepository,
+    private readonly domicilioRepository: DomiciliosRepository,
     private readonly hashProvider: BcryptHashProvider
   ) {
     this.resetTokens = new Map<string, string>();
   }
 
 
-  // public async login(email: string, password: string): Promise<{ token: string; usuario: Usuario } | null> {
-  //   // Buscar al usuario por email
-  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
-
-  //   // Si no se encuentra el usuario
-  //   if (!usuario) {
-  //     return null;
-  //   }
-
-  //   // Comparar la contraseña con la almacenada (suponiendo que la contraseña está cifrada)
-  //   const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
-
-  //   if (!validPassword) {
-  //     return null; // Si la contraseña no coincide, retornamos null
-  //   }
-  //   const token = await this.jwtService.generateToken({ usuario: Usuario });
-
-  //   return { token, usuario }; // Si la autenticación es exitosa, retornamos el usuario
-  // }
-
-  // async requestPasswordReset(email: string): Promise<void> {
-  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
-
-  //   if (!usuario) {
-  //     throw new Error('El correo no está registrado.');
-  //   }
-
-  //   // Generar un token único
-  //   const token = crypto.randomBytes(32).toString('hex');
-  //   this.resetTokens.set(token, email);
-
-  //   // Enviar el correo con el enlace
-  //   const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-  //   await this.emailService.sendEmail({
-  //     to: email,
-  //     subject: 'Recuperación de Contraseña',
-  //     html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-  //            <a href="${resetLink}">${resetLink}</a>`,
-  //   });
-  // }
-
-  // async resetPassword(token: string, newPassword: string): Promise<void> {
-  //   const email = this.resetTokens.get(token);
-
-  //   if (!email) {
-  //     throw new Error('Token inválido o expirado.');
-  //   }
-
-  //   const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
-
-  //   if (!usuario) {
-  //     throw new Error('Usuario no encontrado.');
-  //   }
-
-  //   const newHashedPassword = await this.hashProvider.hash(newPassword);
-
-  //   this.usuarioRepository.resetPassword(newHashedPassword, usuario);
-
-  //   // Eliminar el token después de usarlo
-  //   this.resetTokens.delete(token);
-  // }
-
-
   public async register(data: RegisterUsuarioDto): Promise<Usuario> {
-    const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = data;
+    const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono, idDomicilio } = data;
 
 
     const id = randomUUID(); // Generar UUID en el servicio
-
-    // Validar si ya existe un usuario con el mismo email
+    const apiKey = generateApiKey()
+    const hashedApiKey = await this.hashProvider.hash(apiKey)
+    let domicilio = null
+    if (idDomicilio) {
+      domicilio = await this.domicilioRepository.getById(idDomicilio)
+    }
     const usuarioExistente = await this.usuarioRepository.getUsuarioByEmail(email);
     if (usuarioExistente) {
       throw new Error('El correo ya está registrado.');
@@ -109,8 +53,9 @@ export class UsuarioService {
       apellido,
       esConductor,
       true,
-      'asdasd', // TODO: PUSE UN STRING RANDOM PARA QUE NO TIRE ERROR, HAY QUE IMPLEMENTAR LOGICA PARA GENERAR API_KEY
-      telefono
+      hashedApiKey,
+      telefono,
+      domicilio
     );
 
     // Guardar el usuario en la base de datos
@@ -144,4 +89,66 @@ export class UsuarioService {
 
     return usuario;
   }
+
+  public async deactivateAccount(userId: string): Promise<void> {
+    try {
+      // Lógica adicional: verifica si el usuario ya está inactivo (opcional)
+      const usuario = await this.usuarioRepository.getUsuario(userId);
+
+      if (!usuario) {
+        throw new Error('Usuario no encontrado.');
+      }
+
+      if (!usuario.getIsActive()) { //al pedo?
+        throw new Error('La cuenta ya está desactivada.');
+      }
+
+      // Llamada al repositorio para desactivar la cuenta
+      await this.usuarioRepository.deactivateUser(userId);
+    } catch (error) {
+      console.error('Error en el servicio de desactivación:', error);
+      throw new Error('Error al desactivar la cuenta.');
+    }
+  }
+
+
+  regenerateApiKeyService = async (userId: string) => {
+    // Generamos una nueva API Key aleatoria
+    const newApiKey = generateApiKey();
+
+    // Hasheamos la nueva API Key para almacenarla de manera segura
+    const hashedApiKey = await this.hashProvider.hash(newApiKey)
+
+    // Actualizamos la base de datos con la nueva API Key hasheada
+    await this.usuarioRepository.updateApiKey(userId, hashedApiKey);
+
+    // Devolvemos la nueva API Key para mostrarla al usuario (solo una vez)
+    return newApiKey;
+  };
+
+
+  async getUserByApiKey(apiKey: string) {
+    // Buscar al usuario por la API Key proporcionada (comparable con el hash)
+    const hashedApiKey = await this.hashProvider.hash(apiKey)
+    const user = await this.usuarioRepository.findUserByApiKey(hashedApiKey);
+    return user;
+  }
+
+  public async modificarUsuario(id: string, data: any): Promise<void> {
+    try {
+      // Verificamos si el usuario existe
+      const usuarioExistente = await this.usuarioRepository.getUsuario(id)
+
+      if (!usuarioExistente) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      // Si el usuario existe, procedemos con la actualización
+      await this.usuarioRepository.update(usuarioExistente);
+    } catch (error) {
+      console.error('Error en el servicio al modificar usuario:', error);
+      throw new Error('No se pudo modificar el usuario');
+    }
+  }
 }
+

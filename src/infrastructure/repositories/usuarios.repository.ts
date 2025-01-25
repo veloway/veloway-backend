@@ -93,9 +93,13 @@ export class UsuarioRepository implements IUsuarioRepository {
         nombre: usuario.getNombre(),
         apellido: usuario.getApellido(),
         es_conductor: usuario.getEsConductor(),
-        is_active: usuario.getIsActive(),
         api_key: usuario.getApiKey(),
-        telefono: usuario.getTelefono()
+        telefono: usuario.getTelefono(),
+        domicilios:  {
+          connect: {
+            id_domicilio: usuario.getDomicilio()?.getID()
+          } // Conecta el domicilio por ID
+        }// Si no hay domicilio, omítelo
       }
     });
   }
@@ -113,6 +117,7 @@ export class UsuarioRepository implements IUsuarioRepository {
           nombre: usuario.getNombre(),
           apellido: usuario.getApellido(),
           es_conductor: usuario.getEsConductor(),
+          api_key: usuario.getApiKey(),
           telefono: usuario.getTelefono()
         }
       });
@@ -131,5 +136,34 @@ export class UsuarioRepository implements IUsuarioRepository {
       throw new Error('No se pudo guardar la contraseña');
     }
   }
+
+  public async deactivateUser(id: string): Promise<void> {
+    try {
+      await this.prisma.usuarios.update({
+        where: { id_usuario: id },
+        data: { is_active: false },
+      });
+    } catch (error) {
+      console.error('Error al desactivar la cuenta del usuario:', error);
+      throw new Error('No se pudo desactivar la cuenta del usuario.');
+    }
+  }
+
+  public async updateApiKey(userId: string, hashedApiKey: string): Promise<void> {
+
+    try {
+        await this.prisma.usuarios.update({ 
+          where: { id_usuario: userId },
+          data: { api_key: hashedApiKey },  
+        });
+    } catch (error) {
+        throw new Error('Error al actualizar la API Key en la base de datos');
+    }
 }
 
+async findUserByApiKey(apiKey: string) {
+  // Buscar el usuario en la base de datos por la API Key (suponiendo que la clave esté en la base de datos)
+  return await this.prisma.usuarios.findUnique({ where: { api_key: apiKey } });
+  
+}
+}
