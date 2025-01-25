@@ -21,6 +21,8 @@ import { CoordenadasRepository } from '../repositories/coordenadas.repository';
 import { LocalidadesService } from '../../application/services/localidades.service';
 import { LocalidadesController } from '../../presentation/controllers/localidades.controller';
 import { ConductoresRepository } from '../repositories/conductores.repository';
+import { ConductorService } from '../../application/services/conductor.service';
+import { CondutorController } from '../../presentation/controllers/conductor.controller';
 
 
 container.register(PrismaClient, { useValue: prismaClient });
@@ -40,6 +42,7 @@ container.register(LocalidadesService, { useClass: LocalidadesService });
 container.register(UsuarioService, { useClass: UsuarioService })
 container.register(AuthService, {useClass: AuthService})
 container.register(DomicilioService, {useClass: DomicilioService})
+container.register(ConductorService, {useClass: ConductorService})
 
 
 // Controladores
@@ -57,4 +60,7 @@ export const usuariosController = container.resolve(UsuarioController);
 
 container.register(AuthController, {useClass: AuthController});
 export const authController = container.resolve(AuthController);
+
+container.register(CondutorController, { useClass: CondutorController});
+export const condutorController = container.resolve(CondutorController);
 

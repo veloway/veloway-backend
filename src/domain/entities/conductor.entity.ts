@@ -1,6 +1,7 @@
 import { type Envio } from './envio.entity';
 import { type EstadoConductor } from './estadoConductor.entity';
 import { Usuario } from './usuario.entity';
+import { Domicilio } from './domicilio.entity';
 
 export class Conductor extends Usuario {
   constructor(
@@ -18,6 +19,7 @@ export class Conductor extends Usuario {
     is_active: boolean,
     api_key: string,
     telefono?: string | null,
+    domicilio?: Domicilio | null,
     envios?: Envio[] | null
   /* foreign que necesito
     private patente: Vehiculos,
@@ -35,9 +37,12 @@ export class Conductor extends Usuario {
       is_active,
       api_key,
       telefono,
+      domicilio,
       envios
     );
-    this.idConductor = id;
+    this.idConductor = idConductor;
+    this.compartirFichaMedica = compartirFichaMedica;
+    this.estadoConductor = estadoConductor;
   }
 
   // Getters

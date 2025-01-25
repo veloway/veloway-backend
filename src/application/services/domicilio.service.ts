@@ -25,8 +25,7 @@ export class DomicilioService {
             descripcion } = data;
 
 
-        const id = await this.domicilioRepository.getLastId();
-        console.log(id) // buscar otra forma de dar id
+        const id = await this.domicilioRepository.getLastId() + 1 ;
         const localidad = await this.localidadRepository.getLocalidad(localidadID)
         
         if (!localidad){

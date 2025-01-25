@@ -1,44 +1,41 @@
-// import { type Request, type Response } from 'express';
-// import { UsuarioService } from '../../application/services/usuario.service';
-// import { UsuarioDto } from '../../application/dtos/usuario/getUsuario.dto'
-// import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
-// import { HandleError } from '../errors/handle.error';
+import { type Request, type Response } from 'express';
+import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
+import { HandleError } from '../errors/handle.error';
+import { PostCondutorDto } from '../../application/dtos/conductor/postConductor.dto';
+import { GetConductorDto } from '../../application/dtos/conductor/getConductor.dto';
+import { ConductorService } from '../../application/services/conductor.service';
 
 
-// @Injectable()
-// export class CondutorController {
-//   constructor(
-//     private readonly usuarioService: UsuarioService
-//   ) { }
+@Injectable()
+export class CondutorController {
+    constructor(
+        private readonly conductorService: ConductorService
+    ) { }
 
-//   register = async (req: Request, res: Response) => {
-//     try {
-//       const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = req.body;
+    register = async (req: Request, res: Response) => {
+        try {
+            const { usuario, ...conductorData } = req.body;
 
-//       //Hacer validacion de datos
+            //Hacer validacion de datos
 
-//       // Llamar al servicio de registro
-//       const usuario = await this.usuarioService.register({
-//         dni,
-//         email,
-//         password,
-//         fechaNac,
-//         nombre,
-//         apellido,
-//         esConductor,
-//         telefono,
-//       });
+            const [error, conductorDto] = PostCondutorDto.create(conductorData, usuario.id_usuario);
+            if (error) {
+                res.status(400).json({ message: error });
+                return;
+            }
 
-//       // Convertir la entidad de dominio en un DTO
-//       const usuarioDto = UsuarioDto.create(usuario);
 
-//       // Enviar respuesta al cliente
-//       res.status(201).json(usuarioDto);
-//     } catch (error) {
-//       HandleError.throw(error, res);
-//     }
-//   }
 
+            if (conductorDto) {
+                const conductor = await this.conductorService.register(conductorDto);
+                const driverDto = GetConductorDto.create(conductor);
+                res.status(201).json(driverDto);
+            }
+        } catch (error) {
+            HandleError.throw(error, res);
+        }
+    };
+}
 //   login = async (req: Request, res: Response) => {
 //     try {
 //       const { email, password } = req.body;

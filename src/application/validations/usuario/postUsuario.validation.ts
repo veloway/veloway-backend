@@ -39,26 +39,6 @@ const phoneSchema = z
   .max(15, 'El número de teléfono no puede exceder los 15 dígitos')
   .regex(/^\+?\d+$/, 'El número de teléfono debe ser válido');
 
-// Validación para el número de registro (campo del conductor)
-const registerNumberSchema = z
-  .string()
-  .min(5, 'El número de registro debe tener al menos 5 caracteres');
-
-// Validación para la categoría de licencia
-const licenseCategorySchema = z.enum(['A', 'B', 'C', 'D', 'E'], {
-  errorMap: () => ({
-    message: 'La categoría de licencia debe ser A, B, C, D o E'
-  })
-});
-
-const licenseExpirationSchema = z
-  .string()
-  .refine((date) => {
-    const parsedDate = new Date(date);
-    return parsedDate > new Date();
-  }, 'La licencia no puede estar vencida');
-
-
 export const clientSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
@@ -85,9 +65,3 @@ export const updateClientValidation = (cliente: any) => {
 };
 
 
-export const driverSchema = clientSchema.extend({
-  registerNumber: registerNumberSchema,
-  licenseCategory: licenseCategorySchema,
-  licenseExpiration: licenseExpirationSchema,
-  shareMedicalRecord: z.boolean()
-});
