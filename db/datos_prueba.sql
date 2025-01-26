@@ -175,24 +175,23 @@ VALUES
     (1, 'Camioneta'), 
     (2, 'Auto');
 
--- Vehículos
-INSERT INTO vehiculos (id_vehiculo, patente, anio, color, descripcion, nombre_seguro, id_modelo, id_tipo_vehiculo)
-VALUES 
-    (1, 'ABC123', 2020, 'Blanco', 'Camioneta doble cabina', 'La Caja', 1, 1),
-    (2, 'XYZ789', 2019, 'Negro', 'Auto deportivo', 'Sancor', 2, 2);
-
-
 -- Conductores
-INSERT INTO conductores (id_conductor, compartirFichaMedica, id_estado, id_vehiculo)
+INSERT INTO conductores (id_conductor, id_estado)
 VALUES 
-    ('987f6543-e21c-54d3-b789-426614174001', TRUE, 1, 1),
-    ('789a1234-e21c-98d3-b123-426614174003', TRUE, 2, 2);
+    ('987f6543-e21c-54d3-b789-426614174001', 1),
+    ('789a1234-e21c-98d3-b123-426614174003', 2);
+
+-- Vehículos
+INSERT INTO vehiculos (id_vehiculo, patente, anio, color, descripcion, nombre_seguro, id_modelo, id_tipo_vehiculo, id_conductor)
+VALUES 
+    (1, 'ABC123', 2020, 'Blanco', 'Camioneta doble cabina', 'La Caja', 1, 1, '987f6543-e21c-54d3-b789-426614174001'),
+    (2, 'XYZ789', 2019, 'Negro', 'Auto deportivo', 'Sancor', 2, 2, '789a1234-e21c-98d3-b123-426614174003');
 
 -- Fichas Médicas
-INSERT INTO fichas_medicas (observaciones, telefono_emergencia, id_conductor)
+INSERT INTO fichas_medicas (observaciones, telefono_emergencia, compartir, id_conductor)
 VALUES 
-    ('Sin alergias', '1122334455', '987f6543-e21c-54d3-b789-426614174001'),
-    ('Hipertensión controlada', '5566778899', '789a1234-e21c-98d3-b123-426614174003');
+    ('Sin alergias', '1122334455', TRUE, '987f6543-e21c-54d3-b789-426614174001'),
+    ('Hipertensión controlada', '5566778899', FALSE, '789a1234-e21c-98d3-b123-426614174003');
 
 -- Licencias
 INSERT INTO licencias (numero, categoria, fechaVencimiento, id_conductor)
