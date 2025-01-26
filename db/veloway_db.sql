@@ -73,19 +73,6 @@ CREATE TABLE tipos_vehiculos (
 	nombre VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE vehiculos (
-	id_vehiculo SERIAL PRIMARY KEY,
-	patente VARCHAR(20) UNIQUE NOT NULL,
-	anio INT NOT NULL,
-	color VARCHAR(15) NOT NULL,
-	descripcion TEXT,
-	nombre_seguro VARCHAR(20) NOT NULL,
-	id_modelo INT NOT NULL,
-	id_tipo_vehiculo INT NOT NULL,
-	FOREIGN KEY (id_modelo) REFERENCES modelos(id_modelo),
-	FOREIGN KEY (id_tipo_vehiculo) REFERENCES tipos_vehiculos(id_tipo_vehiculo)
-);
-
 CREATE TABLE estados_conductores (
 	id_estado SERIAL PRIMARY KEY,
 	nombre VARCHAR(20) UNIQUE NOT NULL
@@ -95,18 +82,31 @@ VALUES ('Libre'), ('Ocupado'), ('Deshabilitado');
 
 CREATE TABLE conductores (
 	id_conductor UUID PRIMARY KEY,
-	compartirFichaMedica BOOLEAN NOT NULL,
 	id_estado INT NOT NULL,
-	id_vehiculo INT UNIQUE NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES usuarios(id_usuario),
-	FOREIGN KEY (id_estado) REFERENCES estados_conductores(id_estado), 
-	FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo)
+	FOREIGN KEY (id_estado) REFERENCES estados_conductores(id_estado)
+);
+
+CREATE TABLE vehiculos (
+	id_vehiculo SERIAL PRIMARY KEY,
+	patente VARCHAR(20) UNIQUE NOT NULL,
+	anio INT NOT NULL,
+	color VARCHAR(15) NOT NULL,
+	descripcion TEXT,
+	nombre_seguro VARCHAR(20) NOT NULL,
+	id_modelo INT NOT NULL,
+	id_tipo_vehiculo INT NOT NULL,
+	id_conductor UUID NOT NULL,
+	FOREIGN KEY (id_modelo) REFERENCES modelos(id_modelo),
+	FOREIGN KEY (id_tipo_vehiculo) REFERENCES tipos_vehiculos(id_tipo_vehiculo),
+	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)
 );
 
 CREATE TABLE fichas_medicas (
 	id_ficha_medica SERIAL PRIMARY KEY,
 	observaciones TEXT NOT NULL,
 	telefono_emergencia VARCHAR(20) NOT NULL,
+	compartir BOOLEAN NOT NULL,
 	id_conductor UUID UNIQUE NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)
 );
