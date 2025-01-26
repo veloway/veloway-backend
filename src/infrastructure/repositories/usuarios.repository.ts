@@ -95,7 +95,7 @@ export class UsuarioRepository implements IUsuarioRepository {
         es_conductor: usuario.getEsConductor(),
         api_key: usuario.getApiKey(),
         telefono: usuario.getTelefono(),
-        domicilios:  {
+        domicilios: {
           connect: {
             id_domicilio: usuario.getDomicilio()?.getID()
           } // Conecta el domicilio por ID
@@ -141,7 +141,7 @@ export class UsuarioRepository implements IUsuarioRepository {
     try {
       await this.prisma.usuarios.update({
         where: { id_usuario: id },
-        data: { is_active: false },
+        data: { is_active: false }
       });
     } catch (error) {
       console.error('Error al desactivar la cuenta del usuario:', error);
@@ -150,20 +150,35 @@ export class UsuarioRepository implements IUsuarioRepository {
   }
 
   public async updateApiKey(userId: string, hashedApiKey: string): Promise<void> {
-
     try {
-        await this.prisma.usuarios.update({ 
-          where: { id_usuario: userId },
-          data: { api_key: hashedApiKey },  
-        });
+      await this.prisma.usuarios.update({
+        where: { id_usuario: userId },
+        data: { api_key: hashedApiKey }
+      });
     } catch (error) {
-        throw new Error('Error al actualizar la API Key en la base de datos');
+      throw new Error('Error al actualizar la API Key en la base de datos');
     }
-}
+  }
 
-async findUserByApiKey(apiKey: string) {
+  async findUserByApiKey(apiKey: string): Promise<Usuario | null> {
   // Buscar el usuario en la base de datos por la API Key (suponiendo que la clave esté en la base de datos)
-  return await this.prisma.usuarios.findUnique({ where: { api_key: apiKey } });
-  
-}
+    const user = await this.prisma.usuarios.findUnique({ where: { api_key: apiKey } });
+
+    if (user) {
+      return new Usuario(
+        user.id_usuario,
+        user.dni,
+        user.email,
+        user.password,
+        user.fecha_nac,
+        user.nombre,
+        user.apellido,
+        user.es_conductor,
+        user.is_active,
+        user.api_key,
+        user.telefono
+      );
+    }
+    return null;
+  }
 }

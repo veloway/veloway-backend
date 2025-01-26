@@ -38,7 +38,7 @@ export class DomiciliosRepository implements IDomicilioRepository {
     );
   };
 
-  public async create(domicilio: Domicilio): Promise<Domicilio> {
+  public async create(domicilio: Domicilio, idUser?: string): Promise<Domicilio> {
     const domicilioPrisma = await this.prisma.domicilios.create({
       data: {
         calle: domicilio.getCalle(),
@@ -46,6 +46,11 @@ export class DomiciliosRepository implements IDomicilioRepository {
         piso: domicilio.getPiso(),
         depto: domicilio.getDepto(),
         descripcion: domicilio.getDescripcion(),
+        usuarios: {
+          connect: {
+            id_usuario: idUser
+          }
+        },
         localidades: {
           connect: {
             id_localidad: domicilio.getLocalidad().getID()
@@ -102,10 +107,10 @@ export class DomiciliosRepository implements IDomicilioRepository {
         include: {
           localidades: {
             include: {
-              provincias: true,  // Incluimos la provincia dentro de la localidad
-            },
-          },
-        },
+              provincias: true // Incluimos la provincia dentro de la localidad
+            }
+          }
+        }
       });
 
       if (!domicilioData) {
@@ -115,7 +120,7 @@ export class DomiciliosRepository implements IDomicilioRepository {
       const provincia = new Provincia(
         domicilioData.localidades.provincias.id_provincia,
         domicilioData.localidades.provincias.nombre
-      )
+      );
 
 
       const localidad = new Localidad(
@@ -134,24 +139,11 @@ export class DomiciliosRepository implements IDomicilioRepository {
         domicilioData.depto,
         domicilioData.descripcion
       );
-
-
     } catch (error) {
       console.error(`Error al obtener el domicilio con ID ${idDomicilio}:`, error);
       throw new Error('Error al obtener el domicilio.');
     }
   }
-
-  public async getLastId(): Promise<number> {
-    const result = await this.prisma.domicilios.findFirst({
-      orderBy: { id_domicilio: 'desc' }, // Suponiendo que 'id_domicilio' es el nombre del campo del ID
-      select: { id_domicilio: true },
-    });
-
-    // Retorna el último ID o 0 si no hay domicilios registrados
-    return result?.id_domicilio ? Number(result.id_domicilio) : 0;
-  }
-
 }
 
 

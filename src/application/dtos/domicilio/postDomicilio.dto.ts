@@ -1,4 +1,4 @@
-import { postDomicilioValidation } from "../../validations/domicilio/postDomicilio.validation";
+import { postDomicilioValidation } from '../../validations/domicilio/postDomicilio.validation';
 
 export class PostDomicilioDto {
   private constructor(
@@ -26,5 +26,4 @@ export class PostDomicilioDto {
       domicilioValidation.data.localidadID
     )];
   }
-
 }

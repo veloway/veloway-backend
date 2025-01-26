@@ -1,40 +1,30 @@
 import { type Request, type Response } from 'express';
 import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 import { HandleError } from '../errors/handle.error';
-import { PostCondutorDto } from '../../application/dtos/conductor/postConductor.dto';
-import { GetConductorDto } from '../../application/dtos/conductor/getConductor.dto';
 import { ConductorService } from '../../application/services/conductor.service';
+import { UsuarioService } from '../../application/services/usuario.service';
 
 
 @Injectable()
 export class CondutorController {
-    constructor(
-        private readonly conductorService: ConductorService
-    ) { }
+  constructor(
+    private readonly conductorService: ConductorService,
+    private readonly usuarioService: UsuarioService
+  ) { }
 
-    register = async (req: Request, res: Response) => {
-        try {
-            const { usuario, ...conductorData } = req.body;
+  register = async (req: Request, res: Response) => {
+    try {
+      const { usuario } = req.body;
 
-            //Hacer validacion de datos
+      // Hacer validacion de datos
 
-            const [error, conductorDto] = PostCondutorDto.create(conductorData, usuario.id_usuario);
-            if (error) {
-                res.status(400).json({ message: error });
-                return;
-            }
-
-
-
-            if (conductorDto) {
-                const conductor = await this.conductorService.register(conductorDto);
-                const driverDto = GetConductorDto.create(conductor);
-                res.status(201).json(driverDto);
-            }
-        } catch (error) {
-            HandleError.throw(error, res);
-        }
-    };
+      const driver = await this.usuarioService.register(usuario);
+      await this.conductorService.register(driver);
+      res.status(200).json({ message: 'registro exitoso' });
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
 }
 //   login = async (req: Request, res: Response) => {
 //     try {

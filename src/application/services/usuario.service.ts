@@ -1,4 +1,3 @@
-import { UsuarioRepository } from '../../infrastructure/repositories/usuarios.repository';
 import { Usuario } from '../../domain/entities/usuario.entity';
 import { BcryptHashProvider } from '../../infrastructure/jwt/bcrypt-hash.provider';
 import { Injectable, Inject } from '../../infrastructure/dependencies/injectable.dependency';
@@ -6,16 +5,18 @@ import { randomUUID } from 'crypto';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { type RegisterUsuarioDto } from '../dtos/usuario/registerUsuario.dto';
 import { generateApiKey } from '../../utils/generateApiKey';
-import { DomiciliosRepository } from '../../infrastructure/repositories/domicilios.repository';
+import { IUsuarioRepository } from '../../domain/repositories/usuario.interface';
+import { IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
+import { IBcryptHashProvider } from '../../domain/repositories/bcryptHashProvider.interface';
 
 @Injectable()
 export class UsuarioService {
   resetTokens: Map<string, string>;
   constructor(
-    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)
-    private readonly usuarioRepository: UsuarioRepository,
-    private readonly domicilioRepository: DomiciliosRepository,
-    private readonly hashProvider: BcryptHashProvider
+    // @Inject(REPOSITORIES_TOKENS.IViajesRepository) private readonly viajeRepository: IViajeRepository,
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)  private readonly usuarioRepository: IUsuarioRepository,
+    @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository)  private readonly domicilioRepository: IDomicilioRepository,
+    @Inject(REPOSITORIES_TOKENS.IBcryptHashProvider)  private readonly hashProvider: IBcryptHashProvider
   ) {
     this.resetTokens = new Map<string, string>();
   }

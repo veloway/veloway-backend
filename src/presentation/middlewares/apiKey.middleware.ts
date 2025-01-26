@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { type Request, type Response, type NextFunction } from 'express';
 
 // Middleware para verificar que la API Key está presente en los headers
 export const checkApiKey = (req: Request, res: Response, next: NextFunction): void => {

@@ -12,8 +12,8 @@ export class UsuarioRoutes {
     router.post('/register', usuariosController.register);
     router.delete('/delete-account', authenticateUser, usuariosController.deleteAccount);
     router.post('/regenerate-api-key', authenticateUser, usuariosController.regenerateApiKey);
-    router.put('/update-user', authenticateUser, usuariosController.modificarUsuario)
-    router.put('/update-adress', authenticateUser, usuariosController.modificarDomicilio)
+    router.put('/update-user', authenticateUser, usuariosController.modificarUsuario);
+    router.put('/update-adress', authenticateUser, usuariosController.modificarDomicilio);
 
     return router;
   }
