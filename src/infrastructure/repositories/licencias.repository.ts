@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { type ILicenciaRepository } from "../../domain/repositories/licencia.interface";
-import { type Licencia } from "../../domain/entities/licencia.entity";
+import { Licencia } from "../../domain/entities/licencia.entity";
 import { LicenciaPrismaMapper } from "../mappers/licencia-prisma.mapper";
 import { Injectable } from '../dependencies/injectable.dependency';
 
@@ -25,7 +25,26 @@ export class LicenciasRepository implements ILicenciaRepository{
         return LicenciaPrismaMapper.fromPrismaToEntity(licenciaPrisma);
     };
 
-    update: (id: number, licencia: Licencia) => Promise<void>;
+    public async update (id: number, licencia: Licencia): Promise<Licencia>{
+        const licenciaPrisma = await this.prisma.licencias.update({
+            where: {
+                numero: id
+            },
+            data: {
+                categoria: licencia.getCategoria(),
+                fechavencimiento: licencia.getFechaVenc(),
+                id_conductor: licencia.getIdConductor()
+            }
+        });
+
+        return new Licencia(
+            licenciaPrisma.categoria, 
+            licenciaPrisma.fechavencimiento, 
+            licenciaPrisma.numero, 
+            licenciaPrisma.id_conductor
+        );
+    }
+        
 
     public async delete(id: number){
         await this.prisma.licencias.delete({
