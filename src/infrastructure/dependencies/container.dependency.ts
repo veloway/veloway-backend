@@ -9,6 +9,7 @@ import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
 import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
+import { LicenciasRepository } from '../repositories/licencias.repository';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -16,6 +17,7 @@ container.register(REPOSITORIES_TOKENS.IEnviosRepository, { useClass: EnviosRepo
 container.register(REPOSITORIES_TOKENS.IDomiciliosRepository, { useClass: DomiciliosRepository });
 container.register(REPOSITORIES_TOKENS.ILocalidadesRepository, { useClass: LocalidadesRepository });
 container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuariosRepository });
+container.register(REPOSITORIES_TOKENS.ILicenciasRepository, { useClass: LicenciasRepository });
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });

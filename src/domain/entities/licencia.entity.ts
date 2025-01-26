@@ -4,8 +4,8 @@ export class Licencia {
     constructor(
         private categoria: string,
         private fechaVenc: Date,
-        private numero: number
-        //Agregar atributo idConductor de tipo Conductor
+        private numero: number,
+        private idConductor: string
     ) {}
 
     //Agregar operaciones que tambien me permitan acceder al conductor asociado a la licencia
@@ -25,8 +25,14 @@ export class Licencia {
     }
 
     //Hacer get de idConductor
+    public getIdConductor(): string{
+        return this.idConductor;
+    }
 
     //Setters
+    public setIdConductor(idConductor: string): void{
+        this.idConductor = idConductor;
+    }
 
     public setCategoria(categoria: string): void{
         this.categoria = categoria;
