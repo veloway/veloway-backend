@@ -25,15 +25,27 @@ export class LicenciasRepository implements ILicenciaRepository{
         return LicenciaPrismaMapper.fromPrismaToEntity(licenciaPrisma);
     };
 
+    public async getLicenciaByConductorId(conductorID: string): Promise<Licencia | null>{
+        const licenciaPrisma = await this.prisma.licencias.findFirst({
+            where: {
+                id_conductor: conductorID
+            }
+        });
+
+        if(!licenciaPrisma) return null;
+
+        return LicenciaPrismaMapper.fromPrismaToEntity(licenciaPrisma);
+    };
+
     public async update (id: number, licencia: Licencia): Promise<Licencia>{
         const licenciaPrisma = await this.prisma.licencias.update({
             where: {
                 numero: id
             },
             data: {
+                numero: licencia.getNumero(),
                 categoria: licencia.getCategoria(),
                 fechavencimiento: licencia.getFechaVenc(),
-                id_conductor: licencia.getIdConductor()
             }
         });
 

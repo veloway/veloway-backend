@@ -1,3 +1,5 @@
+import { postLicenciaValidation } from "../../validations/licencia/postLicencia.validation";
+
 export class PostLicenciaDto {
     private constructor(
         public categoria: string,
