@@ -4,6 +4,7 @@ import { type IEnviosRepository } from '../../domain/repositories/envios.interfa
 import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
 import { Injectable } from '../dependencies/injectable.dependency';
 import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
+import { type PaginationOptions } from '../../domain/types/paginationOptions';
 
 @Injectable()
 export class EnviosRepository implements IEnviosRepository {
@@ -40,11 +41,16 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
   }
 
-  public async getAllByClienteID(clienteID: string): Promise<Envio[]> {
+  public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
       {
         where: {
           id_cliente: clienteID
+        },
+        take: paginationOptions.limit,
+        skip: paginationOptions.offset,
+        orderBy: {
+          fecha: 'desc'
         },
         include: {
           usuarios: true,
@@ -72,6 +78,14 @@ export class EnviosRepository implements IEnviosRepository {
     );
 
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
+  }
+
+  public async totalEnviosByClienteID(clienteID: string): Promise<number> {
+    return await this.prisma.envios.count({
+      where: {
+        id_cliente: clienteID
+      }
+    });
   }
 
   public async getEnvio(nroSeguimiento: number): Promise<Envio | null> {

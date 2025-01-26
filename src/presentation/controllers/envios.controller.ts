@@ -24,10 +24,49 @@ export class EnviosController {
 
   getAllByClienteId = async (req: Request, res: Response) => {
     const { clienteID } = req.params;
+    const { limit, offset, page } = req.query;
+
+    if (!clienteID) {
+      res.status(400).json({ message: 'Cliente ID es requerido' });
+      return;
+    }
+
+    if ((limit && isNaN(Number(limit))) || (offset && isNaN(Number(offset))) || (page && isNaN(Number(page)))) {
+      res.status(400).json({ message: 'Limit, offset y page tienen que ser números' });
+      return;
+    }
+
+    if (Number(limit) < 0 || Number(offset) < 0 || Number(page) < 0) {
+      res.status(400).json({ message: 'Limit, offset y page tienen que ser mayores a 0' });
+      return;
+    }
+
+    const paginationOptions = {
+      limit: limit ? Number(limit) : 10,
+      offset: offset ? (page ? (Number(page) - 1) * Number(limit) : Number(offset)) : 0
+    };
+
     try {
-      const envios = await this.enviosService.getAllByClienteId(clienteID);
+      const totalEnvios = await this.enviosService.totalEnviosByClienteId(clienteID);
+      const envios = await this.enviosService.getAllByClienteId(clienteID, paginationOptions);
       const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
-      res.status(200).json(enviosDto);
+
+      const lastPage = Math.ceil(totalEnvios / paginationOptions.limit);
+      if (Number(page) > lastPage) {
+        res.status(400).json({ message: 'Página solicitada no existe' });
+        return;
+      }
+      const currentPage = page ? 1 : Math.floor(paginationOptions.offset / paginationOptions.limit) + 1;
+      const previusPage = currentPage > 1 ? currentPage - 1 : null;
+      const nextPage = currentPage < lastPage ? currentPage + 1 : null;
+
+      res.status(200).json({
+        totalEnvios,
+        lastPage,
+        previusPage,
+        nextPage,
+        envios: enviosDto
+      });
     } catch (error) {
       HandleError.throw(error, res);
     }
