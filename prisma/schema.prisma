@@ -16,16 +16,14 @@ model checkpoints {
 }
 
 model conductores {
-  id_conductor         String              @id @db.Uuid
-  compartirfichamedica Boolean
-  id_estado            Int
-  id_vehiculo          Int                 @unique
-  usuarios             usuarios            @relation(fields: [id_conductor], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
-  estados_conductores  estados_conductores @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
-  vehiculos            vehiculos           @relation(fields: [id_vehiculo], references: [id_vehiculo], onDelete: NoAction, onUpdate: NoAction)
-  fichas_medicas       fichas_medicas?
-  licencias            licencias?
-  viajes               viajes[]
+  id_conductor        String              @id @db.Uuid
+  id_estado           Int
+  usuarios            usuarios            @relation(fields: [id_conductor], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  estados_conductores estados_conductores @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
+  fichas_medicas      fichas_medicas?
+  licencias           licencias?
+  vehiculos           vehiculos[]
+  viajes              viajes[]
 }
 
 model domicilios {
@@ -78,6 +76,7 @@ model fichas_medicas {
   id_ficha_medica     Int         @id @default(autoincrement())
   observaciones       String
   telefono_emergencia String      @db.VarChar(20)
+  compartir           Boolean
   id_conductor        String      @unique @db.Uuid
   conductores         conductores @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -151,7 +150,8 @@ model vehiculos {
   nombre_seguro    String          @db.VarChar(20)
   id_modelo        Int
   id_tipo_vehiculo Int
-  conductores      conductores?
+  id_conductor     String          @db.Uuid
+  conductores      conductores     @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
   modelos          modelos         @relation(fields: [id_modelo], references: [id_modelo], onDelete: NoAction, onUpdate: NoAction)
   tipos_vehiculos  tipos_vehiculos @relation(fields: [id_tipo_vehiculo], references: [id_tipo_vehiculo], onDelete: NoAction, onUpdate: NoAction)
 }
