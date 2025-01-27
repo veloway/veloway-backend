@@ -22,8 +22,16 @@ export class ConductoresRepository implements IConductoresRepository {
   public async create(conductor: Conductor): Promise<void> {
     await this.prisma.conductores.create({
       data: {
-        id_conductor: conductor.getID(),
-        id_estado: conductor.getEstadoConductor().getIdEstado()
+        usuarios: {
+          connect: {
+            id_usuario: conductor.getID()
+          }
+        },
+        estados_conductores: {
+          connect: {
+            id_estado: conductor.getEstadoConductor().getIdEstado()
+          }
+        }
       }
     });
   }
