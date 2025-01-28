@@ -38,14 +38,14 @@ export class AuthController {
   logout = (req: Request, res: Response): void => {
     try {
       // Verificar si la cookie 'auth_token' existe
-      const authToken = req.cookies['auth_token'];
-  
+      const authToken = req.cookies.auth_token;
+
       if (!authToken) {
         // Si no existe la cookie, enviar un mensaje de error
         res.status(400).json({ message: 'No hay sesión activa' });
-        return
+        return;
       }
-  
+
       // Si la cookie existe, limpiar la cookie
       res.clearCookie('auth_token', {
         httpOnly: true,
@@ -53,7 +53,7 @@ export class AuthController {
         sameSite: 'strict',
         path: '/'
       });
-  
+
       // Responder con éxito
       res.status(200).json({ message: 'Logout exitoso' });
     } catch (error) {

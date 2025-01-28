@@ -8,5 +8,5 @@ export interface IUsuarioRepository {
   deactivateUser: (id: string) => Promise<void>
   updateApiKey: (id: string, hashedApiKey: string) => Promise<void>
   findUserByApiKey: (apiKey: string) => Promise<Usuario | null>
-  update:(usuario: Usuario) => Promise<void>
+  update: (id: string, data: any) => Promise<void>
 }

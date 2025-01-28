@@ -1,5 +1,4 @@
 import { Usuario } from '../../domain/entities/usuario.entity';
-import { BcryptHashProvider } from '../../infrastructure/jwt/bcrypt-hash.provider';
 import { Injectable, Inject } from '../../infrastructure/dependencies/injectable.dependency';
 import { randomUUID } from 'crypto';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
@@ -14,25 +13,22 @@ export class UsuarioService {
   resetTokens: Map<string, string>;
   constructor(
     // @Inject(REPOSITORIES_TOKENS.IViajesRepository) private readonly viajeRepository: IViajeRepository,
-    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository)  private readonly usuarioRepository: IUsuarioRepository,
-    @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository)  private readonly domicilioRepository: IDomicilioRepository,
-    @Inject(REPOSITORIES_TOKENS.IBcryptHashProvider)  private readonly hashProvider: IBcryptHashProvider
+    @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly usuarioRepository: IUsuarioRepository,
+    @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository) private readonly domicilioRepository: IDomicilioRepository,
+    @Inject(REPOSITORIES_TOKENS.IBcryptHashProvider) private readonly hashProvider: IBcryptHashProvider
   ) {
     this.resetTokens = new Map<string, string>();
   }
 
 
   public async register(data: RegisterUsuarioDto): Promise<Usuario> {
-    const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono, idDomicilio } = data;
+    const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = data;
 
 
     const id = randomUUID(); // Generar UUID en el servicio
-    const apiKey = generateApiKey()
-    const hashedApiKey = await this.hashProvider.hash(apiKey)
-    let domicilio = null
-    if (idDomicilio) {
-      domicilio = await this.domicilioRepository.getById(idDomicilio)
-    }
+    const apiKey = generateApiKey();
+    const hashedApiKey = await this.hashProvider.hash(apiKey);
+
     const usuarioExistente = await this.usuarioRepository.getUsuarioByEmail(email);
     if (usuarioExistente) {
       throw new Error('El correo ya está registrado.');
@@ -55,9 +51,7 @@ export class UsuarioService {
       esConductor,
       true,
       hashedApiKey,
-      telefono,
-      domicilio
-    );
+      telefono);
 
     // Guardar el usuario en la base de datos
     await this.usuarioRepository.create(usuario);
@@ -100,7 +94,7 @@ export class UsuarioService {
         throw new Error('Usuario no encontrado.');
       }
 
-      if (!usuario.getIsActive()) { //al pedo?
+      if (!usuario.getIsActive()) { // al pedo?
         throw new Error('La cuenta ya está desactivada.');
       }
 
@@ -118,7 +112,7 @@ export class UsuarioService {
     const newApiKey = generateApiKey();
 
     // Hasheamos la nueva API Key para almacenarla de manera segura
-    const hashedApiKey = await this.hashProvider.hash(newApiKey)
+    const hashedApiKey = await this.hashProvider.hash(newApiKey);
 
     // Actualizamos la base de datos con la nueva API Key hasheada
     await this.usuarioRepository.updateApiKey(userId, hashedApiKey);
@@ -130,7 +124,7 @@ export class UsuarioService {
 
   async getUserByApiKey(apiKey: string) {
     // Buscar al usuario por la API Key proporcionada (comparable con el hash)
-    const hashedApiKey = await this.hashProvider.hash(apiKey)
+    const hashedApiKey = await this.hashProvider.hash(apiKey);
     const user = await this.usuarioRepository.findUserByApiKey(hashedApiKey);
     return user;
   }
@@ -138,14 +132,14 @@ export class UsuarioService {
   public async modificarUsuario(id: string, data: any): Promise<void> {
     try {
       // Verificamos si el usuario existe
-      const usuarioExistente = await this.usuarioRepository.getUsuario(id)
+      const usuarioExistente = await this.usuarioRepository.getUsuario(id);
 
       if (!usuarioExistente) {
         throw new Error('Usuario no encontrado');
       }
 
       // Si el usuario existe, procedemos con la actualización
-      await this.usuarioRepository.update(usuarioExistente);
+      await this.usuarioRepository.update(id, data);
     } catch (error) {
       console.error('Error en el servicio al modificar usuario:', error);
       throw new Error('No se pudo modificar el usuario');

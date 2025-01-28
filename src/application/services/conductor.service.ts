@@ -28,8 +28,7 @@ export class ConductorService {
       true,
       true,
       user.getApiKey(),
-      user.getTelefono(),
-      user.getDomicilio()
+      user.getTelefono()
     );
     await this.conductorRepository.create(newConductor);
   }

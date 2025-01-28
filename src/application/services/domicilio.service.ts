@@ -62,5 +62,19 @@ export class DomicilioService {
       throw new Error('No se pudo modificar el usuario');
     }
   }
+
+  async getDomicilioByUsuarioId(usuarioId: string) {
+    try {
+      const domicilio = await this.domicilioRepository.getDomicilioByUsuarioId(usuarioId);
+
+      if (!domicilio) {
+        throw new Error('Domicilio no encontrado');
+      }
+
+      return domicilio;
+    } catch (error) {
+      throw new Error('Error en servicio al obtener domicilio');
+    }
+  }
 }
 

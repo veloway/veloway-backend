@@ -6,8 +6,9 @@ import { HandleError } from '../errors/handle.error';
 import { RegisterUsuarioDto } from '../../application/dtos/usuario/registerUsuario.dto';
 import { PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
 import { DomicilioService } from '../../application/services/domicilio.service';
-import { clientValidation } from '../../application/validations/usuario/postUsuario.validation';
-import { postDomicilioValidation } from '../../application/validations/domicilio/updateEnvio.validation';
+import { UpdateUsuarioDto } from '../../application/dtos/usuario/updateUsuario.dto';
+import { UpdateDomicilioDto } from '../../application/dtos/domicilio/updateDomicilio.dto';
+import { DomicilioMapper } from '../../application/mappers/domicilio.mapper';
 
 
 @Injectable()
@@ -97,7 +98,7 @@ export class UsuarioController {
 
       res.status(200).json({ message: 'Cuenta desactivada exitosamente.' });
     } catch (error) {
-      res.status(500).json({ message: 'Error al desactivar la cuenta.' });
+      HandleError.throw(error, res);
     }
   };
 
@@ -112,7 +113,7 @@ export class UsuarioController {
 
       res.json({ apiKey: newApiKey });
     } catch (error) {
-      res.status(500).json({ message: 'Error al generar la nueva API Key', error });
+      HandleError.throw(error, res);
     }
   };
 
@@ -127,20 +128,21 @@ export class UsuarioController {
 
     const data = req.body; // Los datos para actualizar se pasan en el cuerpo de la solicitud
 
-    const dataValidation = clientValidation(data);
+    const userData = UpdateUsuarioDto.update(data);
+
+    console.log(userData);
 
     try {
-      await this.usuarioService.modificarUsuario(userId, dataValidation);
+      await this.usuarioService.modificarUsuario(userId, userData);
       res.status(200).json({ message: 'Usuario actualizado correctamente' });
     } catch (error) {
-      console.error('Error en el controlador al modificar usuario:', error);
-      res.status(500).json('Hubo un error al modificar el usuario');
+      HandleError.throw(error, res);
     }
   };
 
 
   modificarDomicilio = async (req: Request, res: Response): Promise<void> => {
-    const id = req.user?.domicilio.getID(); // ID del usuario
+    const id = req.user?.id; // ID del usuario
 
     // Verificamos si el id es undefined
     if (!id) {
@@ -148,18 +150,19 @@ export class UsuarioController {
       return;
     }
 
-    const domicilioData = req.body.domicilio; // Obtenemos el nuevo domicilio desde el cuerpo de la solicitud
+    const domicilioData = req.body; // Obtenemos el nuevo domicilio desde el cuerpo de la solicitud
 
-    const domicilioValidation = postDomicilioValidation(domicilioData);
+    const domicilioValidation = UpdateDomicilioDto.update(domicilioData); // Validamos la data entry
 
+    const domicilio = await this.domicilioService.getDomicilioByUsuarioId(id); // obtenemos el domicilio objeto
 
+    const domicilioMapped = DomicilioMapper.fromUpdateDtoToEntity(domicilioValidation, domicilio); // Mapeamos a partir del objeto y de la validacion
     try {
-    // Llamamos al servicio para actualizar el domicilio
-      await this.domicilioService.modificarDomicilio(id, domicilioValidation);
+      const domicilioId = domicilio.getID();
+      await this.domicilioService.modificarDomicilio(domicilioId, domicilioMapped);
       res.status(200).json({ message: 'Domicilio actualizado correctamente' });
     } catch (error) {
-      console.error('Error al modificar domicilio:', error);
-      res.status(500).json('Hubo un error al modificar el domicilio');
+      HandleError.throw(error, res);
     }
   };
 }

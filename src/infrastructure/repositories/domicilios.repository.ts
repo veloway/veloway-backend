@@ -144,6 +144,50 @@ export class DomiciliosRepository implements IDomicilioRepository {
       throw new Error('Error al obtener el domicilio.');
     }
   }
+
+  public async getDomicilioByUsuarioId(usuarioId: string): Promise<Domicilio | null> {
+    try {
+      const domicilioData = await this.prisma.domicilios.findUnique({
+        where: { id_usuario: usuarioId },
+        include: {
+          localidades: {
+            include: {
+              provincias: true // Incluimos la provincia dentro de la localidad
+            }
+          }
+        }
+      });
+
+      if (!domicilioData) {
+        return null;
+      }
+
+      const provincia = new Provincia(
+        domicilioData.localidades.provincias.id_provincia,
+        domicilioData.localidades.provincias.nombre
+      );
+
+
+      const localidad = new Localidad(
+        domicilioData.localidades.id_localidad,
+        domicilioData.localidades.codigo_postal,
+        domicilioData.localidades.nombre,
+        provincia
+      );
+
+      // Mapear el objeto de Prisma a la clase Domicilio
+      return new Domicilio(
+        domicilioData.id_domicilio,
+        domicilioData.calle,
+        domicilioData.numero,
+        localidad, domicilioData.piso,
+        domicilioData.depto,
+        domicilioData.descripcion
+      );
+    } catch (error) {
+      throw new Error('Error al obtener domicilio para el usuario');
+    }
+  }
 }
 
 

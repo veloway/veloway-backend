@@ -1,4 +1,4 @@
-import { Domicilio } from './domicilio.entity';
+import { type Domicilio } from './domicilio.entity';
 import { type Envio } from './envio.entity';
 
 export class Usuario {
@@ -101,7 +101,7 @@ export class Usuario {
     this.envios = newEnvios;
   }
 
-  public setIdDomicilio (domicilio : Domicilio) {
+  public setIdDomicilio (domicilio: Domicilio) {
     this.Domicilio = domicilio;
   }
 }

@@ -94,43 +94,39 @@ export class UsuarioRepository implements IUsuarioRepository {
         apellido: usuario.getApellido(),
         es_conductor: usuario.getEsConductor(),
         api_key: usuario.getApiKey(),
-        telefono: usuario.getTelefono(),
-        domicilios: {
-          connect: {
-            id_domicilio: usuario.getDomicilio()?.getID()
-          } // Conecta el domicilio por ID
-        }// Si no hay domicilio, omítelo
+        telefono: usuario.getTelefono()
       }
     });
   }
 
-  public async update(usuario: Usuario): Promise<void> {
+  public async update(id: string, user: any): Promise<void> {
     try {
-      // Prisma realiza una actualización de usuario, usando el ID para buscarlo
+      // Validamos que el objeto data no esté vacío
       await this.prisma.usuarios.update({
-        where: { id_usuario: usuario.getID() }, // Buscamos por ID para actualizar el usuario
+        where: {
+          id_usuario: id
+        },
         data: {
-          dni: usuario.getDni(),
-          email: usuario.getEmail(),
-          password: usuario.getPassword(),
-          fecha_nac: usuario.getFechaNac(),
-          nombre: usuario.getNombre(),
-          apellido: usuario.getApellido(),
-          es_conductor: usuario.getEsConductor(),
-          api_key: usuario.getApiKey(),
-          telefono: usuario.getTelefono()
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          telefono: user.telefono
         }
       });
     } catch (error) {
-      console.error('Error al guardar el usuario:', error);
-      throw new Error('No se pudo guardar al usuario');
+      console.error('Error al actualizar el usuario:', error);
+      throw new Error('No se pudo actualizar al usuario');
     }
   }
 
   public async resetPassword(newPassword: string, usuario: Usuario): Promise<void> {
     try {
-      usuario.setPassword(newPassword);
-      await this.update(usuario);
+      await this.prisma.usuarios.update({
+        where: { id_usuario: usuario.getID() }, // Buscamos el usuario por su ID
+        data: {
+          password: newPassword // Guardamos la contraseña encriptada
+        }
+      });
     } catch (error) {
       console.error('Error al resetear contraseña del usuario:', error);
       throw new Error('No se pudo guardar la contraseña');

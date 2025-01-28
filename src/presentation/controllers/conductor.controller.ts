@@ -3,24 +3,46 @@ import { Injectable } from '../../infrastructure/dependencies/injectable.depende
 import { HandleError } from '../errors/handle.error';
 import { ConductorService } from '../../application/services/conductor.service';
 import { UsuarioService } from '../../application/services/usuario.service';
+import { RegisterUsuarioDto } from '../../application/dtos/usuario/registerUsuario.dto';
+import { PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { GetUsuarioDto } from '../../application/dtos/usuario/getUsuario.dto';
+import { DomicilioService } from '../../application/services/domicilio.service';
 
 
 @Injectable()
 export class CondutorController {
   constructor(
     private readonly conductorService: ConductorService,
-    private readonly usuarioService: UsuarioService
+    private readonly usuarioService: UsuarioService,
+    private readonly domicilioService: DomicilioService
   ) { }
 
   register = async (req: Request, res: Response) => {
     try {
-      const { usuario } = req.body;
+      const { domicilio, ...usuarioData } = req.body;
 
-      // Hacer validacion de datos
+      // Validar los datos del usuario
+      const [error, clienteDto] = RegisterUsuarioDto.create(usuarioData);
+      if (error) {
+        res.status(400).json({ message: error });
+        return;
+      }
 
-      const driver = await this.usuarioService.register(usuario);
-      await this.conductorService.register(driver);
-      res.status(200).json({ message: 'registro exitoso' });
+      // Validar los datos del domicilio
+      const [errorDomicilio, domicilioDto] = PostDomicilioDto.create(domicilio);
+      if (errorDomicilio) {
+        res.status(400).json({ message: errorDomicilio });
+        return;
+      }
+
+      if (clienteDto && domicilioDto) {
+        const usuario = await this.usuarioService.register(clienteDto);
+        const usuarioDto = GetUsuarioDto.create(usuario);
+        await this.domicilioService.create(domicilioDto, usuario.getID());
+        await this.conductorService.register(usuario);
+
+        res.status(201).json({ usuarioDto, domicilioDto });
+      }
     } catch (error) {
       HandleError.throw(error, res);
     }

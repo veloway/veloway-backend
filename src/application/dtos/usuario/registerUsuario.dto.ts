@@ -33,9 +33,4 @@ export class RegisterUsuarioDto {
       clienteValidation.data.phone
     )];
   }
-
-
-  public setIdDomicilio(idDom: number) {
-    this.idDomicilio = idDom
-  }
 }

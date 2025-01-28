@@ -171,7 +171,7 @@ export class EnviosService {
     const domicilioExistente = await this.domicilioRepository.getDomicilioByProperties(domicilio);
     if (domicilioExistente) return domicilioExistente;
 
-    const domicilioCreated = await this.domicilioRepository.create(domicilio);
+    const domicilioCreated = await this.domicilioRepository.create(domicilio, undefined);
     return domicilioCreated;
   }
 }
