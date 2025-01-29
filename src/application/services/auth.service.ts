@@ -1,5 +1,5 @@
 import { UsuarioRepository } from '../../infrastructure/repositories/usuarios.repository';
-import { Usuario } from '../../domain/entities/usuario.entity';
+import { type Usuario } from '../../domain/entities/usuario.entity';
 import { BcryptHashProvider } from '../../infrastructure/jwt/bcrypt-hash.provider';
 import { Injectable, Inject } from '../../infrastructure/dependencies/injectable.dependency';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
@@ -27,7 +27,7 @@ export class AuthService {
       return null;
     }
     if (!usuario.getIsActive()) {
-      return null
+      return null;
     }
     // Comparar la contraseña con la almacenada (suponiendo que la contraseña está cifrada)
     const validPassword = await this.hashProvider.compare(password, usuario.getPassword());
