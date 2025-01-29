@@ -9,4 +9,5 @@ export interface IDomicilioRepository {
   delete: (id: number) => Promise<Domicilio>
   getById: (id: number) => Promise<Domicilio | null>
   getDomicilioByUsuarioId: (id: string) => Promise<Domicilio | null>
+  createDomicilioEnvio: (domicilio: Domicilio) => Promise<Domicilio>
 }

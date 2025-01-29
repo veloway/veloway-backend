@@ -188,6 +188,33 @@ export class DomiciliosRepository implements IDomicilioRepository {
       throw new Error('Error al obtener domicilio para el usuario');
     }
   }
+
+  public async createDomicilioEnvio(domicilio: Domicilio): Promise<Domicilio> {
+    const domicilioPrisma = await this.prisma.domicilios.create({
+      data: {
+        calle: domicilio.getCalle(),
+        numero: domicilio.getNumero(),
+        piso: domicilio.getPiso(),
+        depto: domicilio.getDepto(),
+        descripcion: domicilio.getDescripcion(),
+        localidades: {
+          connect: {
+            id_localidad: domicilio.getLocalidad().getID()
+          }
+        }
+      }
+    });
+
+    return new Domicilio(
+      domicilioPrisma.id_domicilio,
+      domicilioPrisma.calle,
+      domicilioPrisma.numero,
+      domicilio.getLocalidad(),
+      domicilioPrisma.piso,
+      domicilioPrisma.depto,
+      domicilioPrisma.descripcion
+    );
+  }
 }
 
 
