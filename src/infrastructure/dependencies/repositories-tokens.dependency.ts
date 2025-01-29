@@ -5,5 +5,6 @@ export const REPOSITORIES_TOKENS = {
   IUsuariosRepository: Symbol.for('IUsuariosRepository'),
   IViajesRepository: Symbol.for('IViajesRespository'),
   IConductoresRepository: Symbol.for('IConductoresRepository'),
-  ICoordenadasRepository: Symbol.for('ICoordenadasRepository')
+  ICoordenadasRepository: Symbol.for('ICoordenadasRepository'),
+  IVehiculosRepository: Symbol('IVehiculosRepository')
 };
