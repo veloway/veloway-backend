@@ -1,11 +1,10 @@
-import { type Envio } from './envio.entity';
 import { type EstadoConductor } from './estadoConductor.entity';
 import { Usuario } from './usuario.entity';
+import { type Domicilio } from './domicilio.entity';
 
 export class Conductor extends Usuario {
   constructor(
     private readonly idConductor: string,
-    private compartirFichaMedica: boolean,
     private estadoConductor: EstadoConductor,
     id: string,
     dni: number,
@@ -18,7 +17,8 @@ export class Conductor extends Usuario {
     is_active: boolean,
     api_key: string,
     telefono?: string | null,
-    envios?: Envio[] | null
+    domicilio?: Domicilio | null
+
   /* foreign que necesito
     private patente: Vehiculos,
   */
@@ -35,18 +35,15 @@ export class Conductor extends Usuario {
       is_active,
       api_key,
       telefono,
-      envios
+      domicilio
     );
-    this.idConductor = id;
+    this.idConductor = idConductor;
+    this.estadoConductor = estadoConductor;
   }
 
   // Getters
   public getIdConductor(): string {
     return this.idConductor;
-  }
-
-  public getCompartirFichaMedica(): boolean {
-    return this.compartirFichaMedica;
   }
 
   public getEstadoConductor(): EstadoConductor {
@@ -59,9 +56,6 @@ export class Conductor extends Usuario {
   }
 */
   // Setters
-  public setCompartirFichaMedica(compartirFichaMedica: boolean): void {
-    this.compartirFichaMedica = compartirFichaMedica;
-  }
 
   public setEstadoConductor(estadoConductor: EstadoConductor): void {
     this.estadoConductor = estadoConductor;

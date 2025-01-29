@@ -1,44 +1,53 @@
-// import { type Request, type Response } from 'express';
-// import { UsuarioService } from '../../application/services/usuario.service';
-// import { UsuarioDto } from '../../application/dtos/usuario/getUsuario.dto'
-// import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
-// import { HandleError } from '../errors/handle.error';
+import { type Request, type Response } from 'express';
+import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
+import { HandleError } from '../errors/handle.error';
+import { ConductorService } from '../../application/services/conductor.service';
+import { UsuarioService } from '../../application/services/usuario.service';
+import { RegisterUsuarioDto } from '../../application/dtos/usuario/registerUsuario.dto';
+import { PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
+import { GetUsuarioDto } from '../../application/dtos/usuario/getUsuario.dto';
+import { DomicilioService } from '../../application/services/domicilio.service';
 
 
-// @Injectable()
-// export class CondutorController {
-//   constructor(
-//     private readonly usuarioService: UsuarioService
-//   ) { }
+@Injectable()
+export class CondutorController {
+  constructor(
+    private readonly conductorService: ConductorService,
+    private readonly usuarioService: UsuarioService,
+    private readonly domicilioService: DomicilioService
+  ) { }
 
-//   register = async (req: Request, res: Response) => {
-//     try {
-//       const { dni, email, password, fechaNac, nombre, apellido, esConductor, telefono } = req.body;
+  register = async (req: Request, res: Response) => {
+    try {
+      const { domicilio, ...usuarioData } = req.body;
 
-//       //Hacer validacion de datos
+      // Validar los datos del usuario
+      const [error, clienteDto] = RegisterUsuarioDto.create(usuarioData);
+      if (error) {
+        res.status(400).json({ message: error });
+        return;
+      }
 
-//       // Llamar al servicio de registro
-//       const usuario = await this.usuarioService.register({
-//         dni,
-//         email,
-//         password,
-//         fechaNac,
-//         nombre,
-//         apellido,
-//         esConductor,
-//         telefono,
-//       });
+      // Validar los datos del domicilio
+      const [errorDomicilio, domicilioDto] = PostDomicilioDto.create(domicilio);
+      if (errorDomicilio) {
+        res.status(400).json({ message: errorDomicilio });
+        return;
+      }
 
-//       // Convertir la entidad de dominio en un DTO
-//       const usuarioDto = UsuarioDto.create(usuario);
+      if (clienteDto && domicilioDto) {
+        const usuario = await this.usuarioService.register(clienteDto);
+        const usuarioDto = GetUsuarioDto.create(usuario);
+        await this.domicilioService.create(domicilioDto, usuario.getID());
+        await this.conductorService.register(usuario);
 
-//       // Enviar respuesta al cliente
-//       res.status(201).json(usuarioDto);
-//     } catch (error) {
-//       HandleError.throw(error, res);
-//     }
-//   }
-
+        res.status(201).json({ usuarioDto, domicilioDto });
+      }
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+}
 //   login = async (req: Request, res: Response) => {
 //     try {
 //       const { email, password } = req.body;
