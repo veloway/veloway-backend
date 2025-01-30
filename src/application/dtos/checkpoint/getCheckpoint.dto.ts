@@ -1,23 +1,24 @@
 import { type Checkpoint } from '../../../domain/entities/checkpoint.entity';
-import { type Viaje } from '../../../domain/entities/viaje.entity';
 
 export class GetCheckpointDto {
   private constructor(
+    public numero: number,
+    public idViaje: number,
     public idCoordenadas: number,
     public latitud: number,
-    public longitud: number,
-    public numero: number,
-    public id_viaje: Viaje
+    public longitud: number
   ) {}
 
-  public static get(checkpoint: Checkpoint): GetCheckpointDto {
+  public static create(checkpoint: Checkpoint): GetCheckpointDto {
     return new GetCheckpointDto(
-      checkpoint.getIdCoordenas(),
-      checkpoint.getLatitud(),
-      checkpoint.getLongitud(),
       checkpoint.getNumero(),
-      checkpoint.getViaje()
+      checkpoint.getIdViaje(),
+      checkpoint.getIdCoordenadas(),
+      checkpoint.getLatitud(),
+      checkpoint.getLongitud()
     );
   }
 }
+
+
 
