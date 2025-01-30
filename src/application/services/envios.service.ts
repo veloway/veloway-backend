@@ -47,8 +47,8 @@ export class EnviosService {
     return envios;
   }
 
-  public async totalEnviosByClienteId(clienteID: string): Promise<number> {
-    const totalEnvios = await this.enviosRepository.totalEnviosByClienteID(clienteID);
+  public async totalEnviosByClienteId(clienteID: string, filters: EnvioFilters): Promise<number> {
+    const totalEnvios = await this.enviosRepository.totalEnviosByClienteID(clienteID, filters);
     return totalEnvios;
   }
 

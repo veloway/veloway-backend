@@ -81,10 +81,8 @@ export class EnviosController {
       descripcion: typeof descripcion === 'string' ? descripcion : undefined
     };
 
-    console.log(filters);
-
     try {
-      const totalEnvios = await this.enviosService.totalEnviosByClienteId(clienteID);
+      const totalEnvios = await this.enviosService.totalEnviosByClienteId(clienteID, filters);
       const envios = await this.enviosService.getAllByClienteId(clienteID, paginationOptions, filters);
       const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
 

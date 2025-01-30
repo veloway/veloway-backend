@@ -43,17 +43,16 @@ export class EnviosRepository implements IEnviosRepository {
   }
 
   public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> {
+    console.log(filters);
     const enviosPrisma = await this.prisma.envios.findMany(
       {
         where: {
           id_cliente: clienteID,
           id_estado: filters.estado ? filters.estado : undefined,
-          fecha: filters.fechaDesde
-            ? {
-                gte: new Date(filters.fechaDesde)
-              }
-            : undefined,
-          hora: filters.hora ? filters.hora : undefined,
+          fecha: {
+            gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+            lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+          },
           descripcion: filters.descripcion
             ? {
                 contains: filters.descripcion
@@ -93,10 +92,20 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
   }
 
-  public async totalEnviosByClienteID(clienteID: string): Promise<number> {
+  public async totalEnviosByClienteID(clienteID: string, filters: EnvioFilters): Promise<number> {
     return await this.prisma.envios.count({
       where: {
-        id_cliente: clienteID
+        id_cliente: clienteID,
+        id_estado: filters.estado ? filters.estado : undefined,
+        fecha: {
+          gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+          lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+        },
+        descripcion: filters.descripcion
+          ? {
+              contains: filters.descripcion
+            }
+          : undefined
       }
     });
   }
