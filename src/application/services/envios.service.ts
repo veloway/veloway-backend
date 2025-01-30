@@ -17,6 +17,7 @@ import { ViajesService } from './viajes.service';
 import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
 import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 import { type PaginationOptions } from '../../domain/types/paginationOptions';
+import { type EnvioFilters } from '../../domain/types/enviosFilter';
 
 @Injectable()
 export class EnviosService {
@@ -36,10 +37,11 @@ export class EnviosService {
     return envios;
   }
 
-  public async getAllByClienteId(clienteID: string, paginationOptions: PaginationOptions): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
+  public async getAllByClienteId(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
     const envios = await this.enviosRepository.getAllByClienteID(
       clienteID,
-      paginationOptions
+      paginationOptions,
+      filters
     );
     if (envios.length === 0) throw CustomError.badRequest(`No se encontraron envíos para el cliente con id: ${clienteID}`);
     return envios;
