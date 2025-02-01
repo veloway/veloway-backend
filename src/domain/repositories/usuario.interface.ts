@@ -5,4 +5,8 @@ export interface IUsuarioRepository {
   getUsuario: (id: string) => Promise<Usuario | null>
   getUsuarioByEmail: (email: string) => Promise <Usuario | null>
   create: (usuario: Usuario) => Promise <void>
+  deactivateUser: (id: string) => Promise<void>
+  updateApiKey: (id: string, hashedApiKey: string) => Promise<void>
+  findUserByApiKey: (apiKey: string) => Promise<Usuario | null>
+  update: (id: string, data: any) => Promise<void>
 }

@@ -9,7 +9,8 @@ export class RegisterUsuarioDto {
     public nombre: string,
     public apellido: string,
     public esConductor: boolean,
-    public telefono?: string | null
+    public telefono?: string | null,
+    public idDomicilio?: number | null
   ) {}
 
   public static create(usuario: any): [string?, RegisterUsuarioDto?] {

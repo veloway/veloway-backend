@@ -1,17 +1,34 @@
 import { z } from 'zod';
-import { type Conductor } from '../../../domain/entities/conductor.entity';
 
-export const PostConductorSchema = z.object({
-  compartirFichaMedica: z.boolean()
-  /* foreign que necesito
-    dni: PostUsuariosSchema,
-    idEstado: PostEstaado_conductoresSchema,
-    numeroLicencia: PostLicenciasSchema,
-    idFichaMedica: PostFichas_medicasSchema,
-    patente: PostVehiculosSchema,
-*/
+
+// Validación para el número de registro (campo del conductor)
+// const registerNumberSchema = z
+//   .string()
+//   .min(5, 'El número de registro debe tener al menos 5 caracteres');
+
+// Validación para la categoría de licencia
+// const licenseCategorySchema = z.enum(['A', 'B', 'C', 'D', 'E'], {
+//   errorMap: () => ({
+//     message: 'La categoría de licencia debe ser A, B, C, D o E'
+//   })
+// });
+
+// const licenseExpirationSchema = z
+//   .string()
+//   .refine((date) => {
+//     const parsedDate = new Date(date);
+//     return parsedDate > new Date();
+//   }, 'La licencia no puede estar vencida');
+const idUser = z.string({errorMap: () => ({
+  message: 'El id del conductor debe ser una cadena de caracteres.'
+})})
+
+
+export const driverSchema = z.object({
+  idUser
 });
 
-export const postConductorValidation = (conductor: Conductor) => {
-  return PostConductorSchema.safeParse(conductor);
+
+export const postConductorValidation = (conductor: any) => {
+  return driverSchema.safeParse(conductor);
 };

@@ -17,6 +17,7 @@ import { ViajesService } from './viajes.service';
 import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
 import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 import { ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
+import { type PaginationOptions } from '../../domain/types/paginationOptions';
 
 @Injectable()
 export class EnviosService {
@@ -37,10 +38,18 @@ export class EnviosService {
     return envios;
   }
 
-  public async getAllByClienteId(clienteID: string): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
-    const envios = await this.enviosRepository.getAllByClienteID(clienteID);
+  public async getAllByClienteId(clienteID: string, paginationOptions: PaginationOptions): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
+    const envios = await this.enviosRepository.getAllByClienteID(
+      clienteID,
+      paginationOptions
+    );
     if (envios.length === 0) throw CustomError.badRequest(`No se encontraron envíos para el cliente con id: ${clienteID}`);
     return envios;
+  }
+
+  public async totalEnviosByClienteId(clienteID: string): Promise<number> {
+    const totalEnvios = await this.enviosRepository.totalEnviosByClienteID(clienteID);
+    return totalEnvios;
   }
 
   public async getEnvio(nroSeguimiento: number): Promise<Envio> {
@@ -171,7 +180,7 @@ export class EnviosService {
     const domicilioExistente = await this.domicilioRepository.getDomicilioByProperties(domicilio);
     if (domicilioExistente) return domicilioExistente;
 
-    const domicilioCreated = await this.domicilioRepository.create(domicilio);
+    const domicilioCreated = await this.domicilioRepository.createDomicilioEnvio(domicilio);
     return domicilioCreated;
   }
 }

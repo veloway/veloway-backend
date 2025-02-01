@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import { prismaClient } from '../data/prismaClient';
 import { EnviosRepository } from '../repositories/envios.repository';
 import { DomiciliosRepository } from '../repositories/domicilios.repository';
+import { DomicilioService } from '../../application/services/domicilio.service';
 import { LocalidadesRepository } from '../repositories/localidades.repository';
 import { UsuarioRepository } from '../repositories/usuarios.repository';
 import { UsuarioService } from '../../application/services/usuario.service';
@@ -23,7 +24,9 @@ import { ConductoresRepository } from '../repositories/conductores.repository';
 import { CheckpointsRepository } from '../repositories/checkpoints.repository';
 import { CheckpointService } from '../../application/services/checkpoint.service';
 import { CheckpointsController } from '../../presentation/controllers/checkpoints.controller';
-
+import { ConductorService } from '../../application/services/conductor.service';
+import { CondutorController } from '../../presentation/controllers/conductor.controller';
+import { BcryptHashProvider } from '../jwt/bcrypt-hash.provider';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -35,6 +38,7 @@ container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepo
 container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: CoordenadasRepository });
 container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: ConductoresRepository });
 container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
+container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
@@ -43,6 +47,8 @@ container.register(LocalidadesService, { useClass: LocalidadesService });
 container.register(UsuarioService, { useClass: UsuarioService });
 container.register(AuthService, { useClass: AuthService });
 container.register(CheckpointService, { useClass: CheckpointService });
+container.register(DomicilioService, { useClass: DomicilioService });
+container.register(ConductorService, { useClass: ConductorService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -62,3 +68,6 @@ export const authController = container.resolve(AuthController);
 
 container.register(CheckpointsController, { useClass: CheckpointsController });
 export const checkpointsController = container.resolve(CheckpointsController);
+
+container.register(CondutorController, { useClass: CondutorController });
+export const condutorController = container.resolve(CondutorController);
