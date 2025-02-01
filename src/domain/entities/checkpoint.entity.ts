@@ -1,11 +1,9 @@
 import { Coordenada } from './coordenada.entity';
-import { type Viaje } from './viaje.entity';
 
 export class Checkpoint extends Coordenada {
   constructor(
-    private readonly idCheckpoint: number,
     private numero: number,
-    private viaje: Viaje,
+    private idViaje: number,
     idCoordenadas: number,
     latitud: number,
     longitud: number
@@ -15,21 +13,16 @@ export class Checkpoint extends Coordenada {
       latitud,
       longitud
     );
-    this.idCheckpoint = idCoordenadas;
   }
 
   // Getters
-
-  public getIdCheckpoint(): number {
-    return this.idCheckpoint;
-  }
 
   public getNumero(): number {
     return this.numero;
   }
 
-  public getViaje(): Viaje {
-    return this.viaje;
+  public getIdViaje(): number {
+    return this.idViaje;
   }
 
   // Setters
@@ -37,7 +30,7 @@ export class Checkpoint extends Coordenada {
     this.numero = numero;
   }
 
-  public setViaje(viaje: Viaje): void {
-    this.viaje = viaje;
+  public setIdViaje(idViaje: number): void {
+    this.idViaje = idViaje;
   }
 }

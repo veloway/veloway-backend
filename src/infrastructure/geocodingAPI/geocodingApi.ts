@@ -60,3 +60,8 @@ export async function obtenerCoordDestino(envio: Envio): Promise<{ latitud: numb
 
   return await obtenerCoordenadas({ calle, numero, localidad, provincia });
 };
+
+
+
+// funcion inversa, obtiene las coordenadas a partir de las latitudes
+

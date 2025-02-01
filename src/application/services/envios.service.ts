@@ -16,6 +16,7 @@ import { DomicilioMapper } from '../mappers/domicilio.mapper';
 import { ViajesService } from './viajes.service';
 import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
 import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
+import { ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
 import { type PaginationOptions } from '../../domain/types/paginationOptions';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class EnviosService {
     @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository,
     @Inject(REPOSITORIES_TOKENS.IConductoresRepository) private readonly conductorRepository: IConductoresRepository,
     @Inject(REPOSITORIES_TOKENS.ICoordenadasRepository) private readonly coordenadasRepository: ICoordenadaRepository,
+    @Inject(REPOSITORIES_TOKENS.ICheckpointsRepository) private readonly checkpointsRepository: ICheckpointsRepository,
     private readonly viajeService: ViajesService
   ) {}
 
@@ -153,17 +155,15 @@ export class EnviosService {
   }
 
   public async updateEstadoEnvio(nroSeguimiento: number, estadoEnvioID: number) {
-    if (!(estadoEnvioID === 5)) {
+    if (!(estadoEnvioID === 5) && !(estadoEnvioID === 2)) {
       await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
     }
 
     await this.enviosRepository.updateEstadoEnvio(nroSeguimiento, estadoEnvioID);
 
-    // const viajeEncontrado = await this.viajeService.getViajeByNroSeguimiento(nroSeguimiento);
-    // console.log(viajeEncontrado);
+    const viajeEncontrado = await this.viajeService.getViajeByNroSeguimiento(nroSeguimiento);
 
-
-    // TODO: falta borrar los checkpoints que tambien son del viaje
+    await this.checkpointsRepository.deleteCheckpointByViajeId(viajeEncontrado.getIdViaje());
   }
 
   public async cancelarEnvio(nroSeguimiento: number): Promise<void> {
