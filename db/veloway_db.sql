@@ -138,6 +138,7 @@ CREATE TABLE envios (
 	id_estado INT NOT NULL DEFAULT 1,
 	id_origen INT NOT NULL,
 	id_destino INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (id_cliente) REFERENCES usuarios(id_usuario),
 	FOREIGN KEY (id_estado) REFERENCES estados_envio(id_estado),
 	FOREIGN KEY (id_origen) REFERENCES domicilios(id_domicilio),

@@ -5,6 +5,7 @@ import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
 import { Injectable } from '../dependencies/injectable.dependency';
 import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
 import { type PaginationOptions } from '../../domain/types/paginationOptions';
+import { type EnvioFilters } from '../../domain/types/enviosFilter';
 
 @Injectable()
 export class EnviosRepository implements IEnviosRepository {
@@ -41,16 +42,27 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
   }
 
-  public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions): Promise<Envio[]> {
+  public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> {
+    console.log(filters);
     const enviosPrisma = await this.prisma.envios.findMany(
       {
         where: {
-          id_cliente: clienteID
+          id_cliente: clienteID,
+          id_estado: filters.estado ? filters.estado : undefined,
+          fecha: {
+            gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+            lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+          },
+          descripcion: filters.descripcion
+            ? {
+                contains: filters.descripcion
+              }
+            : undefined
         },
         take: paginationOptions.limit,
         skip: paginationOptions.offset,
         orderBy: {
-          fecha: 'desc'
+          created_at: 'desc'
         },
         include: {
           usuarios: true,
@@ -80,10 +92,20 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
   }
 
-  public async totalEnviosByClienteID(clienteID: string): Promise<number> {
+  public async totalEnviosByClienteID(clienteID: string, filters: EnvioFilters): Promise<number> {
     return await this.prisma.envios.count({
       where: {
-        id_cliente: clienteID
+        id_cliente: clienteID,
+        id_estado: filters.estado ? filters.estado : undefined,
+        fecha: {
+          gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+          lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+        },
+        descripcion: filters.descripcion
+          ? {
+              contains: filters.descripcion
+            }
+          : undefined
       }
     });
   }

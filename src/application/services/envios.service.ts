@@ -18,6 +18,7 @@ import { IConductoresRepository } from '../../domain/repositories/conductor.inte
 import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 import { ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
 import { type PaginationOptions } from '../../domain/types/paginationOptions';
+import { type EnvioFilters } from '../../domain/types/enviosFilter';
 
 @Injectable()
 export class EnviosService {
@@ -38,17 +39,18 @@ export class EnviosService {
     return envios;
   }
 
-  public async getAllByClienteId(clienteID: string, paginationOptions: PaginationOptions): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
+  public async getAllByClienteId(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> { // TODO: Implementar filtros de busqueda para el getAllByClienteID
     const envios = await this.enviosRepository.getAllByClienteID(
       clienteID,
-      paginationOptions
+      paginationOptions,
+      filters
     );
     if (envios.length === 0) throw CustomError.badRequest(`No se encontraron envíos para el cliente con id: ${clienteID}`);
     return envios;
   }
 
-  public async totalEnviosByClienteId(clienteID: string): Promise<number> {
-    const totalEnvios = await this.enviosRepository.totalEnviosByClienteID(clienteID);
+  public async totalEnviosByClienteId(clienteID: string, filters: EnvioFilters): Promise<number> {
+    const totalEnvios = await this.enviosRepository.totalEnviosByClienteID(clienteID, filters);
     return totalEnvios;
   }
 

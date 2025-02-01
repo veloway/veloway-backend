@@ -25,6 +25,7 @@ export class EnviosController {
   getAllByClienteId = async (req: Request, res: Response) => {
     const { clienteID } = req.params;
     const { limit, offset, page } = req.query;
+    const { estado, fechaDesde, fechaHasta, hora, descripcion } = req.query;
 
     if (!clienteID) {
       res.status(400).json({ message: 'Cliente ID es requerido' });
@@ -43,22 +44,55 @@ export class EnviosController {
 
     const paginationOptions = {
       limit: limit ? Number(limit) : 10,
-      offset: offset ? (page ? (Number(page) - 1) * Number(limit) : Number(offset)) : 0
+      offset: offset ? Number(offset) : (page ? (Number(page) - 1) * (limit ? Number(limit) : 10) : 0),
+      page: page ? Number(page) : 1
+    };
+
+    if (fechaDesde && typeof fechaDesde !== 'string') {
+      res.status(400).json({ message: 'FechaDesde tiene que ser un string' });
+      return;
+    }
+
+    if (fechaHasta && typeof fechaHasta !== 'string') {
+      res.status(400).json({ message: 'FechaHasta tiene que ser un string' });
+      return;
+    }
+
+    if (hora && typeof hora !== 'string') {
+      res.status(400).json({ message: 'Hora tiene que ser un string' });
+      return;
+    }
+
+    if (estado && isNaN(Number(estado))) {
+      res.status(400).json({ message: 'Estado tiene que ser un número' });
+      return;
+    }
+
+    if (descripcion && typeof descripcion !== 'string') {
+      res.status(400).json({ message: 'Descripción tiene que ser un string' });
+      return;
+    }
+
+    const filters = {
+      estado: estado ? Number(estado) : undefined,
+      fechaDesde: typeof fechaDesde === 'string' ? fechaDesde : undefined,
+      fechaHasta: typeof fechaHasta === 'string' ? fechaHasta : undefined,
+      hora: typeof hora === 'string' ? hora : undefined,
+      descripcion: typeof descripcion === 'string' ? descripcion : undefined
     };
 
     try {
-      const totalEnvios = await this.enviosService.totalEnviosByClienteId(clienteID);
-      const envios = await this.enviosService.getAllByClienteId(clienteID, paginationOptions);
+      const totalEnvios = await this.enviosService.totalEnviosByClienteId(clienteID, filters);
+      const envios = await this.enviosService.getAllByClienteId(clienteID, paginationOptions, filters);
       const enviosDto = envios.map((envio) => GetEnvioDto.create(envio));
 
       const lastPage = Math.ceil(totalEnvios / paginationOptions.limit);
-      if (Number(page) > lastPage) {
+      if (paginationOptions.page > lastPage) {
         res.status(400).json({ message: 'Página solicitada no existe' });
         return;
       }
-      const currentPage = page ? 1 : Math.floor(paginationOptions.offset / paginationOptions.limit) + 1;
-      const previusPage = currentPage > 1 ? currentPage - 1 : null;
-      const nextPage = currentPage < lastPage ? currentPage + 1 : null;
+      const previusPage = paginationOptions.page > 1 ? paginationOptions.page - 1 : null;
+      const nextPage = paginationOptions.page < lastPage ? paginationOptions.page + 1 : null;
 
       res.status(200).json({
         totalEnvios,
