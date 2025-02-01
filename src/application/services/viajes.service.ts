@@ -82,4 +82,12 @@ export class ViajesService {
     if (!viajeEncontrado) throw CustomError.notFound('No se encontro el viaje con ese nro de seguimiento');
     return viajeEncontrado;
   }
+
+  public async SolicitarAmbulancia(idViaje: number): Promise<void> {
+    const viajeRecuperado = await this.viajeRepository.getViaje(idViaje);
+
+    if (!viajeRecuperado) throw new Error(`No se encontro el viaje con id ${idViaje}`);
+
+    // const checkpointActualRecuperado = viajeRecuperado.getCheckpointActual();
+  }
 }
