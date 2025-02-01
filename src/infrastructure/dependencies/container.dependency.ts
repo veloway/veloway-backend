@@ -21,10 +21,12 @@ import { CoordenadasRepository } from '../repositories/coordenadas.repository';
 import { LocalidadesService } from '../../application/services/localidades.service';
 import { LocalidadesController } from '../../presentation/controllers/localidades.controller';
 import { ConductoresRepository } from '../repositories/conductores.repository';
+import { CheckpointsRepository } from '../repositories/checkpoints.repository';
+import { CheckpointService } from '../../application/services/checkpoint.service';
+import { CheckpointsController } from '../../presentation/controllers/checkpoints.controller';
 import { ConductorService } from '../../application/services/conductor.service';
 import { CondutorController } from '../../presentation/controllers/conductor.controller';
 import { BcryptHashProvider } from '../jwt/bcrypt-hash.provider';
-
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -35,6 +37,7 @@ container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuarioR
 container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepository });
 container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: CoordenadasRepository });
 container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: ConductoresRepository });
+container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
 container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
 
 // Servicios
@@ -43,9 +46,9 @@ container.register(ViajesService, { useClass: ViajesService });
 container.register(LocalidadesService, { useClass: LocalidadesService });
 container.register(UsuarioService, { useClass: UsuarioService });
 container.register(AuthService, { useClass: AuthService });
+container.register(CheckpointService, { useClass: CheckpointService });
 container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
-
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -63,6 +66,8 @@ export const usuariosController = container.resolve(UsuarioController);
 container.register(AuthController, { useClass: AuthController });
 export const authController = container.resolve(AuthController);
 
+container.register(CheckpointsController, { useClass: CheckpointsController });
+export const checkpointsController = container.resolve(CheckpointsController);
+
 container.register(CondutorController, { useClass: CondutorController });
 export const condutorController = container.resolve(CondutorController);
-

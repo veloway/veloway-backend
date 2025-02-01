@@ -64,10 +64,8 @@ export async function obtenerCoordDestino(envio: Envio): Promise<{ latitud: numb
 
 
 // Uso la api para convertir las coordenadas de un checkpoint a direccion
-
-// ej
 // JSON format request for coordinates -22.6792, 14.5272.
-// https://api.opencagedata.com/geocode/v1/json?q=-22.6792%2C+14.5272&key=YOUR-API-KEY&pretty=1
+// Ej: https://api.opencagedata.com/geocode/v1/json?q=-22.6792%2C+14.5272&key=YOUR-API-KEY&pretty=1
 
 export const obtenerDireccion = async (checkpoint: Checkpoint): Promise<string | null> => {
   const latitud = checkpoint.getLatitud();
