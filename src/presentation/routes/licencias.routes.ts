@@ -8,8 +8,9 @@ export class LicenciasRoutes{
         router.get('/', licenciasController.getAll);
         router.get('/:conductorID', licenciasController.getLicenciaByConductorId);
         router.get('/licencia/:licenciaID', licenciasController.getLicencia);
-        router.post('/', licenciasController.create);
+        router.post('/create', licenciasController.create);
         router.put('/:licenciaID', licenciasController.update);
+
         return router;
     }
 }
