@@ -10,6 +10,8 @@ import { EnviosController } from '../../presentation/controllers/envios.controll
 import { PrismaClient } from '@prisma/client';
 import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
 import { LicenciasRepository } from '../repositories/licencias.repository';
+import { LicenciasService } from '../../application/services/licencias.service';
+import { LicenciasController } from '../../presentation/controllers/licencias.controller';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -21,7 +23,11 @@ container.register(REPOSITORIES_TOKENS.ILicenciasRepository, { useClass: Licenci
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
+container.register(LicenciasService, { useClass: LicenciasService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
 export const enviosController = container.resolve(EnviosController);
+
+container.register(LicenciasController, { useClass: LicenciasController });
+export const licenciasController = container.resolve(LicenciasController);

@@ -7,20 +7,20 @@ export class UpdateLicenciaDto {
         public numero: number
     ){}
 
-    public static create(categoria: string, fechaVenc: Date, numero: number): UpdateLicenciaDto {
-        const licenciaValidation = updateLicenciaValidation({categoria, fechaVenc, numero});
+    public static create(updateLicencia: any): [string?, UpdateLicenciaDto?]  {
+        const licenciaValidation = updateLicenciaValidation(updateLicencia);
 
         if (!licenciaValidation.success) {
             throw new Error(licenciaValidation.error.message);
         }
 
-        const fechaVencDate = new Date(fechaVenc);
+        const fechaVencDate = new Date(licenciaValidation.data.fechaVenc);
         
-        return new UpdateLicenciaDto(
+        return [undefined, new UpdateLicenciaDto(
             licenciaValidation.data.categoria,
             fechaVencDate,
             licenciaValidation.data.numero
-        );
+        )];
     }
 }
 

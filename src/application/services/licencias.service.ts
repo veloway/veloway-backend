@@ -4,10 +4,11 @@ import { Inject, Injectable } from '../../infrastructure/dependencies/injectable
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { CustomError } from '../errors/custom.errors';
 import { UpdateLicenciaDto } from "../dtos/licencia/updateLicencia.dto";
+import { PostLicenciaDto } from "../dtos/licencia/postLicencia.dto";
 import { LicenciaMapper } from "../mappers/licencia.mapper";
 
 @Injectable()
-export class LicenciaService {
+export class LicenciasService {
     constructor(
         @Inject(REPOSITORIES_TOKENS.ILicenciasRepository) private readonly licenciaRepository: ILicenciaRepository
     ) {}
@@ -33,9 +34,10 @@ export class LicenciaService {
         return licenciaByConductorId;
     }
 
-    public async create(licencia: Licencia): Promise<Licencia> {
-        const nuevaLicencia = await this.licenciaRepository.create(licencia);
-        return nuevaLicencia;
+    public async create(postLicenciaDto: PostLicenciaDto): Promise<Licencia>{
+        const licencia = LicenciaMapper.fromPostDtoToEntity(postLicenciaDto);
+        const newLicencia = await this.licenciaRepository.create(licencia);
+        return newLicencia;
     }
 
     public async update(id: number, updateLicenciaDto: UpdateLicenciaDto): Promise<Licencia> {
