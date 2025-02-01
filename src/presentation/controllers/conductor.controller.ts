@@ -10,7 +10,7 @@ import { DomicilioService } from '../../application/services/domicilio.service';
 
 
 @Injectable()
-export class CondutorController {
+export class ConductorController {
   constructor(
     private readonly conductorService: ConductorService,
     private readonly usuarioService: UsuarioService,
