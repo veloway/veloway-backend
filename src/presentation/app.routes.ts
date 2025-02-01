@@ -17,7 +17,7 @@ export class AppRoutes {
     router.use('/api/usuarios', UsuarioRoutes.routes);
     router.use('/api/auth', AuthRoutes.routes);
     router.use('/api/checkpoints', CheckpointsRoutes.routes);
-    router.use('/api/condutores', ConductoresRoutes.routes);
+    router.use('/api/conductores', ConductoresRoutes.routes);
 
     return router;
   }

@@ -25,7 +25,7 @@ import { CheckpointsRepository } from '../repositories/checkpoints.repository';
 import { CheckpointService } from '../../application/services/checkpoint.service';
 import { CheckpointsController } from '../../presentation/controllers/checkpoints.controller';
 import { ConductorService } from '../../application/services/conductor.service';
-import { CondutorController } from '../../presentation/controllers/conductor.controller';
+import { ConductorController } from '../../presentation/controllers/conductor.controller';
 import { BcryptHashProvider } from '../jwt/bcrypt-hash.provider';
 
 container.register(PrismaClient, { useValue: prismaClient });
@@ -69,5 +69,5 @@ export const authController = container.resolve(AuthController);
 container.register(CheckpointsController, { useClass: CheckpointsController });
 export const checkpointsController = container.resolve(CheckpointsController);
 
-container.register(CondutorController, { useClass: CondutorController });
-export const condutorController = container.resolve(CondutorController);
+container.register(ConductorController, { useClass: ConductorController });
+export const conductorController = container.resolve(ConductorController);
