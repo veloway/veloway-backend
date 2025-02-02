@@ -15,7 +15,6 @@ import { type Domicilio } from '../../domain/entities/domicilio.entity';
 import { DomicilioMapper } from '../mappers/domicilio.mapper';
 import { ViajesService } from './viajes.service';
 import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
-import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 import { ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
 import { type PaginationOptions } from '../../domain/types/paginationOptions';
 import { type EnvioFilters } from '../../domain/types/enviosFilter';
@@ -28,7 +27,6 @@ export class EnviosService {
     @Inject(REPOSITORIES_TOKENS.ILocalidadesRepository) private readonly localidadRepository: ILocalidadRepository,
     @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly clienteRepository: IUsuarioRepository,
     @Inject(REPOSITORIES_TOKENS.IConductoresRepository) private readonly conductorRepository: IConductoresRepository,
-    @Inject(REPOSITORIES_TOKENS.ICoordenadasRepository) private readonly coordenadasRepository: ICoordenadaRepository,
     @Inject(REPOSITORIES_TOKENS.ICheckpointsRepository) private readonly checkpointsRepository: ICheckpointsRepository,
     private readonly viajeService: ViajesService
   ) {}
@@ -97,7 +95,7 @@ export class EnviosService {
 
     envio.verificarReserva();
 
-    const conductorId = await this.conductorRepository.buscarConductor();
+    const conductorId = await this.buscarConductorDisponible(envio);
     if (!conductorId) throw CustomError.notFound('No hay conductores disponibles');
 
     // Setea los domicilios con sus IDs si existen, sino los crea
@@ -184,5 +182,25 @@ export class EnviosService {
 
     const domicilioCreated = await this.domicilioRepository.createDomicilioEnvio(domicilio);
     return domicilioCreated;
+  }
+
+  private async buscarConductorDisponible(envio: Envio): Promise<string | null> {
+    let conductorId;
+    const idProvincia = envio.getOrigen().getLocalidad().getProvincia().getID();
+    if (envio.getReserva()) {
+      // Busca el primer conductor que no tenga un envío reservado en el rango de 1 hora antes y después de la hora de la reserva
+      const horaInicio = new Date(envio.getHora());
+      horaInicio.setHours(horaInicio.getHours() - 1);
+      const horaFin = new Date(envio.getHora());
+      horaFin.setHours(horaFin.getHours() + 1);
+
+      conductorId = await this.conductorRepository.buscarConductorParaReserva(horaInicio, horaFin, idProvincia);
+    } else {
+      const horaFin = new Date();
+      horaFin.setHours(horaFin.getHours() + 1);
+      conductorId = await this.conductorRepository.buscarConductorParaAhora(horaFin, idProvincia);
+    }
+
+    return conductorId;
   }
 }

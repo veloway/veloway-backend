@@ -19,9 +19,11 @@ import { z } from 'zod';
 //     const parsedDate = new Date(date);
 //     return parsedDate > new Date();
 //   }, 'La licencia no puede estar vencida');
-const idUser = z.string({errorMap: () => ({
-  message: 'El id del conductor debe ser una cadena de caracteres.'
-})})
+const idUser = z.string({
+  errorMap: () => ({
+    message: 'El id del conductor debe ser una cadena de caracteres.'
+  })
+});
 
 
 export const driverSchema = z.object({
