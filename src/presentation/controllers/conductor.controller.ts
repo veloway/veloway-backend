@@ -56,11 +56,12 @@ export class ConductorController {
       const conductor = await this.conductorService.getConductor(idConductor);
 
       if (!conductor) {
-        return res.status(404).json({ message: 'No se encontró el conductor' });
+        res.status(404).json({ message: 'No se encontró el conductor' });
+        return;
       }
 
       const conductorDto = GetConductorDto.create(conductor);
-      return res.status(200).json(conductorDto);
+      res.status(200).json(conductorDto);
     } catch (error) {
       HandleError.throw(error, res);
     }
