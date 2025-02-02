@@ -43,9 +43,9 @@ export class EnviosController {
     }
 
     const paginationOptions = {
-      limit: limit ? Number(limit) : 10,
-      offset: offset ? Number(offset) : (page ? (Number(page) - 1) * (limit ? Number(limit) : 10) : 0),
-      page: page ? Number(page) : 1
+      limit: Number(limit),
+      offset: offset ? Number(offset) : (page ? (Number(page) - 1) * Number(limit) : 0),
+      page: Number(page) || 1
     };
 
     if (fechaDesde && typeof fechaDesde !== 'string') {
