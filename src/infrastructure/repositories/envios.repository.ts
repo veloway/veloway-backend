@@ -43,23 +43,21 @@ export class EnviosRepository implements IEnviosRepository {
   }
 
   public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> {
-    console.log(filters);
     const enviosPrisma = await this.prisma.envios.findMany(
       {
         where: {
           id_cliente: clienteID,
-          id_estado: filters.estado ? filters.estado : undefined,
+          id_estado: filters.estado,
           fecha: {
             gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
             lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
           },
-          descripcion: filters.descripcion
-            ? {
-                contains: filters.descripcion
-              }
-            : undefined
+          descripcion: {
+            contains: filters.descripcion,
+            mode: 'insensitive'
+          }
         },
-        take: paginationOptions.limit,
+        take: paginationOptions.limit ? paginationOptions.limit : undefined,
         skip: paginationOptions.offset,
         orderBy: {
           created_at: 'desc'
