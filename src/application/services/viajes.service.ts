@@ -1,18 +1,23 @@
 import { Coordenada } from '../../domain/entities/coordenada.entity';
 import { type Envio } from '../../domain/entities/envio.entity';
 import { Viaje } from '../../domain/entities/viaje.entity';
+import { ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
+import { IConductoresRepository } from '../../domain/repositories/conductor.interface';
 import { ICoordenadaRepository } from '../../domain/repositories/coordenadas.interface';
 import { IViajeRepository } from '../../domain/repositories/viajes.interface';
 import { Inject, Injectable } from '../../infrastructure/dependencies/injectable.dependency';
 import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositories-tokens.dependency';
 import { obtenerCoordDestino, obtenerCoordOrigen } from '../../infrastructure/geocodingAPI/geocodingApi';
+import { postSolicitarAmbulancia } from '../../infrastructure/interactions/ambulancias/postSolicitarAmbulancia';
 import { CustomError } from '../errors/custom.errors';
 
 @Injectable()
 export class ViajesService {
   constructor (
     @Inject(REPOSITORIES_TOKENS.IViajesRepository) private readonly viajeRepository: IViajeRepository,
-    @Inject(REPOSITORIES_TOKENS.ICoordenadasRepository) private readonly coordenadaRepository: ICoordenadaRepository
+    @Inject(REPOSITORIES_TOKENS.ICoordenadasRepository) private readonly coordenadaRepository: ICoordenadaRepository,
+    @Inject(REPOSITORIES_TOKENS.ICheckpointsRepository) private readonly checkpointRepository: ICheckpointsRepository,
+    @Inject(REPOSITORIES_TOKENS.IConductoresRepository) private readonly conductorRepository: IConductoresRepository
   ) {}
 
   // recupera un viaje
@@ -83,11 +88,19 @@ export class ViajesService {
     return viajeEncontrado;
   }
 
-  public async SolicitarAmbulancia(idViaje: number): Promise<void> {
+  public async solicitarAmbulancia(idViaje: number): Promise<void> {
     const viajeRecuperado = await this.viajeRepository.getViaje(idViaje);
 
     if (!viajeRecuperado) throw new Error(`No se encontro el viaje con id ${idViaje}`);
 
-    // const checkpointActualRecuperado = viajeRecuperado.getCheckpointActual();
+    const conductorRecuperado = await this.conductorRepository.getConductor(viajeRecuperado?.getIdConductor());
+
+    if (!conductorRecuperado) throw new Error('No se encontro el conductor');
+
+    const checkpointActualRecuperado = await this.checkpointRepository.getCurrentCheckpointByIdViaje(viajeRecuperado);
+
+    if (!checkpointActualRecuperado) throw new Error('No se encontro el checkpointActual');
+
+    await postSolicitarAmbulancia(conductorRecuperado, checkpointActualRecuperado);
   }
 }

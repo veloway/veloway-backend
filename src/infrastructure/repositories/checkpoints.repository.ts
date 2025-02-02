@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { type ICheckpointsRepository } from '../../domain/repositories/checkpoint.interface';
 import { Injectable } from '../dependencies/injectable.dependency';
-import { type Checkpoint } from '../../domain/entities/checkpoint.entity';
+import { Checkpoint } from '../../domain/entities/checkpoint.entity';
 import { CheckpointPrismaMapper } from '../mappers/checkpoint-prisma.mapper';
+import { type Viaje } from '../../domain/entities/viaje.entity';
 
 @Injectable()
 export class CheckpointsRepository implements ICheckpointsRepository {
@@ -50,4 +51,26 @@ export class CheckpointsRepository implements ICheckpointsRepository {
 
     return `Se eliminaron ${deleteCheckpoint.count} checkpoints asociados al viaje con ID: ${idViaje}`;
   }
+
+  async getCurrentCheckpointByIdViaje(viaje: Viaje): Promise<Checkpoint | null> {
+    const currentCheckpoint = await this.prisma.checkpoints.findFirst({
+      where: {
+        id_viaje: viaje.getIdViaje(),
+        numero: viaje.getCheckpointActual()
+      },
+      include: {
+        coordenadas: true
+      }
+    });
+
+    if (!currentCheckpoint) return null;
+
+    return new Checkpoint(
+      currentCheckpoint.numero,
+      currentCheckpoint.id_viaje,
+      currentCheckpoint.id_checkpoint,
+      currentCheckpoint.coordenadas.latitud,
+      currentCheckpoint.coordenadas.longitud
+    );
+  };
 }

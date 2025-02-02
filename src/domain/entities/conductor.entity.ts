@@ -1,6 +1,5 @@
 import { type EstadoConductor } from './estadoConductor.entity';
 import { Usuario } from './usuario.entity';
-import { type Domicilio } from './domicilio.entity';
 
 export class Conductor extends Usuario {
   constructor(
@@ -16,12 +15,7 @@ export class Conductor extends Usuario {
     esConductor: boolean,
     is_active: boolean,
     api_key: string,
-    telefono?: string | null,
-    domicilio?: Domicilio | null
-
-  /* foreign que necesito
-    private patente: Vehiculos,
-  */
+    telefono?: string | null
   ) {
     super(
       id,
@@ -34,8 +28,7 @@ export class Conductor extends Usuario {
       esConductor,
       is_active,
       api_key,
-      telefono,
-      domicilio
+      telefono
     );
     this.idConductor = idConductor;
     this.estadoConductor = estadoConductor;
@@ -50,19 +43,9 @@ export class Conductor extends Usuario {
     return this.estadoConductor;
   }
 
-  /*
-  public getPatente(): Vehiculos {
-    return this.patente;
-  }
-*/
   // Setters
 
   public setEstadoConductor(estadoConductor: EstadoConductor): void {
     this.estadoConductor = estadoConductor;
   }
-/*
-  public getPatente(patente: Vehiculos): void {
-    this.patente = patente;
-  }
-*/
 }
