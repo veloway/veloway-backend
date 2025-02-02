@@ -7,6 +7,7 @@ import { RegisterUsuarioDto } from '../../application/dtos/usuario/registerUsuar
 import { PostDomicilioDto } from '../../application/dtos/domicilio/postDomicilio.dto';
 import { GetUsuarioDto } from '../../application/dtos/usuario/getUsuario.dto';
 import { DomicilioService } from '../../application/services/domicilio.service';
+import { GetConductorDto } from '../../application/dtos/conductor/getConductor.dto';
 
 
 @Injectable()
@@ -43,6 +44,23 @@ export class ConductorController {
 
         res.status(201).json({ usuarioDto, domicilioDto });
       }
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+
+  getConductor = async (req: Request, res: Response) => {
+    const { idConductor } = req.params;
+
+    try {
+      const conductor = await this.conductorService.getConductor(idConductor);
+
+      if (!conductor) {
+        return res.status(404).json({ message: 'No se encontró el conductor' });
+      }
+
+      const conductorDto = GetConductorDto.create(conductor);
+      return res.status(200).json(conductorDto);
     } catch (error) {
       HandleError.throw(error, res);
     }

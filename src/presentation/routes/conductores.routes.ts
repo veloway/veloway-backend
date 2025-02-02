@@ -6,6 +6,7 @@ export class ConductoresRoutes {
     const router = Router();
 
     router.post('/register', conductorController.register);
+    router.get('/idConductor/:idConductor', conductorController.getConductor);
 
     return router;
   }

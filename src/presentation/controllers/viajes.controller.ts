@@ -32,5 +32,15 @@ export class ViajesController {
       HandleError.throw(error, res);
     }
   };
+
+  solicitarAmbulancia = async (req: Request, res: Response) => {
+    const { idViaje } = req.params;
+    try {
+      await this.viajesService.solicitarAmbulancia(Number(idViaje));
+      res.status(200).json({ message: 'Ambulancia solicitada correctamente' });
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
 }
 
