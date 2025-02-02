@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { EnviosRoutes } from './routes/envios.routes';
+import { LicenciasRoutes } from './routes/licencias.routes';
 import { ViajesRoutes } from './routes/viajes.routes';
 import { LocalidadesRoutes } from './routes/localidades.routes';
 import { UsuarioRoutes } from './routes/usuario.routes';
@@ -18,6 +19,7 @@ export class AppRoutes {
     router.use('/api/auth', AuthRoutes.routes);
     router.use('/api/checkpoints', CheckpointsRoutes.routes);
     router.use('/api/conductores', ConductoresRoutes.routes);
+    router.use('/api/licencias', LicenciasRoutes.routes);
 
     return router;
   }

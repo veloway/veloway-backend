@@ -14,6 +14,9 @@ import { EnviosService } from '../../application/services/envios.service';
 import { EnviosController } from '../../presentation/controllers/envios.controller';
 import { PrismaClient } from '@prisma/client';
 import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
+import { LicenciasRepository } from '../repositories/licencias.repository';
+import { LicenciasService } from '../../application/services/licencias.service';
+import { LicenciasController } from '../../presentation/controllers/licencias.controller';
 import { ViajesRepository } from '../repositories/viajes.repository';
 import { ViajesService } from '../../application/services/viajes.service';
 import { ViajesController } from '../../presentation/controllers/viajes.controller';
@@ -33,6 +36,8 @@ container.register(PrismaClient, { useValue: prismaClient });
 container.register(REPOSITORIES_TOKENS.IEnviosRepository, { useClass: EnviosRepository });
 container.register(REPOSITORIES_TOKENS.IDomiciliosRepository, { useClass: DomiciliosRepository });
 container.register(REPOSITORIES_TOKENS.ILocalidadesRepository, { useClass: LocalidadesRepository });
+container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuariosRepository });
+container.register(REPOSITORIES_TOKENS.ILicenciasRepository, { useClass: LicenciasRepository });
 container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuarioRepository });
 container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepository });
 container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: CoordenadasRepository });
@@ -49,6 +54,7 @@ container.register(AuthService, { useClass: AuthService });
 container.register(CheckpointService, { useClass: CheckpointService });
 container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
+container.register(LicenciasService, { useClass: LicenciasService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -71,3 +77,7 @@ export const checkpointsController = container.resolve(CheckpointsController);
 
 container.register(ConductorController, { useClass: ConductorController });
 export const conductorController = container.resolve(ConductorController);
+
+container.register(LicenciasController, { useClass: LicenciasController });
+export const licenciasController = container.resolve(LicenciasController);
+
