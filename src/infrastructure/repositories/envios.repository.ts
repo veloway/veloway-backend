@@ -3,6 +3,9 @@ import { type Envio } from '../../domain/entities/envio.entity';
 import { type IEnviosRepository } from '../../domain/repositories/envios.interface';
 import { EnvioPrismaMapper } from '../mappers/envio-prisma.mapper';
 import { Injectable } from '../dependencies/injectable.dependency';
+import { EstadoEnvioEnum } from '../../domain/types/estadoEnvio.enum';
+import { type PaginationOptions } from '../../domain/types/paginationOptions';
+import { type EnvioFilters } from '../../domain/types/enviosFilter';
 
 @Injectable()
 export class EnviosRepository implements IEnviosRepository {
@@ -39,11 +42,25 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
   }
 
-  public async getAllByClienteID(clienteID: string): Promise<Envio[]> {
+  public async getAllByClienteID(clienteID: string, paginationOptions: PaginationOptions, filters: EnvioFilters): Promise<Envio[]> {
     const enviosPrisma = await this.prisma.envios.findMany(
       {
         where: {
-          id_cliente: clienteID
+          id_cliente: clienteID,
+          id_estado: filters.estado,
+          fecha: {
+            gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+            lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+          },
+          descripcion: {
+            contains: filters.descripcion,
+            mode: 'insensitive'
+          }
+        },
+        take: paginationOptions.limit ? paginationOptions.limit : undefined,
+        skip: paginationOptions.offset,
+        orderBy: {
+          created_at: 'desc'
         },
         include: {
           usuarios: true,
@@ -71,6 +88,24 @@ export class EnviosRepository implements IEnviosRepository {
     );
 
     return EnvioPrismaMapper.fromPrismaArrayToEntity(enviosPrisma);
+  }
+
+  public async totalEnviosByClienteID(clienteID: string, filters: EnvioFilters): Promise<number> {
+    return await this.prisma.envios.count({
+      where: {
+        id_cliente: clienteID,
+        id_estado: filters.estado ? filters.estado : undefined,
+        fecha: {
+          gte: filters.fechaDesde ? new Date(filters.fechaDesde) : undefined,
+          lte: filters.fechaHasta ? new Date(filters.fechaHasta) : undefined
+        },
+        descripcion: filters.descripcion
+          ? {
+              contains: filters.descripcion
+            }
+          : undefined
+      }
+    });
   }
 
   public async getEnvio(nroSeguimiento: number): Promise<Envio | null> {
@@ -109,6 +144,8 @@ export class EnviosRepository implements IEnviosRepository {
     return EnvioPrismaMapper.fromPrismaToEntity(envioPrisma);
   }
 
+
+  // La bd guarda la fecha y hora en UTC
   public async create(envio: Envio): Promise<number> {
     const envioData = await this.prisma.envios.create({
       data: {
@@ -118,6 +155,7 @@ export class EnviosRepository implements IEnviosRepository {
         hora: envio.getHora(),
         peso_gramos: envio.getPesoGramos(),
         monto: envio.getMonto(),
+        reserva: envio.getReserva(),
         id_cliente: envio.getCliente().getID(),
         id_estado: envio.getEstado().getID(),
         id_origen: envio.getOrigen().getID(),
@@ -135,6 +173,7 @@ export class EnviosRepository implements IEnviosRepository {
         fecha: envio.getFecha(),
         hora: envio.getHora(),
         peso_gramos: envio.getPesoGramos(),
+        reserva: envio.getReserva(),
         id_estado: envio.getEstado().getID(),
         id_cliente: envio.getCliente().getID(),
         id_origen: envio.getOrigen().getID(),
@@ -199,6 +238,17 @@ export class EnviosRepository implements IEnviosRepository {
       },
       data: {
         id_estado: estadoEnvioID
+      }
+    });
+  }
+
+  public async cancelarEnvio(nroSeguimiento: number): Promise<void> {
+    await this.prisma.envios.update({
+      where: {
+        nro_seguimiento: nroSeguimiento
+      },
+      data: {
+        id_estado: EstadoEnvioEnum.Cancelado
       }
     });
   }

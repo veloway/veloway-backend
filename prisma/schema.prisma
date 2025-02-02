@@ -8,26 +8,22 @@ datasource db {
 }
 
 model checkpoints {
-  id_checkpoint Int    @id @default(autoincrement())
-  latitud       Float
-  longitud      Float
+  id_checkpoint Int         @id
   numero        Int
   id_viaje      Int
-  viajes        viajes @relation(fields: [id_viaje], references: [id_viaje], onDelete: NoAction, onUpdate: NoAction)
+  coordenadas   coordenadas @relation(fields: [id_checkpoint], references: [id_coordenadas], onDelete: NoAction, onUpdate: NoAction)
+  viajes        viajes      @relation(fields: [id_viaje], references: [id_viaje], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model conductores {
-  id_conductor         String              @id @db.Uuid
-  dni                  Int                 @unique
-  compartirfichamedica Boolean
-  id_estado            Int
-  id_vehiculo          Int                 @unique
-  usuarios             usuarios            @relation(fields: [id_conductor], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
-  estados_conductores  estados_conductores @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
-  vehiculos            vehiculos           @relation(fields: [id_vehiculo], references: [id_vehiculo], onDelete: NoAction, onUpdate: NoAction)
-  fichas_medicas       fichas_medicas?
-  licencias            licencias?
-  viajes               viajes[]
+  id_conductor        String              @id @db.Uuid
+  id_estado           Int
+  usuarios            usuarios            @relation(fields: [id_conductor], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  estados_conductores estados_conductores @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
+  fichas_medicas      fichas_medicas?
+  licencias           licencias?
+  vehiculos           vehiculos[]
+  viajes              viajes[]
 }
 
 model domicilios {
@@ -52,10 +48,12 @@ model envios {
   hora                                     DateTime      @db.Time(6)
   peso_gramos                              Decimal       @db.Decimal(10, 2)
   monto                                    Decimal       @db.Decimal(10, 2)
+  reserva                                  Boolean       @default(false)
   id_cliente                               String        @db.Uuid
   id_estado                                Int           @default(1)
   id_origen                                Int
   id_destino                               Int
+  created_at                               DateTime?     @default(now()) @db.Timestamp(6)
   usuarios                                 usuarios      @relation(fields: [id_cliente], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
   domicilios_envios_id_destinoTodomicilios domicilios    @relation("envios_id_destinoTodomicilios", fields: [id_destino], references: [id_domicilio], onDelete: NoAction, onUpdate: NoAction)
   estados_envio                            estados_envio @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
@@ -79,6 +77,7 @@ model fichas_medicas {
   id_ficha_medica     Int         @id @default(autoincrement())
   observaciones       String
   telefono_emergencia String      @db.VarChar(20)
+  compartir           Boolean
   id_conductor        String      @unique @db.Uuid
   conductores         conductores @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -136,6 +135,8 @@ model usuarios {
   apellido     String       @db.VarChar(50)
   es_conductor Boolean
   telefono     String?      @db.VarChar(20)
+  api_key      String       @unique @db.VarChar(100)
+  is_active    Boolean      @default(true)
   conductores  conductores?
   domicilios   domicilios?
   envios       envios[]
@@ -150,19 +151,33 @@ model vehiculos {
   nombre_seguro    String          @db.VarChar(20)
   id_modelo        Int
   id_tipo_vehiculo Int
-  conductores      conductores?
+  id_conductor     String          @db.Uuid
+  conductores      conductores     @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
   modelos          modelos         @relation(fields: [id_modelo], references: [id_modelo], onDelete: NoAction, onUpdate: NoAction)
   tipos_vehiculos  tipos_vehiculos @relation(fields: [id_tipo_vehiculo], references: [id_tipo_vehiculo], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model viajes {
-  id_viaje          Int           @id @default(autoincrement())
-  checkpoint_actual Int           @default(1)
-  fecha_inicio      DateTime?     @db.Timestamp(6)
-  fecha_fin         DateTime?     @db.Timestamp(6)
-  id_conductor      String        @db.Uuid
-  nro_seguimiento   BigInt        @unique
-  checkpoints       checkpoints[]
-  conductores       conductores   @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
-  envios            envios        @relation(fields: [nro_seguimiento], references: [nro_seguimiento], onDelete: NoAction, onUpdate: NoAction)
+  id_viaje                                     Int           @id @default(autoincrement())
+  checkpoint_actual                            Int           @default(1)
+  fecha_inicio                                 DateTime?     @db.Timestamp(6)
+  fecha_fin                                    DateTime?     @db.Timestamp(6)
+  id_conductor                                 String        @db.Uuid
+  nro_seguimiento                              BigInt        @unique
+  origen_cord                                  Int
+  destino_cord                                 Int
+  checkpoints                                  checkpoints[]
+  coordenadas_viajes_destino_cordTocoordenadas coordenadas   @relation("viajes_destino_cordTocoordenadas", fields: [destino_cord], references: [id_coordenadas], onDelete: NoAction, onUpdate: NoAction)
+  conductores                                  conductores   @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
+  envios                                       envios        @relation(fields: [nro_seguimiento], references: [nro_seguimiento], onDelete: NoAction, onUpdate: NoAction)
+  coordenadas_viajes_origen_cordTocoordenadas  coordenadas   @relation("viajes_origen_cordTocoordenadas", fields: [origen_cord], references: [id_coordenadas], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model coordenadas {
+  id_coordenadas                          Int          @id @default(autoincrement())
+  latitud                                 Float
+  longitud                                Float
+  checkpoints                             checkpoints?
+  viajes_viajes_destino_cordTocoordenadas viajes[]     @relation("viajes_destino_cordTocoordenadas")
+  viajes_viajes_origen_cordTocoordenadas  viajes[]     @relation("viajes_origen_cordTocoordenadas")
 }

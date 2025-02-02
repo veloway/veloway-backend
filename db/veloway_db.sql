@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS fichas_medicas CASCADE;
 DROP TABLE IF EXISTS licencias CASCADE; 
 DROP TABLE IF EXISTS estados_envio CASCADE;
 DROP TABLE IF EXISTS envios CASCADE;
+DROP TABLE IF EXISTS coordenadas CASCADE;
 DROP TABLE IF EXISTS viajes CASCADE;
 DROP TABLE IF EXISTS checkpoints CASCADE;  
 
@@ -37,7 +38,9 @@ CREATE TABLE usuarios (
 	nombre VARCHAR(50) NOT NULL,
 	apellido VARCHAR(50) NOT NULL,
 	es_conductor BOOLEAN NOT NULL,
-	telefono VARCHAR(20)
+	telefono VARCHAR(20),
+	api_key VARCHAR(100) NOT NULL UNIQUE,
+	is_active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE domicilios (
@@ -70,19 +73,6 @@ CREATE TABLE tipos_vehiculos (
 	nombre VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE vehiculos (
-	id_vehiculo SERIAL PRIMARY KEY,
-	patente VARCHAR(20) UNIQUE NOT NULL,
-	anio INT NOT NULL,
-	color VARCHAR(15) NOT NULL,
-	descripcion TEXT,
-	nombre_seguro VARCHAR(20) NOT NULL,
-	id_modelo INT NOT NULL,
-	id_tipo_vehiculo INT NOT NULL,
-	FOREIGN KEY (id_modelo) REFERENCES modelos(id_modelo),
-	FOREIGN KEY (id_tipo_vehiculo) REFERENCES tipos_vehiculos(id_tipo_vehiculo)
-);
-
 CREATE TABLE estados_conductores (
 	id_estado SERIAL PRIMARY KEY,
 	nombre VARCHAR(20) UNIQUE NOT NULL
@@ -92,19 +82,31 @@ VALUES ('Libre'), ('Ocupado'), ('Deshabilitado');
 
 CREATE TABLE conductores (
 	id_conductor UUID PRIMARY KEY,
-	dni INT UNIQUE NOT NULL,
-	compartirFichaMedica BOOLEAN NOT NULL,
 	id_estado INT NOT NULL,
-	id_vehiculo INT UNIQUE NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES usuarios(id_usuario),
-	FOREIGN KEY (id_estado) REFERENCES estados_conductores(id_estado), 
-	FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id_vehiculo)
+	FOREIGN KEY (id_estado) REFERENCES estados_conductores(id_estado)
+);
+
+CREATE TABLE vehiculos (
+	id_vehiculo SERIAL PRIMARY KEY,
+	patente VARCHAR(20) UNIQUE NOT NULL,
+	anio INT NOT NULL,
+	color VARCHAR(15) NOT NULL,
+	descripcion TEXT,
+	nombre_seguro VARCHAR(20) NOT NULL,
+	id_modelo INT NOT NULL,
+	id_tipo_vehiculo INT NOT NULL,
+	id_conductor UUID NOT NULL,
+	FOREIGN KEY (id_modelo) REFERENCES modelos(id_modelo),
+	FOREIGN KEY (id_tipo_vehiculo) REFERENCES tipos_vehiculos(id_tipo_vehiculo),
+	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)
 );
 
 CREATE TABLE fichas_medicas (
 	id_ficha_medica SERIAL PRIMARY KEY,
 	observaciones TEXT NOT NULL,
 	telefono_emergencia VARCHAR(20) NOT NULL,
+	compartir BOOLEAN NOT NULL,
 	id_conductor UUID UNIQUE NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)
 );
@@ -131,14 +133,22 @@ CREATE TABLE envios (
 	hora TIME NOT NULL,
 	peso_gramos NUMERIC(10, 2) NOT NULL,
 	monto NUMERIC(10, 2) NOT NULL,
+	reserva BOOLEAN NOT NULL DEFAULT false,	
 	id_cliente UUID NOT NULL,
 	id_estado INT NOT NULL DEFAULT 1,
 	id_origen INT NOT NULL,
 	id_destino INT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (id_cliente) REFERENCES usuarios(id_usuario),
 	FOREIGN KEY (id_estado) REFERENCES estados_envio(id_estado),
 	FOREIGN KEY (id_origen) REFERENCES domicilios(id_domicilio),
 	FOREIGN KEY (id_destino) REFERENCES domicilios(id_domicilio)
+);
+
+CREATE TABLE coordenadas (
+	id_coordenadas SERIAL PRIMARY KEY,
+	latitud DOUBLE PRECISION NOT NULL,
+	longitud DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE viajes (
@@ -148,15 +158,18 @@ CREATE TABLE viajes (
 	fecha_fin TIMESTAMP,
 	id_conductor UUID NOT NULL,
 	nro_seguimiento BIGINT UNIQUE NOT NULL, 
+	origen_cord INT NOT NULL,
+	destino_cord INT NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor),
-	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento)
+	FOREIGN KEY (nro_seguimiento) REFERENCES envios(nro_seguimiento),
+	FOREIGN KEY (origen_cord) REFERENCES coordenadas(id_coordenadas),
+	FOREIGN KEY (destino_cord) REFERENCES coordenadas(id_coordenadas)
 );
 
 CREATE TABLE checkpoints (
-	id_checkpoint SERIAL PRIMARY KEY,
-	latitud DOUBLE PRECISION NOT NULL,
-	longitud DOUBLE PRECISION NOT NULL,
+	id_checkpoint INT PRIMARY KEY,
 	numero INT NOT NULL,
 	id_viaje INT NOT NULL,
+	FOREIGN KEY (id_checkpoint) REFERENCES coordenadas(id_coordenadas),
 	FOREIGN KEY (id_viaje) REFERENCES viajes(id_viaje)
-);
+); 

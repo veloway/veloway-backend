@@ -1,3 +1,4 @@
+import { type Domicilio } from './domicilio.entity';
 import { type Envio } from './envio.entity';
 
 export class Usuario {
@@ -10,7 +11,10 @@ export class Usuario {
     private nombre: string,
     private apellido: string,
     private esConductor: boolean,
+    private is_active: boolean = true,
+    private api_key: string,
     private telefono?: string | null,
+    private Domicilio?: Domicilio | null,
     private envios?: Envio[] | null
   ) {}
 
@@ -53,5 +57,51 @@ export class Usuario {
 
   public getEnvios(): Envio[] | null | undefined {
     return this.envios;
+  }
+
+  public getApiKey(): string {
+    return this.api_key;
+  }
+
+  public getIsActive(): boolean {
+    return this.is_active;
+  }
+
+  public getDomicilio(): Domicilio | null | undefined {
+    return this.Domicilio;
+  }
+
+  // Setter
+
+  public setPassword(newPassword: string) {
+    this.password = newPassword;
+  }
+
+  public setNombre(newNombre: string) {
+    this.nombre = newNombre;
+  }
+
+  public setApellido(newApellido: string) {
+    this.apellido = newApellido;
+  }
+
+  public setTelefono(newTelefono: string) {
+    this.telefono = newTelefono;
+  }
+
+  public setApiKey(newApiKey: string) {
+    this.api_key = newApiKey;
+  }
+
+  public setIsActive(newIsActive: boolean) {
+    this.is_active = newIsActive;
+  }
+
+  public setEnvios(newEnvios: Envio[]) {
+    this.envios = newEnvios;
+  }
+
+  public setIdDomicilio (domicilio: Domicilio) {
+    this.Domicilio = domicilio;
   }
 }

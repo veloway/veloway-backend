@@ -12,3 +12,4 @@ export class HandleError {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+

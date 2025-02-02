@@ -1,4 +1,3 @@
-import { randomInt } from 'crypto';
 import { EstadoEnvioEnum } from '../types/estadoEnvio.enum';
 import { type Domicilio } from './domicilio.entity';
 import { EstadoEnvio } from './estadoEnvio.entity';
@@ -6,25 +5,23 @@ import { type Usuario } from './usuario.entity';
 
 export const PESO_GRAMOS_MAX = 20000;
 const PRECIO_CADA_100_GRAMOS = 500;
-const HORA_INICIO = 8;
-const HORA_FIN = 18;
+export const HORA_INICIO = 8;
+export const HORA_FIN = 18;
 
 export class Envio {
   constructor(
-    private readonly nroSeguimiento: number,
+    private nroSeguimiento: number,
     private descripcion: string,
-    private fecha: Date,
+    private fecha: Date = new Date(),
     private hora: Date,
     private pesoGramos: number,
-    private monto: number,
-    private estado: EstadoEnvio,
+    private monto: number = this.calcularMonto(),
+    private reserva: boolean = false,
+    private estado: EstadoEnvio = new EstadoEnvio(EstadoEnvioEnum.Confirmado, ''),
     private origen: Domicilio,
     private destino: Domicilio,
     private cliente: Usuario
-  ) {
-    this.nroSeguimiento ||= randomInt(10000000, 99999999);
-    this.estado ||= new EstadoEnvio(EstadoEnvioEnum.Confirmado, '');
-  }
+  ) {}
 
   // Getters
   public getNroSeguimiento(): number {
@@ -51,6 +48,10 @@ export class Envio {
     return this.monto;
   }
 
+  public getReserva(): boolean {
+    return this.reserva;
+  }
+
   public getEstado(): EstadoEnvio {
     return this.estado;
   }
@@ -68,6 +69,10 @@ export class Envio {
   }
 
   // Setters
+  public setNroSeguimiento(nroSeguimiento: number): void {
+    this.nroSeguimiento = nroSeguimiento;
+  }
+
   public setDescripcion(descripcion: string): void {
     this.descripcion = descripcion;
   }
@@ -86,6 +91,10 @@ export class Envio {
 
   public setMonto(monto: number): void {
     this.monto = monto;
+  }
+
+  public setReserva(reserva: boolean): void {
+    this.reserva = reserva;
   }
 
   public setEstado(estado: EstadoEnvio): void {
@@ -109,16 +118,36 @@ export class Envio {
     return this.pesoGramos * PRECIO_CADA_100_GRAMOS / 100;
   }
 
-  /* Validar que la hora en que se quiera realizar el envio este entre las 8:00 y 18:00,
-       si no queda para el dia siguiente entre el mismo rango horario. */
-  public verificarRangoHorario() {
-    if (this.hora.getUTCHours() < HORA_INICIO || this.hora.getUTCHours() > HORA_FIN) {
-      const newDate = new Date(this.getFecha().getTime() + 86400000); // 86400000 = 24 horas en milisegundos (1 dia)
-      const newHour = new Date(this.getFecha());
-      newHour.setUTCHours(8, 0, 0, 0);
+  /* - Verificacion del rango horario que viene en el json
+   *- Se maneja en UTC porque en el mapper se convierte la hora enviada
+    a UTC para poder guardarla en la base de datos
+  */
+  public verificarRangoHorario(): boolean {
+    const horaArg = this.getArgentinaHour(this.hora);
+    if (horaArg < HORA_INICIO || horaArg >= HORA_FIN) {
+      return false;
+    }
+    return true;
+  }
 
-      this.setFecha(newDate);
-      this.setHora(newHour);
+  /* Si se manda un rango horario valido se verifica que:
+    1) Si el envio no es reserva, la fecha y hora de la reserva es la actual (fecha actual por defecto)
+    2) Si el envio es reserva, se verifica la fecha:
+      - Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
+      - Si la hora actual esta dentro del rango horario, la reserva es para el mismo dia (fecha actual por defecto)
+  */
+  public verificarReserva(): void {
+    if (!this.reserva) {
+      this.hora = this.fecha; // Horario de la fecha actual
+      this.hora = new Date(this.hora.setSeconds(0, 0)); // HH:mm:00
+      if (!this.verificarRangoHorario()) {
+        throw new Error(`El horario de entrega debe ser entre las ${HORA_INICIO} y ${HORA_FIN} horas`);
+      }
+      return;
+    }
+    const horaArg = this.getArgentinaHour(this.fecha);
+    if (horaArg < HORA_INICIO || horaArg > HORA_FIN) {
+      this.fecha.setDate(this.fecha.getDate() + 1);
     }
   }
 
@@ -127,5 +156,15 @@ export class Envio {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Por defecto new Date() devuelve la hora en UTC, por eso se convierte a la hora de Argentina
+   * para hacer los calculos correspondientes.
+   */
+  private getArgentinaHour(date: Date): number {
+    const tiempoArg = date.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false, hour: '2-digit', minute: '2-digit' });
+    const horaArg = Number(tiempoArg.split(':')[0]);
+    return horaArg;
   }
 }
