@@ -36,7 +36,6 @@ container.register(PrismaClient, { useValue: prismaClient });
 container.register(REPOSITORIES_TOKENS.IEnviosRepository, { useClass: EnviosRepository });
 container.register(REPOSITORIES_TOKENS.IDomiciliosRepository, { useClass: DomiciliosRepository });
 container.register(REPOSITORIES_TOKENS.ILocalidadesRepository, { useClass: LocalidadesRepository });
-container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuariosRepository });
 container.register(REPOSITORIES_TOKENS.ILicenciasRepository, { useClass: LicenciasRepository });
 container.register(REPOSITORIES_TOKENS.IUsuariosRepository, { useClass: UsuarioRepository });
 container.register(REPOSITORIES_TOKENS.IViajesRepository, { useClass: ViajesRepository });
