@@ -16,13 +16,13 @@ export class PostLicenciaDto {
         }
 
         // Convierte la fecha en formato Date para poder guardarla en la base de datos
-        const fechaVenc = new Date(licenciaValidation.data.fechaVenc);
+        const fechaVenc = new Date(licenciaValidation.data.fechavencimiento);
 
         return [undefined, new PostLicenciaDto(
             licenciaValidation.data.categoria,
             fechaVenc,
             licenciaValidation.data.numero,
-            licenciaValidation.data.idConductor
+            licenciaValidation.data.id_conductor
         )];
     }
 }

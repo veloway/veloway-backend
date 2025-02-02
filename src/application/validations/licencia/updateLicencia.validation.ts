@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const UpdateLicenciaSchema = z.object({
     categoria: z.string(),
-    fechaVenc: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha en formato YYYY-MM-DD'),
+    fechavencimiento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha en formato YYYY-MM-DD'),
     numero: z.number(),
 })
 

@@ -14,7 +14,7 @@ export class UpdateLicenciaDto {
             throw new Error(licenciaValidation.error.message);
         }
 
-        const fechaVencDate = new Date(licenciaValidation.data.fechaVenc);
+        const fechaVencDate = new Date(licenciaValidation.data.fechavencimiento);
         
         return [undefined, new UpdateLicenciaDto(
             licenciaValidation.data.categoria,

@@ -9,7 +9,7 @@ export class LicenciasRoutes{
         router.get('/:conductorID', licenciasController.getLicenciaByConductorId);
         router.get('/licencia/:licenciaID', licenciasController.getLicencia);
         router.post('/create', licenciasController.create);
-        router.put('/:licenciaID', licenciasController.update);
+        router.put('/update/:licenciaID', licenciasController.update);
 
         return router;
     }

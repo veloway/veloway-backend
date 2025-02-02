@@ -59,9 +59,8 @@ export class LicenciasController{
 
         if (postLicenciaDto){
             try{
-                const licencia = await this.licenciasService.create(postLicenciaDto);
-                const licenciaDto = GetLicenciaDto.create(licencia);
-                res.status(201).json(licenciaDto);
+                await this.licenciasService.create(postLicenciaDto);
+                res.status(201).json({message: 'Licencia creada correctamente'});
             } catch (error){
                 HandleError.throw(error, res);
             }
