@@ -6,4 +6,5 @@ export interface IViajeRepository {
   getViaje(viajeId: number): Promise<Viaje | null>
   getAllByConductorId(conductorId: string): Promise<Viaje[]>
   getViajeByNroSeguimiento(nroSeguimiento: number): Promise<Viaje | null>
+  getViajeActual(idConductor: string): Promise<Viaje | null>
 }
