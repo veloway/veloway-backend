@@ -1,4 +1,4 @@
-export class fichaMedica {
+export class FichaMedica {
     constructor(
         private altura: number,
         private peso: number,

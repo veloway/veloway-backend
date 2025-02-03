@@ -1,6 +1,6 @@
 import { updateFichaMedicaSchema } from "../../validations/ficha-medica/updateFichaMedica.validation";
 
-export class updateFichaMedica{
+export class UpdateFichaMedica{
     private constructor(
         public altura: number,
         public peso: number,
@@ -12,14 +12,14 @@ export class updateFichaMedica{
         public compartir: boolean
     ){}
 
-    public static create(fichaMedica: any): [string?, updateFichaMedica?] {
+    public static create(fichaMedica: any): [string?, UpdateFichaMedica?] {
         const fichaMedicaValidation = updateFichaMedicaSchema.safeParse(fichaMedica);
 
         if (!fichaMedicaValidation.success) {
             return [JSON.parse(fichaMedicaValidation.error.message)];
         }
 
-        return [undefined, new updateFichaMedica(
+        return [undefined, new UpdateFichaMedica(
             fichaMedicaValidation.data.altura,
             fichaMedicaValidation.data.peso,
             fichaMedicaValidation.data.enfermedadCardiaca,

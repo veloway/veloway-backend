@@ -17,6 +17,9 @@ import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
 import { LicenciasRepository } from '../repositories/licencias.repository';
 import { LicenciasService } from '../../application/services/licencias.service';
 import { LicenciasController } from '../../presentation/controllers/licencias.controller';
+//import { FichaMedicaRepository } from '../repositories/fichaMedica.repository';
+import { FichasMedicasService } from '../../application/services/fichasMedicas.service';
+import { FichasMedicasController } from '../../presentation/controllers/fichasMedicas.controller';
 import { ViajesRepository } from '../repositories/viajes.repository';
 import { ViajesService } from '../../application/services/viajes.service';
 import { ViajesController } from '../../presentation/controllers/viajes.controller';
@@ -43,6 +46,7 @@ container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: Coord
 container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: ConductoresRepository });
 container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
 container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
+//container.register(REPOSITORIES_TOKENS.IFichaMedicaRepository, { useClass: FichaMedicaRepository });
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
@@ -54,6 +58,7 @@ container.register(CheckpointService, { useClass: CheckpointService });
 container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
 container.register(LicenciasService, { useClass: LicenciasService });
+container.register(FichasMedicasService, { useClass: FichasMedicasService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -79,4 +84,7 @@ export const conductorController = container.resolve(ConductorController);
 
 container.register(LicenciasController, { useClass: LicenciasController });
 export const licenciasController = container.resolve(LicenciasController);
+
+container.register(FichasMedicasController, { useClass: FichasMedicasController });
+export const fichaMedicaController = container.resolve(FichasMedicasController);
 
