@@ -1,4 +1,4 @@
-import { type fichaMedica } from "../../../domain/entities/fichaMedica.entity";
+import { type FichaMedica } from "../../../domain/entities/fichaMedica.entity";
 
 export class GetFichaMedicaDto {
     private constructor(
@@ -11,7 +11,7 @@ export class GetFichaMedicaDto {
         public diabetes: boolean,
     ){}
 
-    public static create(fichaMedica: fichaMedica): GetFichaMedicaDto{
+    public static create(fichaMedica: FichaMedica): GetFichaMedicaDto{
         return new GetFichaMedicaDto(
             fichaMedica.getAltura(),
             fichaMedica.getPeso(),
