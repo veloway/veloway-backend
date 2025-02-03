@@ -2,11 +2,15 @@ import { type Request, type Response } from 'express';
 import { AuthService } from '../../application/services/auth.service';
 import { HandleError } from '../errors/handle.error';
 import { Injectable } from '../../infrastructure/dependencies/injectable.dependency';
+import { GetUsuarioDto } from '../../application/dtos/usuario/getUsuario.dto';
+import { DomicilioService } from '../../application/services/domicilio.service';
+import { GetDomicilioDto } from '../../application/dtos/domicilio/getDomicilio.dto';
 
 @Injectable()
 export class AuthController {
   constructor(
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly domicilioService: DomicilioService
   ) { }
 
   login = async (req: Request, res: Response) => {
@@ -22,6 +26,12 @@ export class AuthController {
 
       const { token, usuario } = loginResponse;
 
+      const domicilio = await this.domicilioService.getDomicilioByUsuarioId(usuario.getID());
+
+      const usuarioDTO = GetUsuarioDto.create(usuario);
+
+      const domicilioDTO = GetDomicilioDto.create(domicilio);
+
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -29,7 +39,7 @@ export class AuthController {
         maxAge: 60 * 60 * 1000 // 1 hs
       });
       // Enviar respuesta con el token
-      res.status(200).json({ message: 'Login exitoso', usuario });
+      res.status(200).json({ message: 'Login exitoso', usuarioDTO, domicilioDTO });
     } catch (error) {
       return HandleError.throw(error, res);
     }
@@ -74,8 +84,8 @@ export class AuthController {
 
   resetPassword = async (req: Request, res: Response) => {
     try {
-      const { token, newPassword } = req.body;
-      await this.authService.resetPassword(token, newPassword);
+      const { code, newPassword } = req.body;
+      await this.authService.resetPassword(code, newPassword);
       res.status(200).json({ message: 'Contraseña restablecida correctamente.' });
     } catch (error) {
       HandleError.throw(error, res);

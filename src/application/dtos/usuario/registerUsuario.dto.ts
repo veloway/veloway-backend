@@ -20,17 +20,17 @@ export class RegisterUsuarioDto {
       return [JSON.parse(clienteValidation.error.message)];
     }
 
-    const fechaNacDate = new Date(clienteValidation.data.birthDate);
+    const fechaNacDate = new Date(clienteValidation.data.fechaNacimiento);
 
     return [undefined, new RegisterUsuarioDto(
       clienteValidation.data.dni,
       clienteValidation.data.email,
       clienteValidation.data.password,
       fechaNacDate,
-      clienteValidation.data.name,
-      clienteValidation.data.lastName,
+      clienteValidation.data.nombre,
+      clienteValidation.data.apellido,
       false,
-      clienteValidation.data.phone
+      clienteValidation.data.telefono
     )];
   }
 }

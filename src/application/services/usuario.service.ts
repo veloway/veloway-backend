@@ -5,7 +5,6 @@ import { REPOSITORIES_TOKENS } from '../../infrastructure/dependencies/repositor
 import { type RegisterUsuarioDto } from '../dtos/usuario/registerUsuario.dto';
 import { generateApiKey } from '../../utils/generateApiKey';
 import { IUsuarioRepository } from '../../domain/repositories/usuario.interface';
-import { IDomicilioRepository } from '../../domain/repositories/domicilio.interface';
 import { IBcryptHashProvider } from '../../domain/repositories/bcryptHashProvider.interface';
 
 @Injectable()
@@ -14,7 +13,6 @@ export class UsuarioService {
   constructor(
     // @Inject(REPOSITORIES_TOKENS.IViajesRepository) private readonly viajeRepository: IViajeRepository,
     @Inject(REPOSITORIES_TOKENS.IUsuariosRepository) private readonly usuarioRepository: IUsuarioRepository,
-    @Inject(REPOSITORIES_TOKENS.IDomiciliosRepository) private readonly domicilioRepository: IDomicilioRepository,
     @Inject(REPOSITORIES_TOKENS.IBcryptHashProvider) private readonly hashProvider: IBcryptHashProvider
   ) {
     this.resetTokens = new Map<string, string>();
@@ -29,9 +27,13 @@ export class UsuarioService {
     const apiKey = generateApiKey();
     const hashedApiKey = await this.hashProvider.hash(apiKey);
 
+    const usuarioExisteDni = await this.usuarioRepository.buscarUsuarioPorDNI(dni);
     const usuarioExistente = await this.usuarioRepository.getUsuarioByEmail(email);
     if (usuarioExistente) {
       throw new Error('El correo ya está registrado.');
+    }
+    if (usuarioExisteDni) {
+      throw new Error('Esta persona ya tiene cuenta.');
     }
 
     // Encriptar la contraseña

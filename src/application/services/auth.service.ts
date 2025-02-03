@@ -22,7 +22,7 @@ export class AuthService {
 
   public async login(email: string, password: string): Promise<{ token: string, usuario: Usuario } | null> {
     const usuario = await this.usuarioRepository.getUsuarioByEmail(email);
-
+    // agregar logica de recuperar conductor
     if (!usuario) {
       return null;
     }
