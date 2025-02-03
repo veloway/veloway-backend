@@ -1,0 +1,33 @@
+import { updateFichaMedicaSchema } from "../../validations/ficha-medica/updateFichaMedica.validation";
+
+export class updateFichaMedica{
+    private constructor(
+        public altura: number,
+        public peso: number,
+        public enfermedadCardiaca: string | null,
+        public enfermedadRespiratoria: string | null,
+        public alergias: string | null,
+        public epilepsia: boolean,
+        public diabetes: boolean,
+        public compartir: boolean
+    ){}
+
+    public static create(fichaMedica: any): [string?, updateFichaMedica?] {
+        const fichaMedicaValidation = updateFichaMedicaSchema.safeParse(fichaMedica);
+
+        if (!fichaMedicaValidation.success) {
+            return [JSON.parse(fichaMedicaValidation.error.message)];
+        }
+
+        return [undefined, new updateFichaMedica(
+            fichaMedicaValidation.data.altura,
+            fichaMedicaValidation.data.peso,
+            fichaMedicaValidation.data.enfermedadCardiaca,
+            fichaMedicaValidation.data.enfermedadRespiratoria,
+            fichaMedicaValidation.data.alergias,
+            fichaMedicaValidation.data.epilepsia,
+            fichaMedicaValidation.data.diabetes,
+            fichaMedicaValidation.data.compartir
+        )];
+    }
+}

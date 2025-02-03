@@ -7,6 +7,7 @@ export class fichaMedica {
         private alergias: string | null,
         private epilepsia: boolean,
         private diabetes: boolean,
+        private compartir: boolean,
         private idConductor: string
     ){}
 
@@ -38,6 +39,10 @@ export class fichaMedica {
 
     public getDiabetes(): boolean{
         return this.diabetes;
+    }
+
+    public getCompartir(): boolean{
+        return this.compartir;
     }
 
     public getIdConductor(): string{
@@ -72,5 +77,9 @@ export class fichaMedica {
 
     public setDiabetes(diabetes: boolean): void{
         this.diabetes = diabetes;
+    }
+
+    public setCompartir(compartir: boolean): void{
+        this.compartir = compartir;
     }
 }
