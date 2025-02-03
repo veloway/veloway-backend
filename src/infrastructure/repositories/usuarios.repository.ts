@@ -177,4 +177,32 @@ export class UsuarioRepository implements IUsuarioRepository {
     }
     return null;
   }
+
+
+  async buscarUsuarioPorDNI (dni: number): Promise<Usuario | null> {
+    try {
+      const usuarioData = await this.prisma.usuarios.findUnique({
+        where: { dni }// Incluye domicilio si es necesario
+      });
+      if (usuarioData) {
+        return new Usuario(
+          usuarioData.id_usuario,
+          usuarioData.dni,
+          usuarioData.email,
+          usuarioData.password,
+          usuarioData.fecha_nac,
+          usuarioData.nombre,
+          usuarioData.apellido,
+          usuarioData.es_conductor,
+          usuarioData.is_active,
+          usuarioData.api_key,
+          usuarioData.telefono
+        );
+      }
+      return null;
+    } catch (error) {
+      console.error('Error buscando usuario:', error);
+      throw new Error('Error al buscar el usuario por DNI.');
+    }
+  };
 }

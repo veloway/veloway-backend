@@ -40,7 +40,7 @@ export class DomicilioService {
       descripcion
     );
 
-    // Guardar el usuario en la base de datos
+
     await this.domicilioRepository.create(domicilio, idUser);
 
     return domicilio;
@@ -76,5 +76,13 @@ export class DomicilioService {
       throw new Error('Error en servicio al obtener domicilio');
     }
   }
-}
 
+  async existLocalidad (localidadId: number) {
+    try {
+      const localidad = await this.localidadRepository.getLocalidad(localidadId);
+      if (localidad) return true;
+    } catch (error) {
+      throw new Error('No existe la localidad');
+    }
+  }
+}

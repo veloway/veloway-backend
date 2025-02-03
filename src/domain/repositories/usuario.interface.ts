@@ -9,4 +9,5 @@ export interface IUsuarioRepository {
   updateApiKey: (id: string, hashedApiKey: string) => Promise<void>
   findUserByApiKey: (apiKey: string) => Promise<Usuario | null>
   update: (id: string, data: any) => Promise<void>
+  buscarUsuarioPorDNI: (dni: number) => Promise<Usuario | null>
 }
