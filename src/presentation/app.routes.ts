@@ -7,6 +7,7 @@ import { UsuarioRoutes } from './routes/usuario.routes';
 import { AuthRoutes } from './routes/auth.routes';
 import { CheckpointsRoutes } from './routes/checkpoints.routes';
 import { ConductoresRoutes } from './routes/conductores.routes';
+import { VehiculoRoutes } from './routes/vehiculo.routes';
 
 export class AppRoutes {
   static get routes(): Router {
@@ -20,6 +21,7 @@ export class AppRoutes {
     router.use('/api/checkpoints', CheckpointsRoutes.routes);
     router.use('/api/conductores', ConductoresRoutes.routes);
     router.use('/api/licencias', LicenciasRoutes.routes);
+    router.use('/api/vehiculos', VehiculoRoutes.routes);
 
     return router;
   }
