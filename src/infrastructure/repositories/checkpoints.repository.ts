@@ -54,6 +54,7 @@ export class CheckpointsRepository implements ICheckpointsRepository {
 
   async getCurrentCheckpointByIdViaje(viaje: Viaje): Promise<Checkpoint | null> {
     const currentCheckpoint = await this.prisma.checkpoints.findFirst({
+
       where: {
         id_viaje: viaje.getIdViaje(),
         numero: viaje.getCheckpointActual()
