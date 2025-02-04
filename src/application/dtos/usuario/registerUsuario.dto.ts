@@ -29,7 +29,7 @@ export class RegisterUsuarioDto {
       fechaNacDate,
       clienteValidation.data.nombre,
       clienteValidation.data.apellido,
-      false,
+      usuario.esConductor,
       clienteValidation.data.telefono
     )];
   }

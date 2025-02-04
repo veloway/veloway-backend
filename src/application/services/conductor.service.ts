@@ -15,7 +15,7 @@ export class ConductorService {
 
   }
 
-  public async register(user: Usuario): Promise<void> {
+  public async register(user: Usuario): Promise<string> {
     const newConductor = new Conductor(
       user.getID(),
       new EstadoConductor(1, ''),
@@ -32,6 +32,8 @@ export class ConductorService {
       user.getTelefono()
     );
     await this.conductorRepository.create(newConductor);
+
+    return newConductor.getID();
   }
 
   public async getConductor(idConductor: string): Promise<Conductor | null> {

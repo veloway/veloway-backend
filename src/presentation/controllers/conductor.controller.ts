@@ -40,9 +40,9 @@ export class ConductorController {
         const usuario = await this.usuarioService.register(clienteDto);
         const usuarioDto = GetUsuarioDto.create(usuario);
         await this.domicilioService.create(domicilioDto, usuario.getID());
-        await this.conductorService.register(usuario);
+        const conductorId = await this.conductorService.register(usuario);
 
-        res.status(201).json({ usuarioDto, domicilioDto });
+        res.status(201).json({ usuarioDto, domicilioDto, conductorId });
       }
     } catch (error) {
       HandleError.throw(error, res);
