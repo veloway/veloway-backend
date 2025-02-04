@@ -1,4 +1,5 @@
 import { type Coordenada } from '../../../domain/entities/coordenada.entity';
+import { type Envio } from '../../../domain/entities/envio.entity';
 import { type Viaje } from '../../../domain/entities/viaje.entity';
 
 export class GetViajeDto {
@@ -7,7 +8,7 @@ export class GetViajeDto {
     public fechaFin: string,
     public fechaInicio: string,
     public idConductor: string,
-    public nroSeguimiento: number,
+    public envio: Envio,
     public origenCord: Coordenada,
     public destinoCord: Coordenada
   ) {}
@@ -21,7 +22,7 @@ export class GetViajeDto {
       fechaFin,
       fechaInicio,
       viaje.getIdConductor(),
-      viaje.getEnvio().getNroSeguimiento(),
+      viaje.getEnvio(),
       viaje.getOrigenCord(),
       viaje.getDestinoCord()
     );

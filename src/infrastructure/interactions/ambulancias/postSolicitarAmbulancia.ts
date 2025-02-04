@@ -12,7 +12,7 @@ export async function postSolicitarAmbulancia(conductor: Conductor, checkpoint: 
     nombre: `${conductor.getNombre()} ${conductor.getApellido()}`,
     telefono: `${conductor.getTelefono()}`,
     direccion: `${direccionRecuperada}`,
-    descripcion: 'Emergencia conductor Veloway'
+    descripcion: 'Veloway'
   };
 
   await axios.post(URL_AMBULANCIA, solicitudAmbulancia);
