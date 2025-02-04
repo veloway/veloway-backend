@@ -40,6 +40,7 @@ export class UsuarioController {
         if (await this.domicilioService.existLocalidad(domicilio.localidadID)) {
           const usuario = await this.usuarioService.register(clienteDto);
           await this.domicilioService.create(domicilioDto, usuario.getID());
+          res.status(201).json({ message: 'Usuario registrado correctamente' });
         }
       }
     } catch (error) {
