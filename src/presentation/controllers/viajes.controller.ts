@@ -13,9 +13,9 @@ export class ViajesController {
   ) {}
 
   getAllByConductorId = async (req: Request, res: Response) => {
-    const { conductorId } = req.params;
+    const { idConductor } = req.params;
     try {
-      const viajes = await this.viajesService.getAllByConductoresId(conductorId);
+      const viajes = await this.viajesService.getAllByConductoresId(idConductor);
       const viajesDto = viajes.map((viaje) => GetAllByConductorIdDto.create(viaje));
       res.status(200).json(viajesDto);
     } catch (error) {

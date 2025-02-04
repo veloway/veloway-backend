@@ -23,11 +23,11 @@ export class ViajesRepository implements IViajeRepository {
     return Number(viajeData.id_viaje);
   }
 
-  async getAllByConductorId(conductorId: string): Promise<Viaje[]> {
+  async getAllByConductorId(idConductor: string): Promise<Viaje[]> {
     const viajesPrisma = await this.prisma.viajes.findMany(
       {
         where: {
-          id_conductor: conductorId
+          id_conductor: idConductor
         },
         include: {
           conductores: {
