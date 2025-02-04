@@ -22,7 +22,7 @@ model conductores {
   estados_conductores estados_conductores @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction)
   fichas_medicas      fichas_medicas?
   licencias           licencias?
-  vehiculos           vehiculos[]
+  vehiculos           vehiculos?
   viajes              viajes[]
 }
 
@@ -74,12 +74,17 @@ model estados_envio {
 }
 
 model fichas_medicas {
-  id_ficha_medica     Int         @id @default(autoincrement())
-  observaciones       String
-  telefono_emergencia String      @db.VarChar(20)
-  compartir           Boolean
-  id_conductor        String      @unique @db.Uuid
-  conductores         conductores @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
+  id_ficha_medica         Int         @id @default(autoincrement())
+  altura                  Int
+  peso                    Decimal     @db.Decimal(10, 2)
+  enfermedad_cardiaca     String?     @db.VarChar(50)
+  enfermedad_respiratoria String?     @db.VarChar(50)
+  alergias                String?     @db.VarChar(50)
+  epilepsia               Boolean
+  diabetes                Boolean
+  compartir               Boolean
+  id_conductor            String      @unique @db.Uuid
+  conductores             conductores @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model licencias {
@@ -148,10 +153,9 @@ model vehiculos {
   anio             Int
   color            String          @db.VarChar(15)
   descripcion      String?
-  nombre_seguro    String          @db.VarChar(20)
   id_modelo        Int
   id_tipo_vehiculo Int
-  id_conductor     String          @db.Uuid
+  id_conductor     String          @unique(map: "id_conductor_unique") @db.Uuid
   conductores      conductores     @relation(fields: [id_conductor], references: [id_conductor], onDelete: NoAction, onUpdate: NoAction)
   modelos          modelos         @relation(fields: [id_modelo], references: [id_modelo], onDelete: NoAction, onUpdate: NoAction)
   tipos_vehiculos  tipos_vehiculos @relation(fields: [id_tipo_vehiculo], references: [id_tipo_vehiculo], onDelete: NoAction, onUpdate: NoAction)

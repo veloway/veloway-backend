@@ -160,13 +160,13 @@ VALUES
 -- Marcas
 INSERT INTO marcas (id_marca, nombre) 
 VALUES 
-    (1, 'Toyota'),
+    (1, 'Fiat'),
     (2, 'Ford');
 
 -- Modelos
 INSERT INTO modelos (id_modelo, nombre, id_marca)
 VALUES 
-    (1, 'Hilux', 1), 
+    (1, 'Palio', 1), 
     (2, 'Ranger', 2);
 
 -- Tipos de Vehículos
@@ -182,16 +182,45 @@ VALUES
     ('789a1234-e21c-98d3-b123-426614174003', 2);
 
 -- Vehículos
-INSERT INTO vehiculos (id_vehiculo, patente, anio, color, descripcion, nombre_seguro, id_modelo, id_tipo_vehiculo, id_conductor)
+INSERT INTO vehiculos (id_vehiculo, patente, anio, color, descripcion, id_modelo, id_tipo_vehiculo, id_conductor)
 VALUES 
-    (1, 'ABC123', 2020, 'Blanco', 'Camioneta doble cabina', 'La Caja', 1, 1, '987f6543-e21c-54d3-b789-426614174001'),
-    (2, 'XYZ789', 2019, 'Negro', 'Auto deportivo', 'Sancor', 2, 2, '789a1234-e21c-98d3-b123-426614174003');
+    (1, 'ABC123', 2020, 'Blanco', 'Camioneta doble cabina', 1, 1, '987f6543-e21c-54d3-b789-426614174001'),
+    (2, 'XYZ789', 2019, 'Negro', 'Auto deportivo', 2, 2, '789a1234-e21c-98d3-b123-426614174003');
 
 -- Fichas Médicas
-INSERT INTO fichas_medicas (observaciones, telefono_emergencia, compartir, id_conductor)
-VALUES 
-    ('Sin alergias', '1122334455', TRUE, '987f6543-e21c-54d3-b789-426614174001'),
-    ('Hipertensión controlada', '5566778899', FALSE, '789a1234-e21c-98d3-b123-426614174003');
+INSERT INTO fichas_medicas (
+    altura, 
+    peso, 
+    enfermedad_cardiaca, 
+    enfermedad_respiratoria, 
+    alergias, 
+    epilepsia, 
+    diabetes, 
+    compartir, 
+    id_conductor
+) VALUES 
+(
+    175, 
+    75.50, 
+    null, 
+    'Asma leve', 
+    'Polen', 
+    FALSE, 
+    FALSE, 
+    TRUE, 
+    '987f6543-e21c-54d3-b789-426614174001'
+),
+(
+    180, 
+    85.00, 
+    'Hipertensión', 
+    'Asma', 
+    null, 
+    TRUE, 
+    TRUE, 
+    FALSE, 
+    '789a1234-e21c-98d3-b123-426614174003'
+);
 
 -- Licencias
 INSERT INTO licencias (numero, categoria, fechaVencimiento, id_conductor)
