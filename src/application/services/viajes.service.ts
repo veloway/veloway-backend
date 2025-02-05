@@ -95,6 +95,10 @@ export class ViajesService {
     return viajeActualRecuperado;
   }
 
+  public async updateCheckpointActual(idViaje: number, checkpointActual: number): Promise<void> {
+    await this.viajeRepository.updateCheckpointActual(idViaje, checkpointActual);
+  }
+
   public async solicitarAmbulancia(idViaje: number): Promise<void> {
     const viajeRecuperado = await this.viajeRepository.getViaje(idViaje);
 
