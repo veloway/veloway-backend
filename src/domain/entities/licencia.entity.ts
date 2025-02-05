@@ -1,45 +1,45 @@
 // Importar despues entidad Conductor
 
 export class Licencia {
-    constructor(
-        private categoria: string,
-        private fechaVenc: Date,
-        private numero: number,
-        private idConductor: string
-    ) {}
+  constructor(
+    private categoria: string,
+    private fechaVenc: Date,
+    private numero: number,
+    private idConductor: string
+  ) {}
 
-    //Agregar operaciones que tambien me permitan acceder al conductor asociado a la licencia
+  // Agregar operaciones que tambien me permitan acceder al conductor asociado a la licencia
 
-    // Getters
-    
-    public getCategoria(): string{
-        return this.categoria;
-    }
+  // Getters
 
-    public getFechaVenc(): Date{
-        return this.fechaVenc;
-    }
+  public getCategoria(): string {
+    return this.categoria;
+  }
 
-    public getNumero(): number{
-        return this.numero;
-    }
+  public getFechaVenc(): Date {
+    return this.fechaVenc;
+  }
 
-    //Hacer get de idConductor
-    public getIdConductor(): string{
-        return this.idConductor;
-    }
+  public getNumero(): number {
+    return this.numero;
+  }
 
-    //Setters
-    public setIdConductor(idConductor: string): void{
-        this.idConductor = idConductor;
-    }
+  // Hacer get de idConductor
+  public getIdConductor(): string {
+    return this.idConductor;
+  }
 
-    public setCategoria(categoria: string): void{
-        this.categoria = categoria;
-    }
+  // Setters
+  public setIdConductor(idConductor: string): void {
+    this.idConductor = idConductor;
+  }
 
-    public setFechaVenc(fechaVenc: Date): void{
-        this.fechaVenc = fechaVenc;
-    }
+  public setCategoria(categoria: string): void {
+    this.categoria = categoria;
+  }
+
+  public setFechaVenc(fechaVenc: Date): void {
+    this.fechaVenc = fechaVenc;
+  }
 }
 
