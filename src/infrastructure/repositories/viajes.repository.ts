@@ -23,11 +23,11 @@ export class ViajesRepository implements IViajeRepository {
     return Number(viajeData.id_viaje);
   }
 
-  async getAllByConductorId(conductorId: string): Promise<Viaje[]> {
+  async getAllByConductorId(idConductor: string): Promise<Viaje[]> {
     const viajesPrisma = await this.prisma.viajes.findMany(
       {
         where: {
-          id_conductor: conductorId
+          id_conductor: idConductor
         },
         include: {
           conductores: {
@@ -174,5 +174,69 @@ export class ViajesRepository implements IViajeRepository {
       }
     );
     return viajeEncontrado ? ViajePrismaMapper.fromPrismaToEntity(viajeEncontrado) : null;
+  }
+
+  async getViajeActual(idConductor: string): Promise<Viaje | null> {
+    const ahora = new Date();
+
+    const viajeActualRecuperado = await this.prisma.viajes.findFirst({
+      where: {
+        id_conductor: idConductor,
+        envios: {
+          id_estado: {
+            notIn: [2, 5]
+          },
+          OR: [
+            {
+              reserva: false,
+              fecha: { lte: ahora },
+              hora: { lte: ahora }
+            },
+            {
+              reserva: true
+              // fecha: { lte: ahora },
+              // hora: { lte: ahora }
+            }
+          ]
+        }
+      },
+      orderBy: {
+        fecha_inicio: 'desc'
+      },
+      include: {
+        envios: {
+          include: {
+            usuarios: true,
+            estados_envio: true,
+            domicilios_envios_id_origenTodomicilios: {
+              include: {
+                localidades: {
+                  include: {
+                    provincias: true
+                  }
+                }
+              }
+            },
+            domicilios_envios_id_destinoTodomicilios: {
+              include: {
+                localidades: {
+                  include: {
+                    provincias: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        coordenadas_viajes_origen_cordTocoordenadas: true,
+        coordenadas_viajes_destino_cordTocoordenadas: true
+      }
+    });
+
+    if (!viajeActualRecuperado) {
+      return null;
+    }
+
+    return viajeActualRecuperado ? ViajePrismaMapper.fromPrismaToEntity(viajeActualRecuperado) : null;
   }
 }

@@ -33,6 +33,18 @@ import { CheckpointsController } from '../../presentation/controllers/checkpoint
 import { ConductorService } from '../../application/services/conductor.service';
 import { ConductorController } from '../../presentation/controllers/conductor.controller';
 import { BcryptHashProvider } from '../jwt/bcrypt-hash.provider';
+import { VehiculoRepository } from '../repositories/vehiculo.repository';
+import { MarcaRepository } from '../repositories/marca.repository';
+import { ModeloRepository } from '../repositories/modelo.repository';
+import { TipoVehiculoRepository } from '../repositories/tipoVehiculo.repository';
+import { VehiculoService } from '../../application/services/vehiculo.service';
+import { VehiculoController } from '../../presentation/controllers/vehiculo.controller';
+import { MarcasService } from '../../application/services/marcas.service';
+import { ModelosService } from '../../application/services/modelos.service';
+import { MarcaController } from '../../presentation/controllers/marca.controller';
+import { ModeloController } from '../../presentation/controllers/modelo.controller';
+import { TipoVehiculoService } from '../../application/services/tipoVehiculo.service';
+import { TipoVehiculoController } from '../../presentation/controllers/tipoVehiculo.controller';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -47,6 +59,11 @@ container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: Condu
 container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
 container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
 container.register(REPOSITORIES_TOKENS.IFichasMedicasRepository, { useClass: FichasMedicaRepository });
+container.register(REPOSITORIES_TOKENS.IVehiculoRepository, { useClass: VehiculoRepository });
+container.register(REPOSITORIES_TOKENS.IMarcaRepository, { useClass: MarcaRepository });
+container.register(REPOSITORIES_TOKENS.IModeloRepository, { useClass: ModeloRepository });
+container.register(REPOSITORIES_TOKENS.ITipoVehiculoRepository, { useClass: TipoVehiculoRepository });
+
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
@@ -59,6 +76,11 @@ container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
 container.register(LicenciasService, { useClass: LicenciasService });
 container.register(FichasMedicasService, { useClass: FichasMedicasService });
+container.register(VehiculoService, { useClass: VehiculoService });
+container.register(MarcasService, { useClass: MarcasService });
+container.register(ModelosService, { useClass: ModelosService });
+container.register(TipoVehiculoService, { useClass: TipoVehiculoService });
+
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -85,6 +107,19 @@ export const conductorController = container.resolve(ConductorController);
 container.register(LicenciasController, { useClass: LicenciasController });
 export const licenciasController = container.resolve(LicenciasController);
 
+
 container.register(FichasMedicasController, { useClass: FichasMedicasController });
 export const fichaMedicaController = container.resolve(FichasMedicasController);
+
+container.register(VehiculoController, { useClass: VehiculoController });
+export const vehiculoController = container.resolve(VehiculoController);
+
+container.register(MarcaController, { useClass: MarcaController });
+export const marcaController = container.resolve(MarcaController);
+
+container.register(ModeloController, { useClass: ModeloController });
+export const modeloController = container.resolve(ModeloController);
+
+container.register(TipoVehiculoController, { useClass: TipoVehiculoController });
+export const tipoVehiculoController = container.resolve(TipoVehiculoController);
 

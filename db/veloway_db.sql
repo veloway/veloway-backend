@@ -92,11 +92,10 @@ CREATE TABLE vehiculos (
 	patente VARCHAR(20) UNIQUE NOT NULL,
 	anio INT NOT NULL,
 	color VARCHAR(15) NOT NULL,
-	descripcion TEXT,
-	nombre_seguro VARCHAR(20) NOT NULL,
+	descripcion text,
 	id_modelo INT NOT NULL,
 	id_tipo_vehiculo INT NOT NULL,
-	id_conductor UUID NOT NULL,
+	id_conductor UUID UNIQUE NOT NULL,
 	FOREIGN KEY (id_modelo) REFERENCES modelos(id_modelo),
 	FOREIGN KEY (id_tipo_vehiculo) REFERENCES tipos_vehiculos(id_tipo_vehiculo),
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)
@@ -104,8 +103,13 @@ CREATE TABLE vehiculos (
 
 CREATE TABLE fichas_medicas (
 	id_ficha_medica SERIAL PRIMARY KEY,
-	observaciones TEXT NOT NULL,
-	telefono_emergencia VARCHAR(20) NOT NULL,
+	altura INT not null,
+	peso numeric(10,2) not null,
+	enfermedad_cardiaca VARCHAR(50),
+	enfermedad_respiratoria VARCHAR(50),
+	alergias VARCHAR(50),
+	epilepsia BOOLEAN not null,
+	diabetes BOOLEAN not null,
 	compartir BOOLEAN NOT NULL,
 	id_conductor UUID UNIQUE NOT NULL,
 	FOREIGN KEY (id_conductor) REFERENCES conductores(id_conductor)

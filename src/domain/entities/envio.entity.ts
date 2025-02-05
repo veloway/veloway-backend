@@ -124,10 +124,7 @@ export class Envio {
   */
   public verificarRangoHorario(): boolean {
     const horaArg = this.getArgentinaHour(this.hora);
-    if (horaArg < HORA_INICIO || horaArg >= HORA_FIN) {
-      return false;
-    }
-    return true;
+    return horaArg >= HORA_INICIO && horaArg < HORA_FIN;
   }
 
   /* Si se manda un rango horario valido se verifica que:
@@ -146,8 +143,13 @@ export class Envio {
       return;
     }
     const horaArg = this.getArgentinaHour(this.fecha);
-    if (horaArg < HORA_INICIO || horaArg > HORA_FIN) {
+    // Si la hora actual esta fuera del rango horario, la reserva es para el dia siguiente
+    if (horaArg < HORA_INICIO || horaArg >= HORA_FIN) {
       this.fecha.setDate(this.fecha.getDate() + 1);
+    } else {
+      if (this.hora < new Date()) {
+        throw new Error('El horario para la reserva ya paso');
+      }
     }
   }
 
@@ -163,7 +165,13 @@ export class Envio {
    * para hacer los calculos correspondientes.
    */
   private getArgentinaHour(date: Date): number {
-    const tiempoArg = date.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false, hour: '2-digit', minute: '2-digit' });
+    const tiempoArg = date.toLocaleTimeString('es-AR',
+      {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     const horaArg = Number(tiempoArg.split(':')[0]);
     return horaArg;
   }

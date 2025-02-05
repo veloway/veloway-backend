@@ -10,4 +10,8 @@ export const REPOSITORIES_TOKENS = {
   ICheckpointsRepository: Symbol.for('ICheckpointsRepository'),
   IBcryptHashProvider: Symbol.for('IBcryptHashProvider'),
   IFichasMedicasRepository: Symbol.for('IFichasMedicasRepository')
+  IVehiculoRepository: Symbol.for('IVehiculoRepository'),
+  IMarcaRepository: Symbol.for('IMarcaRepository'),
+  IModeloRepository: Symbol.for('IModeloRepository'),
+  ITipoVehiculoRepository: Symbol.for('ITipoVehiculoRepository')
 };

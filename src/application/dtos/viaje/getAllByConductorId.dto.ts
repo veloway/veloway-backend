@@ -1,10 +1,11 @@
 import { type Viaje } from '../../../domain/entities/viaje.entity';
+import { GetEnvioDto } from '../envio/getEnvio.dto';
 
 export class GetAllByConductorIdDto {
   private constructor(
     public idViaje: number,
     public idConductor: string,
-    public nroSeguimiento: number,
+    public envio: GetEnvioDto,
     public fechaFin?: string | null,
     public fechaInicio?: string | null
   ) {}
@@ -16,7 +17,7 @@ export class GetAllByConductorIdDto {
     return new GetAllByConductorIdDto(
       viaje.getIdViaje(),
       viaje.getIdConductor(),
-      viaje.getEnvio().getNroSeguimiento(),
+      GetEnvioDto.create(viaje.getEnvio()),
       fechaFin,
       fechaInicio
     );

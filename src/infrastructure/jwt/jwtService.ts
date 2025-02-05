@@ -14,7 +14,10 @@ export class JwtService {
       nombre: usuario.getNombre(), // Incluye el nombre del usuario
       email: usuario.getEmail(), // Incluye el email del usuario
       esConductor: usuario.getEsConductor(), // Incluye el rol del usuario
-      domicilio: usuario.getDomicilio()
+      domicilio: usuario.getDomicilio(),
+      apellido: usuario.getApellido(),
+      telefono: usuario.getTelefono(),
+      activo: usuario.getIsActive()
     };
     // Generamos el token JWT con el payload estructurado
     return jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });

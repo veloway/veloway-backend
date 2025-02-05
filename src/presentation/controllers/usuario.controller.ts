@@ -16,7 +16,7 @@ export class UsuarioController {
   constructor(
     private readonly usuarioService: UsuarioService,
     private readonly domicilioService: DomicilioService
-  ) {}
+  ) { }
 
   register = async (req: Request, res: Response) => {
     try {
@@ -37,10 +37,11 @@ export class UsuarioController {
       }
 
       if (clienteDto && domicilioDto) {
-        const usuario = await this.usuarioService.register(clienteDto);
-        const usuarioDto = GetUsuarioDto.create(usuario);
-        await this.domicilioService.create(domicilioDto, usuario.getID());
-        res.status(201).json(usuarioDto);
+        if (await this.domicilioService.existLocalidad(domicilio.localidadID)) {
+          const usuario = await this.usuarioService.register(clienteDto);
+          await this.domicilioService.create(domicilioDto, usuario.getID());
+          res.status(201).json({ message: 'Usuario registrado correctamente' });
+        }
       }
     } catch (error) {
       HandleError.throw(error, res);
@@ -85,7 +86,7 @@ export class UsuarioController {
 
   deleteAccount = async (req: Request, res: Response) => {
     try {
-      // Obtén el ID del usuario desde el token de sesión
+    // Obtén el ID del usuario desde el token de sesión
       const userId = req.user?.id; // req.user debe estar definido en un middleware de autenticación
 
       if (!userId) {

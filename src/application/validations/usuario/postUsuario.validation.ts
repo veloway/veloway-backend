@@ -43,10 +43,10 @@ export const clientSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   dni: dniSchema,
-  birthDate: birthDateSchema,
-  name: nameSchema,
-  lastName: nameSchema,
-  phone: phoneSchema
+  fechaNacimiento: birthDateSchema,
+  nombre: nameSchema,
+  apellido: nameSchema,
+  telefono: phoneSchema
 });
 
 export const updateClientSchema = z.object({

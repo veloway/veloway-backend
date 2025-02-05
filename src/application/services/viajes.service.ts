@@ -88,6 +88,17 @@ export class ViajesService {
     return viajeEncontrado;
   }
 
+  public async getViajeActual(idConductor: string): Promise<Viaje> {
+    const viajeActualRecuperado = await this.viajeRepository.getViajeActual(idConductor);
+
+    if (!viajeActualRecuperado) throw CustomError.notFound('No se encontro el viaje de ese conductor');
+    return viajeActualRecuperado;
+  }
+
+  public async updateCheckpointActual(idViaje: number, checkpointActual: number): Promise<void> {
+    await this.viajeRepository.updateCheckpointActual(idViaje, checkpointActual);
+  }
+
   public async solicitarAmbulancia(idViaje: number): Promise<void> {
     const viajeRecuperado = await this.viajeRepository.getViaje(idViaje);
 

@@ -2,6 +2,7 @@ import { type Conductor } from '../entities/conductor.entity';
 
 export interface IConductoresRepository {
   create: (conductor: Conductor) => Promise<void>
-  buscarConductor: () => Promise<string | null>
+  buscarConductorParaAhora: (horaFin: Date, provinciaId: number) => Promise<string | null>
+  buscarConductorParaReserva: (horaInicio: Date, horaFin: Date, provinciaId: number) => Promise<string | null>
   getConductor: (idConductor: string) => Promise<Conductor | null>
 }

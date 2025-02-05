@@ -10,6 +10,9 @@ declare global {
         email: string // Incluye el email del usuario
         rol: boolean
         domicilio: Domicilio
+        apellido: string
+        telefono: string
+        activo: boolean
       }
       apikey?: string
     }
