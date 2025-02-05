@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const updateFichaMedicaSchema = z.object({
     altura: z.number().int(),
-    peso: z.number().int(),
+    peso: z.number(),
     enfermedadCardiaca: z.string().nullable(),
     enfermedadRespiratoria: z.string().nullable(),
     alergias: z.string().nullable(),

@@ -26,9 +26,9 @@ export class FichaMedicaMapper{
         return new FichaMedica(
             altura || fichaMedica.getAltura(), 
             peso || fichaMedica.getPeso(), 
-            enfermedadCardiaca || fichaMedica.getEnfermedadCardiaca(),
-            enfermedadRespiratoria || fichaMedica.getEnfermedadRespiratoria(),
-            alergias || fichaMedica.getAlergias(),
+            enfermedadCardiaca ?? fichaMedica.getEnfermedadCardiaca(),
+            enfermedadRespiratoria ?? fichaMedica.getEnfermedadRespiratoria(),
+            alergias ?? fichaMedica.getAlergias(),
             epilepsia || fichaMedica.getEpilepsia(),
             diabetes || fichaMedica.getDiabetes(),
             compartir || fichaMedica.getCompartir(),

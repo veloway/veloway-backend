@@ -17,7 +17,7 @@ import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
 import { LicenciasRepository } from '../repositories/licencias.repository';
 import { LicenciasService } from '../../application/services/licencias.service';
 import { LicenciasController } from '../../presentation/controllers/licencias.controller';
-//import { FichaMedicaRepository } from '../repositories/fichaMedica.repository';
+import { FichasMedicaRepository } from '../repositories/fichasMedicas.repository';
 import { FichasMedicasService } from '../../application/services/fichasMedicas.service';
 import { FichasMedicasController } from '../../presentation/controllers/fichasMedicas.controller';
 import { ViajesRepository } from '../repositories/viajes.repository';
@@ -46,7 +46,7 @@ container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: Coord
 container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: ConductoresRepository });
 container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
 container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
-//container.register(REPOSITORIES_TOKENS.IFichaMedicaRepository, { useClass: FichaMedicaRepository });
+container.register(REPOSITORIES_TOKENS.IFichasMedicasRepository, { useClass: FichasMedicaRepository });
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });

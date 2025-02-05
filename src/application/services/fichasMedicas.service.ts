@@ -40,10 +40,13 @@ export class FichasMedicasService {
         return newFichaMedica;
     }
 
-    public async update(id: number, updateFichaMedicaDto: UpdateFichaMedica): Promise<FichaMedica> {
-        const fichaMedica = await this.getFichaMedica(id);
+    public async update(idFichaMedica: number, updateFichaMedicaDto: UpdateFichaMedica): Promise<FichaMedica> {
+        
+        const fichaMedica = await this.getFichaMedica(idFichaMedica);
         const updatedFichaMedica = FichaMedicaMapper.fromUpdateDtoToEntity(updateFichaMedicaDto, fichaMedica);
-        const fichaMedicaUpdated = await this.fichaMedicaRepository.update(id, updatedFichaMedica);
+        const fichaMedicaUpdated = await this.fichaMedicaRepository.update(idFichaMedica, updatedFichaMedica);
+
         return fichaMedicaUpdated;
     }
 }
+

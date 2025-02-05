@@ -22,9 +22,9 @@ export class UpdateFichaMedica{
         return [undefined, new UpdateFichaMedica(
             fichaMedicaValidation.data.altura,
             fichaMedicaValidation.data.peso,
-            fichaMedicaValidation.data.enfermedadCardiaca,
-            fichaMedicaValidation.data.enfermedadRespiratoria,
-            fichaMedicaValidation.data.alergias,
+            fichaMedicaValidation.data.enfermedadCardiaca ?? null,
+            fichaMedicaValidation.data.enfermedadRespiratoria ?? null,
+            fichaMedicaValidation.data.alergias ?? null,
             fichaMedicaValidation.data.epilepsia,
             fichaMedicaValidation.data.diabetes,
             fichaMedicaValidation.data.compartir

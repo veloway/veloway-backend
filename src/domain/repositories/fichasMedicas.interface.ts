@@ -5,6 +5,6 @@ export interface IFichasMedicasRepository {
     getFichaMedica: (fichaMedicaID: number) => Promise<FichaMedica | null> 
     getFichaMedicaByConductorId: (conductorID: string) => Promise<FichaMedica | null>
     create: (fichaMedica: FichaMedica) => Promise<FichaMedica>
-    update: (id: number, fichaMedica: FichaMedica) => Promise<FichaMedica>
-    delete: (id: number) => Promise<void>
+    update: (idFichaMedica: number, fichaMedica: FichaMedica) => Promise<FichaMedica>
+    delete: (idFichaMedica: number) => Promise<void>
 }
