@@ -9,6 +9,7 @@ export const REPOSITORIES_TOKENS = {
   ICoordenadasRepository: Symbol.for('ICoordenadasRepository'),
   ICheckpointsRepository: Symbol.for('ICheckpointsRepository'),
   IBcryptHashProvider: Symbol.for('IBcryptHashProvider'),
+  IFichasMedicasRepository: Symbol.for('IFichasMedicasRepository')
   IVehiculoRepository: Symbol.for('IVehiculoRepository'),
   IMarcaRepository: Symbol.for('IMarcaRepository'),
   IModeloRepository: Symbol.for('IModeloRepository'),

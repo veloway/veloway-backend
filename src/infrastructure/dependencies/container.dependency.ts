@@ -17,6 +17,9 @@ import { REPOSITORIES_TOKENS } from './repositories-tokens.dependency';
 import { LicenciasRepository } from '../repositories/licencias.repository';
 import { LicenciasService } from '../../application/services/licencias.service';
 import { LicenciasController } from '../../presentation/controllers/licencias.controller';
+import { FichasMedicaRepository } from '../repositories/fichasMedicas.repository';
+import { FichasMedicasService } from '../../application/services/fichasMedicas.service';
+import { FichasMedicasController } from '../../presentation/controllers/fichasMedicas.controller';
 import { ViajesRepository } from '../repositories/viajes.repository';
 import { ViajesService } from '../../application/services/viajes.service';
 import { ViajesController } from '../../presentation/controllers/viajes.controller';
@@ -55,10 +58,12 @@ container.register(REPOSITORIES_TOKENS.ICoordenadasRepository, { useClass: Coord
 container.register(REPOSITORIES_TOKENS.IConductoresRepository, { useClass: ConductoresRepository });
 container.register(REPOSITORIES_TOKENS.ICheckpointsRepository, { useClass: CheckpointsRepository });
 container.register(REPOSITORIES_TOKENS.IBcryptHashProvider, { useClass: BcryptHashProvider });
+container.register(REPOSITORIES_TOKENS.IFichasMedicasRepository, { useClass: FichasMedicaRepository });
 container.register(REPOSITORIES_TOKENS.IVehiculoRepository, { useClass: VehiculoRepository });
 container.register(REPOSITORIES_TOKENS.IMarcaRepository, { useClass: MarcaRepository });
 container.register(REPOSITORIES_TOKENS.IModeloRepository, { useClass: ModeloRepository });
 container.register(REPOSITORIES_TOKENS.ITipoVehiculoRepository, { useClass: TipoVehiculoRepository });
+
 
 // Servicios
 container.register(EnviosService, { useClass: EnviosService });
@@ -70,10 +75,12 @@ container.register(CheckpointService, { useClass: CheckpointService });
 container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
 container.register(LicenciasService, { useClass: LicenciasService });
+container.register(FichasMedicasService, { useClass: FichasMedicasService });
 container.register(VehiculoService, { useClass: VehiculoService });
 container.register(MarcasService, { useClass: MarcasService });
 container.register(ModelosService, { useClass: ModelosService });
 container.register(TipoVehiculoService, { useClass: TipoVehiculoService });
+
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -100,6 +107,10 @@ export const conductorController = container.resolve(ConductorController);
 container.register(LicenciasController, { useClass: LicenciasController });
 export const licenciasController = container.resolve(LicenciasController);
 
+
+container.register(FichasMedicasController, { useClass: FichasMedicasController });
+export const fichaMedicaController = container.resolve(FichasMedicasController);
+
 container.register(VehiculoController, { useClass: VehiculoController });
 export const vehiculoController = container.resolve(VehiculoController);
 
@@ -111,3 +122,4 @@ export const modeloController = container.resolve(ModeloController);
 
 container.register(TipoVehiculoController, { useClass: TipoVehiculoController });
 export const tipoVehiculoController = container.resolve(TipoVehiculoController);
+
