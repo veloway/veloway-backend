@@ -193,9 +193,9 @@ export class ViajesRepository implements IViajeRepository {
               hora: { lte: ahora }
             },
             {
-              reserva: true,
-              fecha: { lte: ahora },
-              hora: { lte: ahora }
+              reserva: true
+              // fecha: { lte: ahora },
+              // hora: { lte: ahora }
             }
           ]
         }

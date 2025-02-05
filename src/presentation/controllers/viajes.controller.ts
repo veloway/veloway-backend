@@ -45,6 +45,18 @@ export class ViajesController {
     }
   };
 
+  updateCheckpointActual = async (req: Request, res: Response) => {
+    const { idViaje } = req.params;
+    const { checkpointActual } = req.body;
+
+    try {
+      await this.viajesService.updateCheckpointActual(Number(idViaje), Number(checkpointActual));
+      res.status(200).json({ message: 'Checkpoint actual actualizado' });
+    } catch (error) {
+      HandleError.throw(error, res);
+    }
+  };
+
   solicitarAmbulancia = async (req: Request, res: Response) => {
     const { idViaje } = req.params;
     try {
