@@ -36,6 +36,12 @@ import { ModeloRepository } from '../repositories/modelo.repository';
 import { TipoVehiculoRepository } from '../repositories/tipoVehiculo.repository';
 import { VehiculoService } from '../../application/services/vehiculo.service';
 import { VehiculoController } from '../../presentation/controllers/vehiculo.controller';
+import { MarcasService } from '../../application/services/marcas.service';
+import { ModelosService } from '../../application/services/modelos.service';
+import { MarcaController } from '../../presentation/controllers/marca.controller';
+import { ModeloController } from '../../presentation/controllers/modelo.controller';
+import { TipoVehiculoService } from '../../application/services/tipoVehiculo.service';
+import { TipoVehiculoController } from '../../presentation/controllers/tipoVehiculo.controller';
 
 container.register(PrismaClient, { useValue: prismaClient });
 // Repositorios
@@ -65,6 +71,9 @@ container.register(DomicilioService, { useClass: DomicilioService });
 container.register(ConductorService, { useClass: ConductorService });
 container.register(LicenciasService, { useClass: LicenciasService });
 container.register(VehiculoService, { useClass: VehiculoService });
+container.register(MarcasService, { useClass: MarcasService });
+container.register(ModelosService, { useClass: ModelosService });
+container.register(TipoVehiculoService, { useClass: TipoVehiculoService });
 
 // Controladores
 container.register(EnviosController, { useClass: EnviosController });
@@ -93,3 +102,12 @@ export const licenciasController = container.resolve(LicenciasController);
 
 container.register(VehiculoController, { useClass: VehiculoController });
 export const vehiculoController = container.resolve(VehiculoController);
+
+container.register(MarcaController, { useClass: MarcaController });
+export const marcaController = container.resolve(MarcaController);
+
+container.register(ModeloController, { useClass: ModeloController });
+export const modeloController = container.resolve(ModeloController);
+
+container.register(TipoVehiculoController, { useClass: TipoVehiculoController });
+export const tipoVehiculoController = container.resolve(TipoVehiculoController);

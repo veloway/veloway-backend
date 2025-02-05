@@ -49,6 +49,24 @@ export class ModeloRepository implements IModeloRepository {
   }
 
   async getAllByMarcaId(marcaId: number): Promise<Modelo[]> {
-    throw new Error('Method not implemented.');
+    const modelosPrisma = await this.prisma.modelos.findMany({
+      where: {
+        id_marca: marcaId
+      },
+      include: {
+        marcas: true
+      }
+    });
+
+    const modelos = modelosPrisma.map(modelo => new Modelo(
+      modelo.id_modelo,
+      modelo.nombre,
+      new Marca(
+        modelo.marcas.id_marca,
+        modelo.marcas.nombre
+      )
+    ));
+
+    return modelos;
   }
 }

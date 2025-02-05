@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Injectable } from '../dependencies/injectable.dependency';
 import { type IMarcaRepository } from '../../domain/repositories/marca.interface';
-import { type Marca } from '../../domain/entities/marca.entity';
+import { Marca } from '../../domain/entities/marca.entity';
 
 @Injectable()
 export class MarcaRepository implements IMarcaRepository {
@@ -26,6 +26,13 @@ export class MarcaRepository implements IMarcaRepository {
   }
 
   async getAll(): Promise<Marca[]> {
-    throw new Error('Method not implemented.');
+    const marcasPrisma = await this.prisma.marcas.findMany();
+
+    const marcas = marcasPrisma.map(marca => new Marca(
+      marca.id_marca,
+      marca.nombre
+    ));
+
+    return marcas;
   }
 }
