@@ -37,6 +37,11 @@ export class TipoVehiculoRepository implements ITipoVehiculoRepository {
   }
 
   async getAll(): Promise<TipoVehiculo[]> {
-    throw new Error('Method not implemented.');
+    const tiposVehiculoPrisma = await this.prisma.tipos_vehiculos.findMany();
+
+    return tiposVehiculoPrisma.map(tipoVehiculoPrisma => new TipoVehiculo(
+      tipoVehiculoPrisma.id_tipo_vehiculo,
+      tipoVehiculoPrisma.nombre
+    ));
   }
 }
